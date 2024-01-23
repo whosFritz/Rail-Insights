@@ -2,21 +2,25 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>de.whosfritz</groupId>
     <artifactId>RailMetrics</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>RailMetrics</name>
     <description>Web APP for exploring Deutsche Bahn Rail Metrics</description>
+
     <properties>
         <java.version>17</java.version>
         <vaadin.version>24.3.3</vaadin.version>
     </properties>
+
     <repositories>
         <repository>
             <id>github</id>
@@ -31,6 +35,7 @@
             </snapshots>
         </repository>
     </repositories>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -42,7 +47,10 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <dependencies>
+        <!-- Spring Boot -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -52,15 +60,41 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- Spring Boot End -->
+
+        <!-- Vaadin -->
+
+        <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
         </dependency>
-        <!--		<dependency>-->
-        <!--			<groupId>org.springframework.boot</groupId>-->
-        <!--			<artifactId>spring-boot-docker-compose</artifactId>-->
-        <!--			<scope>runtime</scope>-->
-        <!--			<optional>true</optional>-->
-        <!--		</dependency>-->
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <!-- Replace artifactId with vaadin-core to use only free components -->
+            <artifactId>vaadin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-testbench-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.parttio</groupId>
+            <artifactId>line-awesome</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <!-- Vaadin End -->
+
+        <!-- Database -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -71,47 +105,23 @@
             <artifactId>mariadb-java-client</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- Database End -->
+
+        <!-- Other -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <!-- Replace artifactId with vaadin-core to use only free components -->
-            <artifactId>vaadin</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.parttio</groupId>
-            <artifactId>line-awesome</artifactId>
-            <version>2.0.0</version>
-        </dependency>
+        <!-- Other End -->
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-test</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
-
+        <!-- Own -->
         <dependency>
             <groupId>de.olech2412.adapter</groupId>
             <artifactId>db-adapter-v6</artifactId>
             <version>1.1.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-testbench-junit5</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!-- Own End -->
     </dependencies>
 
     <build>
@@ -137,6 +147,7 @@
             </plugin>
         </plugins>
     </build>
+
     <profiles>
         <profile>
             <!-- Production mode is activated using -Pproduction -->
