@@ -32,5 +32,8 @@ build/
 
 ### VS Code ###
 .vscode/
-### My Settings ###
+### Our Settings ###
 /frontend/generated/
+/frontend/index.html
+/.flow-node-tasks.lock
+/src/main/bundles/
