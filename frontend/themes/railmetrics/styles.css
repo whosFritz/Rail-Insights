@@ -1,0 +1,45 @@
+html {
+    --lumo-border-radius: 0.75em;
+    --lumo-font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --lumo-shade-5pct: rgba(26, 26, 26, 0.05);
+    --lumo-shade-10pct: rgba(26, 26, 26, 0.1);
+    --lumo-shade-20pct: rgba(26, 26, 26, 0.2);
+    --lumo-shade-30pct: rgba(26, 26, 26, 0.3);
+    --lumo-shade-40pct: rgba(26, 26, 26, 0.4);
+    --lumo-shade-50pct: rgba(26, 26, 26, 0.5);
+    --lumo-shade-60pct: rgba(26, 26, 26, 0.6);
+    --lumo-shade-70pct: rgba(26, 26, 26, 0.7);
+    --lumo-shade-80pct: rgba(26, 26, 26, 0.8);
+    --lumo-shade-90pct: rgba(26, 26, 26, 0.9);
+    --lumo-error-text-color: rgb(155, 0, 14);
+    --lumo-error-color-50pct: rgba(155, 0, 14, 0.5);
+    --lumo-error-color-10pct: rgba(155, 0, 14, 0.1);
+    --lumo-shade: hsl(0, 0%, 10%);
+    --lumo-error-color: #9B000E;
+    --lumo-success-contrast-color: hsl(159, 29%, 10%);
+    --lumo-primary-text-color: #ec0016;
+    --lumo-primary-color-50pct: rgba(236, 0, 22, 0.5);
+    --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
+    --lumo-primary-color: #ec0016;
+    --lumo-success-text-color: rgb(120, 190, 20);
+    --lumo-success-color-50pct: rgba(120, 190, 20, 0.5);
+    --lumo-success-color-10pct: rgba(120, 190, 20, 0.1);
+    --lumo-success-color: #78BE14;
+}
+
+[theme~="dark"] {
+    --lumo-primary-text-color: rgb(236, 0, 22);
+    --lumo-primary-color-50pct: rgba(236, 0, 22, 0.5);
+    --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
+    --lumo-primary-color: #ec0016;
+    --lumo-success-text-color: rgb(99, 166, 21);
+    --lumo-success-color-50pct: rgba(99, 166, 21, 0.5);
+    --lumo-success-color-10pct: rgba(99, 166, 21, 0.1);
+    --lumo-success-color: #63A615;
+    --lumo-error-text-color: rgb(225, 29, 98);
+    --lumo-error-color-50pct: rgba(225, 29, 98, 0.5);
+    --lumo-error-color-10pct: rgba(225, 29, 98, 0.1);
+    --lumo-error-color: #e11d62;
+    --lumo-base-color: hsl(214, 35%, 21%);
+    --lumo-warning-color: #fea200
+}
