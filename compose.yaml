@@ -2,10 +2,10 @@ services:
   mariadb:
     image: 'mariadb:latest'
     environment:
-      - 'MARIADB_ROOT_PASSWORD=verysecret'
+      - 'MARIADB_ROOT_PASSWORD=password'
       - 'MARIADB_DATABASE=railmetrics'
       - 'MARIADB_PASSWORD=password'
-      - 'MARIADB_USER=user'
+      - 'MARIADB_USER=root'
     volumes:
       - data:/var/lib/mysql
     ports:
