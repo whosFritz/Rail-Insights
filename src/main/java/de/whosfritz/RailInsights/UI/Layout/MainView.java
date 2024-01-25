@@ -6,11 +6,10 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.theme.lumo.LumoUtility;
+import de.whosfritz.RailInsights.UI.Components.DarkModeToggle;
 import de.whosfritz.RailInsights.UI.Pages.GeneralView;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
@@ -21,32 +20,29 @@ public class MainView extends AppLayout {
         SideNav views = getPrimaryNavigation();
 
         Scroller scroller = new Scroller(views);
-        scroller.setClassName(LumoUtility.Padding.SMALL);
+        scroller.getStyle().set("padding", "var(--lumo-space-s)");
 
-        DrawerToggle toggle = new DrawerToggle();
+        DrawerToggle drawerToggle = new DrawerToggle();
 
         RouterLink viewTitle = new RouterLink("Rail Insights", GeneralView.class);
-        viewTitle.getStyle().set("font-size", "var(--lumo-font-size-l)")
+        viewTitle.getStyle().set("font-size", "var(--lumo-font-size-xl)")
                 .set("margin", "0");
 
-        HorizontalLayout subViews = getSecondaryNavigation();
-        subViews.getElement();
+        DarkModeToggle darkModeToggle = new DarkModeToggle();
 
-
-        HorizontalLayout wrapper = new HorizontalLayout(toggle, viewTitle);
+        HorizontalLayout wrapper = new HorizontalLayout();
+        wrapper.add(drawerToggle, viewTitle);
+        wrapper.setSizeFull();
         wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
-        wrapper.setSpacing(false);
 
-        VerticalLayout viewHeader = new VerticalLayout(wrapper, subViews);
-        viewHeader.setPadding(false);
-        viewHeader.setSpacing(false);
-
+        HorizontalLayout wrapper2 = new HorizontalLayout();
+        wrapper2.add(darkModeToggle);
+        wrapper2.setAlignSelf(FlexComponent.Alignment.END, darkModeToggle);
+        wrapper2.getStyle().set("margin", "var(--lumo-space-s)");
         addToDrawer(scroller);
-        addToNavbar(viewHeader);
-
+        addToNavbar(wrapper, wrapper2);
         setPrimarySection(Section.DRAWER);
     }
-    // end::snippet[]
 
     private SideNav getPrimaryNavigation() {
         SideNav sideNav = new SideNav();
@@ -78,12 +74,5 @@ public class MainView extends AppLayout {
 //                new SideNavItem("Menüpunkt8", "/m1", VaadinIcon.MENU.create())
 //        );
         return sideNav;
-    }
-
-    private HorizontalLayout getSecondaryNavigation() {
-        HorizontalLayout navigation = new HorizontalLayout();
-        navigation.addClassNames(LumoUtility.JustifyContent.CENTER,
-                LumoUtility.Gap.SMALL, LumoUtility.Height.MEDIUM);
-        return navigation;
     }
 }
