@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>de.whosfritz</groupId>
-    <artifactId>RailInsights</artifactId>
+    <artifactId>railinsights</artifactId>
     <version>1.0.0</version>
     <name>RailInsights</name>
     <description>Web APP for exploring Deutsche Bahn Rail Metrics</description>
