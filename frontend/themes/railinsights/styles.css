@@ -25,7 +25,13 @@ html {
     --lumo-success-color-50pct: rgba(120, 190, 20, 0.5);
     --lumo-success-color-10pct: rgba(120, 190, 20, 0.1);
     --lumo-success-color: #78BE14;
+
+    --lumo-warning-color: #fea200;
+    --lumo-warning-text-color: rgb(255, 162, 0);
+    --lumo-warning-color-50pct: rgba(255, 162, 0, 0.5);
+    --lumo-warning-color-10pct: rgba(255, 162, 0, 0.1);
 }
+
 
 [theme~="dark"] {
     --lumo-primary-text-color: rgb(236, 0, 22);
@@ -41,5 +47,10 @@ html {
     --lumo-error-color-10pct: rgba(225, 29, 98, 0.1);
     --lumo-error-color: #e11d62;
     --lumo-base-color: hsl(214, 35%, 21%);
-    --lumo-warning-color: #fea200
+
+    --lumo-warning-color: #fea200;
+    --lumo-warning-text-color: rgb(255, 162, 0);
+    --lumo-warning-color-50pct: rgba(255, 162, 0, 0.5);
+    --lumo-warning-color-10pct: rgba(255, 162, 0, 0.1);
+
 }

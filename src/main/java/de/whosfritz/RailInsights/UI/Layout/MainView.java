@@ -1,9 +1,7 @@
-package de.whosfritz.RailMetrics.UI.Layout;
+package de.whosfritz.RailInsights.UI.Layout;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -11,16 +9,14 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
+import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import de.whosfritz.RailInsights.UI.Pages.GeneralView;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 public class MainView extends AppLayout {
 
     public MainView() {
-        H1 appTitle = new H1("RailMetrics");
-        appTitle.getStyle().set("font-size", "var(--lumo-font-size-l)")
-                .set("line-height", "var(--lumo-size-l)")
-                .set("margin", "0 var(--lumo-space-m)");
 
         SideNav views = getPrimaryNavigation();
 
@@ -29,12 +25,13 @@ public class MainView extends AppLayout {
 
         DrawerToggle toggle = new DrawerToggle();
 
-        H2 viewTitle = new H2("Orders");
+        RouterLink viewTitle = new RouterLink("Rail Insights", GeneralView.class);
         viewTitle.getStyle().set("font-size", "var(--lumo-font-size-l)")
                 .set("margin", "0");
 
         HorizontalLayout subViews = getSecondaryNavigation();
         subViews.getElement();
+
 
         HorizontalLayout wrapper = new HorizontalLayout(toggle, viewTitle);
         wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
@@ -44,7 +41,7 @@ public class MainView extends AppLayout {
         viewHeader.setPadding(false);
         viewHeader.setSpacing(false);
 
-        addToDrawer(appTitle, scroller);
+        addToDrawer(scroller);
         addToNavbar(viewHeader);
 
         setPrimarySection(Section.DRAWER);
@@ -53,6 +50,8 @@ public class MainView extends AppLayout {
 
     private SideNav getPrimaryNavigation() {
         SideNav sideNav = new SideNav();
+
+
         sideNav.addItem(
                 new SideNavItem("Trips", "/trips",
                         VaadinIcon.SUITCASE.create()),
@@ -63,7 +62,21 @@ public class MainView extends AppLayout {
                 new SideNavItem("IC", "/ic",
                         VaadinIcon.TRAIN.create()),
                 new SideNavItem("Regionalbahn", "/regionalbahn",
-                        LineAwesomeIcon.SUBWAY_SOLID.create()));
+                        LineAwesomeIcon.SUBWAY_SOLID.create()),
+                new SideNavItem("Karte", "/map",
+                        LineAwesomeIcon.ROUTE_SOLID.create())
+        );
+
+//        sideNav.addItem(
+//                new SideNavItem("Menüpunkt1", "/m1", VaadinIcon.MENU.create()),
+//                new SideNavItem("Menüpunkt2", "/m1", VaadinIcon.MENU.create()),
+//                new SideNavItem("Menüpunkt3", "/m1", VaadinIcon.MENU.create()),
+//                new SideNavItem("Menüpunkt4", "/m1", VaadinIcon.MENU.create()),
+//                new SideNavItem("Menüpunkt5", "/stations", VaadinIcon.MENU.create()),
+//                new SideNavItem("Menüpunkt6", "/m1", VaadinIcon.MENU.create()),
+//                new SideNavItem("Menüpunkt7", "/m1", VaadinIcon.MENU.create()),
+//                new SideNavItem("Menüpunkt8", "/m1", VaadinIcon.MENU.create())
+//        );
         return sideNav;
     }
 

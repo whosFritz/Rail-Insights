@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>de.whosfritz</groupId>
-    <artifactId>RailMetrics</artifactId>
-    <version>0.0.1</version>
-    <name>RailMetrics</name>
+    <artifactId>RailInsights</artifactId>
+    <version>1.0.0</version>
+    <name>RailInsights</name>
     <description>Web APP for exploring Deutsche Bahn Rail Metrics</description>
     <properties>
         <java.version>17</java.version>
@@ -102,6 +102,10 @@
             <groupId>de.olech2412.adapter</groupId>
             <artifactId>db-adapter-v6</artifactId>
             <version>1.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-charts-flow-svg-generator</artifactId>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
