@@ -1,4 +1,4 @@
-package de.whosfritz.RailMetrics.Scheduling;
+package de.whosfritz.RailInsights.Scheduling;
 
 //@Configuration
 //@EnableScheduling

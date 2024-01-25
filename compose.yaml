@@ -3,7 +3,7 @@ services:
     image: 'mariadb:latest'
     environment:
       - 'MARIADB_ROOT_PASSWORD=password'
-      - 'MARIADB_DATABASE=railmetrics'
+      - 'MARIADB_DATABASE=railinsights'
       - 'MARIADB_PASSWORD=password'
       - 'MARIADB_USER=root'
     volumes:
