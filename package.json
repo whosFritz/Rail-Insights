@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "@polymer/polymer": "3.5.1",
+    "@vaadin-component-factory/vcf-toggle-button": "1.0.4",
     "@vaadin/a11y-base": "24.3.3",
     "@vaadin/accordion": "24.3.3",
     "@vaadin/app-layout": "24.3.3",
@@ -95,6 +96,7 @@
   "vaadin": {
     "dependencies": {
       "@polymer/polymer": "3.5.1",
+      "@vaadin-component-factory/vcf-toggle-button": "1.0.4",
       "@vaadin/a11y-base": "24.3.3",
       "@vaadin/accordion": "24.3.3",
       "@vaadin/app-layout": "24.3.3",
@@ -183,7 +185,7 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "48d2168dca11ad8b9274dd779d4b367b6fd6037764766fdab300e559cac67ecd"
+    "hash": "a96fdc47e016b3b0cde5602c7273f42e141d41df2290415bfaced7c47df18b2d"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -255,6 +257,7 @@
     "apexcharts": "$apexcharts",
     "onecolor": "$onecolor",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
-    "date-fns": "$date-fns"
+    "date-fns": "$date-fns",
+    "@vaadin-component-factory/vcf-toggle-button": "$@vaadin-component-factory/vcf-toggle-button"
   }
 }

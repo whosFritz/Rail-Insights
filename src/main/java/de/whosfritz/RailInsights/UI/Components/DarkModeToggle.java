@@ -15,10 +15,6 @@ public class DarkModeToggle extends Div {
         add(darkmodeButton);
     }
 
-    private Component getThemeIcon() {
-        return VaadinIcon.MOON_O.create();
-    }
-
     private Component getInitialIcon() {
         if (getElement().getThemeList().contains("dark")) {
             return VaadinIcon.MOON_O.create();

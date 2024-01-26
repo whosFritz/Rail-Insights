@@ -9,7 +9,8 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.RouterLink;
-import de.whosfritz.RailInsights.UI.Components.DarkModeToggle;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+import de.whosfritz.RailInsights.UI.Components.EvenBetterDarkModeToggle;
 import de.whosfritz.RailInsights.UI.Pages.GeneralView;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
@@ -20,7 +21,7 @@ public class MainView extends AppLayout {
         SideNav views = getPrimaryNavigation();
 
         Scroller scroller = new Scroller(views);
-        scroller.getStyle().set("padding", "var(--lumo-space-s)");
+        scroller.addClassName(LumoUtility.Padding.SMALL);
 
         DrawerToggle drawerToggle = new DrawerToggle();
 
@@ -28,7 +29,6 @@ public class MainView extends AppLayout {
         viewTitle.getStyle().set("font-size", "var(--lumo-font-size-xl)")
                 .set("margin", "0");
 
-        DarkModeToggle darkModeToggle = new DarkModeToggle();
 
         HorizontalLayout wrapper = new HorizontalLayout();
         wrapper.add(drawerToggle, viewTitle);
@@ -36,9 +36,9 @@ public class MainView extends AppLayout {
         wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
         HorizontalLayout wrapper2 = new HorizontalLayout();
-        wrapper2.add(darkModeToggle);
-        wrapper2.setAlignSelf(FlexComponent.Alignment.END, darkModeToggle);
-        wrapper2.getStyle().set("margin", "var(--lumo-space-s)");
+        wrapper2.addClassName(LumoUtility.Margin.MEDIUM);
+        EvenBetterDarkModeToggle myToggleButton = new EvenBetterDarkModeToggle();
+        wrapper2.add(myToggleButton);
         addToDrawer(scroller);
         addToNavbar(wrapper, wrapper2);
         setPrimarySection(Section.DRAWER);
@@ -51,7 +51,7 @@ public class MainView extends AppLayout {
         sideNav.addItem(
                 new SideNavItem("Trips", "/trips",
                         VaadinIcon.SUITCASE.create()),
-                new SideNavItem("Stations", "/stations",
+                new SideNavItem("Bahnhöfe", "/stations",
                         LineAwesomeIcon.CITY_SOLID.create()),
                 new SideNavItem("ICE", "/ice",
                         LineAwesomeIcon.TRAIN_SOLID.create()),
@@ -59,7 +59,7 @@ public class MainView extends AppLayout {
                         VaadinIcon.TRAIN.create()),
                 new SideNavItem("Regionalbahn", "/regionalbahn",
                         LineAwesomeIcon.SUBWAY_SOLID.create()),
-                new SideNavItem("Karte", "/map",
+                new SideNavItem("Interaktive Karte", "/map",
                         LineAwesomeIcon.ROUTE_SOLID.create())
         );
 
