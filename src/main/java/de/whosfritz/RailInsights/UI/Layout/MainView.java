@@ -34,9 +34,7 @@ public class MainView extends AppLayout {
         DrawerToggle drawerToggle = new DrawerToggle();
 
         RouterLink viewTitle = new RouterLink("Rail Insights", GeneralView.class);
-        viewTitle.getStyle().set("font-size", "var(--lumo-font-size-xl)")
-                .set("margin", "0");
-
+        viewTitle.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.BOLD);
 
         HorizontalLayout wrapper = new HorizontalLayout();
         wrapper.add(drawerToggle, viewTitle);
@@ -91,10 +89,8 @@ public class MainView extends AppLayout {
     }
 
     private Cookie getCookieByName() {
-        // Fetch all cookies from the request
         Cookie[] cookies = VaadinService.getCurrentRequest().getCookies();
 
-        // Iterate to find cookie by its name
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("RlConsentCookie")) {
                 return cookie;
