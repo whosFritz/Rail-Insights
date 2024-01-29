@@ -12,6 +12,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.RouterLink;
@@ -25,11 +26,9 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 public class MainView extends AppLayout {
 
     public MainView() {
-
-        SideNav views = getNavigationBar();
+        VerticalLayout views = getNavigationBar();
 
         Scroller scroller = new Scroller(views);
-        scroller.addClassName(LumoUtility.Padding.SMALL);
 
         DrawerToggle drawerToggle = new DrawerToggle();
 
@@ -67,9 +66,10 @@ public class MainView extends AppLayout {
         return wrapper;
     }
 
-    private SideNav getNavigationBar() {
-        SideNav sideNav = new SideNav();
-        sideNav.addItem(
+    private VerticalLayout getNavigationBar() {
+        VerticalLayout wrapper = new VerticalLayout();
+        SideNav mainSideNav = new SideNav();
+        mainSideNav.addItem(
                 new SideNavItem("Trips", "/trips",
                         VaadinIcon.SUITCASE.create()),
                 new SideNavItem("Bahnhöfe", "/stations",
@@ -83,7 +83,17 @@ public class MainView extends AppLayout {
                 new SideNavItem("Interaktive Karte", "/map",
                         LineAwesomeIcon.ROUTE_SOLID.create())
         );
-        return sideNav;
+        SideNav subSideNav = new SideNav();
+        subSideNav.addItem(
+                new SideNavItem("Impressum", "/impressum",
+                        LineAwesomeIcon.INFO_CIRCLE_SOLID.create()),
+                new SideNavItem("Datenschutzerklärung", "/datenschutzerklaerung",
+                        LineAwesomeIcon.SHIELD_ALT_SOLID.create())
+        );
+        wrapper.add(mainSideNav, subSideNav);
+        wrapper.setSizeFull();
+        mainSideNav.setSizeFull();
+        return wrapper;
     }
 
     private Cookie getCookieByName() {
