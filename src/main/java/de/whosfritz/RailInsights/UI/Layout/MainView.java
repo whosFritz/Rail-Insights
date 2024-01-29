@@ -49,8 +49,6 @@ public class MainView extends AppLayout {
         addToNavbar(wrapper, wrapper2);
         setPrimarySection(Section.DRAWER);
         getCookieConsentBanner();
-        //<theme-editor-local-classname>
-        addClassName("main-view-app-layout-1");
     }
 
     private static Div getWrapper() {
