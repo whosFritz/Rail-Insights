@@ -1,3 +1,4 @@
+
 html {
     --lumo-font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
     --lumo-border-radius: 0.5em;
@@ -31,7 +32,7 @@ html {
     --lumo-primary-color-50pct: rgba(236, 0, 22, 0.5);
     --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
     --lumo-primary-color: #EC0016;
-    --lumo-base-color: hsl(214, 18%, 24%);
+    --lumo-base-color: rgba(29, 42, 56, 1);
 
     --lumo-warning-color: #fea200;
     --lumo-warning-text-color: rgb(255, 162, 0);

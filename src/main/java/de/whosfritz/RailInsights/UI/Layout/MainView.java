@@ -26,7 +26,7 @@ public class MainView extends AppLayout {
 
     public MainView() {
 
-        SideNav views = getPrimaryNavigation();
+        SideNav views = getNavigationBar();
 
         Scroller scroller = new Scroller(views);
         scroller.addClassName(LumoUtility.Padding.SMALL);
@@ -51,6 +51,8 @@ public class MainView extends AppLayout {
         addToNavbar(wrapper, wrapper2);
         setPrimarySection(Section.DRAWER);
         getCookieConsentBanner();
+        //<theme-editor-local-classname>
+        addClassName("main-view-app-layout-1");
     }
 
     private static Div getWrapper() {
@@ -69,7 +71,7 @@ public class MainView extends AppLayout {
         return wrapper;
     }
 
-    private SideNav getPrimaryNavigation() {
+    private SideNav getNavigationBar() {
         SideNav sideNav = new SideNav();
         sideNav.addItem(
                 new SideNavItem("Trips", "/trips",
