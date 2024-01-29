@@ -1,20 +1,22 @@
 
 html {
-    --lumo-font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --lumo-border-radius: 0.5em;
-    --lumo-primary-text-color: #EC0016;
-    --lumo-primary-color-50pct: rgba(236, 0, 22, 0.5);
-    --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
-    --lumo-error-text-color: rgb(225, 29, 98);
-    --lumo-error-color-50pct: rgba(225, 29, 98, 0.5);
-    --lumo-error-color-10pct: rgba(225, 29, 98, 0.1);
-    --lumo-success-text-color: rgb(120, 190, 20);
-    --lumo-success-color-50pct: rgba(120, 190, 20, 0.5);
-    --lumo-success-color-10pct: rgba(120, 190, 20, 0.1);
-    --lumo-primary-color: #EC0016;
-    --lumo-error-color: #e11d62;
-    --lumo-success-color: #78BE14;
-    --lumo-success-contrast-color: hsl(159, 29%, 10%);
+    --lumo-primary-text-color: rgb(114, 22, 243);
+    --lumo-primary-color-50pct: rgba(114, 22, 243, 0.5);
+    --lumo-primary-color-10pct: rgba(114, 22, 243, 0.1);
+    --lumo-error-text-color: rgb(255, 56, 103);
+    --lumo-error-color-50pct: rgba(255, 56, 103, 0.5);
+    --lumo-error-color-10pct: rgba(255, 56, 103, 0.1);
+    --lumo-success-text-color: rgb(20, 184, 143);
+    --lumo-success-color-50pct: rgba(20, 184, 143, 0.5);
+    --lumo-success-color-10pct: rgba(20, 184, 143, 0.1);
+    --lumo-primary-color: hsl(265, 90%, 52%);
+    --lumo-error-color: hsl(346, 100%, 61%);
+    --lumo-success-color: hsl(165, 80%, 40%);
+    --lumo-header-text-color: hsl(285, 35%, 15%);
+    --lumo-body-text-color: hsla(285, 40%, 16%, 0.94);
+    --lumo-secondary-text-color: hsla(285, 42%, 18%, 0.72);
+    --lumo-tertiary-text-color: hsla(285, 45%, 20%, 0.5);
+    --lumo-disabled-text-color: hsla(285, 50%, 22%, 0.26);
 
     --lumo-warning-color: #fea200;
     --lumo-warning-text-color: rgb(255, 162, 0);
@@ -24,20 +26,6 @@ html {
 
 
 [theme~="dark"] {
-    --lumo-error-text-color: rgb(225, 29, 98);
-    --lumo-error-color-50pct: rgba(225, 29, 98, 0.5);
-    --lumo-error-color-10pct: rgba(225, 29, 98, 0.1);
-    --lumo-error-color: #e11d62;
-    --lumo-primary-text-color: rgb(236, 0, 22);
-    --lumo-primary-color-50pct: rgba(236, 0, 22, 0.5);
-    --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
-    --lumo-primary-color: #EC0016;
-    --lumo-base-color: rgba(29, 42, 56, 1);
-
-    --lumo-warning-color: #fea200;
-    --lumo-warning-text-color: rgb(255, 162, 0);
-    --lumo-warning-color-50pct: rgba(255, 162, 0, 0.5);
-    --lumo-warning-color-10pct: rgba(255, 162, 0, 0.1);
 }
 
 
