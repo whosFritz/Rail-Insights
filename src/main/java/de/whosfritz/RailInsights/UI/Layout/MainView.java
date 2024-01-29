@@ -61,7 +61,7 @@ public class MainView extends AppLayout {
                 " Weitere Informationen über die Verwendung Ihrer Daten finden Sie in unserer "
         );
         Anchor datenschutzLink = new Anchor("/datenschutzerklaerung", "Datenschutzerklärung", AnchorTarget.BLANK);
-        Text text2 = new Text(". Sie können Ihre Auswahl jederzeit unter Einstellungen widerrufen oder anpassen.");
+        Text text2 = new Text(". Sie können Ihre Auswahl jederzeit unter Ihren Browser-Einstellungen widerrufen oder anpassen.");
         wrapper.add(text1, datenschutzLink, text2);
         return wrapper;
     }
