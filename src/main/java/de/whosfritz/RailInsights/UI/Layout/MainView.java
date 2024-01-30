@@ -1,5 +1,6 @@
 package de.whosfritz.RailInsights.UI.Layout;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -7,11 +8,13 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.RouterLink;
@@ -23,13 +26,12 @@ import jakarta.servlet.http.Cookie;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 public class MainView extends AppLayout {
+    Notification cookieNotification = new Notification();
 
     public MainView() {
-
-        SideNav views = getNavigationBar();
+        VerticalLayout views = getNavigationBar();
 
         Scroller scroller = new Scroller(views);
-        scroller.addClassName(LumoUtility.Padding.SMALL);
 
         DrawerToggle drawerToggle = new DrawerToggle();
 
@@ -49,43 +51,33 @@ public class MainView extends AppLayout {
         addToNavbar(wrapper, wrapper2);
         setPrimarySection(Section.DRAWER);
         getCookieConsentBanner();
-        //<theme-editor-local-classname>
-        addClassName("main-view-app-layout-1");
     }
 
-    private static Div getWrapper() {
+    private Component getWrapper() {
         Div wrapper = new Div();
         Text text1 = new Text("Wir benötigen Ihre Zustimmung, bevor Sie unsere Website weiter besuchen können." +
-                " Wenn Sie unter 16 Jahre alt sind und Ihre Zustimmung zu freiwilligen Diensten geben möchten," +
-                " müssen Sie Ihre Erziehungsberechtigten um Erlaubnis bitten. Wir verwenden Cookies und andere" +
-                " Technologien auf unserer Webseite. Einige von ihnen sind essenziell, während andere uns helfen," +
-                " diese Webseite und Ihre Erfahrung zu verbessern. Personenbezogene Daten können verarbeitet werden" +
-                " (z. B. IP-Adressen), z. B. für personalisierte Anzeigen und Inhalte oder Anzeigen- und Inhaltsmessung." +
-                " Weitere Informationen über die Verwendung Ihrer Daten finden Sie in unserer "
+                " Wir verwenden Cookies und andere Technologien auf unserer Webseite. Diese sind essenziell für die Funktion" +
+                " der Webseite. Durch Klick auf Akzeptieren sind Sie damit einverstanden." +
+                " Mehr Informationen finden Sie in unserer "
         );
-        Anchor datenschutzLink = new Anchor("/datenschutzerklaerung", "Datenschutzerklärung", AnchorTarget.BLANK);
-        Text text2 = new Text(". Sie können Ihre Auswahl jederzeit unter Einstellungen widerrufen oder anpassen.");
+        Anchor datenschutzLink = new Anchor("/datenschutzerklaerung", "Datenschutzerklärung.", AnchorTarget.BLANK);
+        Paragraph text2 = new Paragraph("Sie können Ihre Auswahl jederzeit unter Ihren Browser-Einstellungen widerrufen oder anpassen.");
         wrapper.add(text1, datenschutzLink, text2);
-        return wrapper;
+        wrapper.addClassName(LumoUtility.Padding.MEDIUM);
+        wrapper.add(new Button("Akzeptieren", evt -> {
+            setCookieConsent();
+            cookieNotification.close();
+        }));
+        return new Scroller(wrapper);
     }
 
-    private SideNav getNavigationBar() {
-        SideNav sideNav = new SideNav();
-        sideNav.addItem(
-                new SideNavItem("Trips", "/trips",
-                        VaadinIcon.SUITCASE.create()),
-                new SideNavItem("Bahnhöfe", "/stations",
-                        LineAwesomeIcon.CITY_SOLID.create()),
-                new SideNavItem("ICE", "/ice",
-                        LineAwesomeIcon.TRAIN_SOLID.create()),
-                new SideNavItem("IC", "/ic",
-                        VaadinIcon.TRAIN.create()),
-                new SideNavItem("Regionalbahn", "/regionalbahn",
-                        LineAwesomeIcon.SUBWAY_SOLID.create()),
-                new SideNavItem("Interaktive Karte", "/map",
-                        LineAwesomeIcon.ROUTE_SOLID.create())
-        );
-        return sideNav;
+    private VerticalLayout getNavigationBar() {
+        VerticalLayout wrapper = new VerticalLayout();
+        SideNav mainSideNav = getMainSideNav();
+        SideNav subSideNav = getSubSideNav();
+        wrapper.add(mainSideNav, subSideNav);
+        wrapper.setSizeFull();
+        return wrapper;
     }
 
     private Cookie getCookieByName() {
@@ -102,20 +94,47 @@ public class MainView extends AppLayout {
     private void getCookieConsentBanner() {
         Cookie rlConsentCookie = getCookieByName();
         if (rlConsentCookie == null || (rlConsentCookie.getValue() != null && !rlConsentCookie.getValue().equals("true"))) {
-            Notification cookieNotification = new Notification();
-            cookieNotification.setPosition(Notification.Position.BOTTOM_STRETCH);
+            cookieNotification.setPosition(Notification.Position.MIDDLE);
             cookieNotification.setDuration(0);
-            Div wrapper = getWrapper();
-            cookieNotification.add(wrapper);
-            cookieNotification.add(new Button("Akzeptieren", evt -> {
-                Cookie consentCookie = new Cookie("RlConsentCookie", "true");
-                consentCookie.setMaxAge(60 * 60 * 24 * 365);
-                consentCookie.setPath("/");
-                VaadinService.getCurrentResponse().addCookie(consentCookie);
-                cookieNotification.close();
-            }));
+            cookieNotification.add(getWrapper());
             cookieNotification.open();
         }
     }
-}
 
+    private void setCookieConsent() {
+        Cookie consentCookie = new Cookie("RlConsentCookie", "true");
+        consentCookie.setMaxAge(60 * 60 * 24 * 365);
+        consentCookie.setPath("/");
+        VaadinService.getCurrentResponse().addCookie(consentCookie);
+    }
+
+    private SideNav getMainSideNav() {
+        SideNav mainSideNav = new SideNav();
+        mainSideNav.addItem(
+                createNavItem("Trips", "/trips", VaadinIcon.SUITCASE.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("Bahnhöfe", "/stations", LineAwesomeIcon.CITY_SOLID.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("ICE", "/ice", LineAwesomeIcon.TRAIN_SOLID.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("IC", "/ic", VaadinIcon.TRAIN.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("Regionalbahn", "/regionalbahn", LineAwesomeIcon.SUBWAY_SOLID.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("Interaktive Karte", "/map", LineAwesomeIcon.ROUTE_SOLID.create(), LumoUtility.FontSize.MEDIUM)
+        );
+        mainSideNav.setSizeFull();
+        return mainSideNav;
+    }
+
+    private SideNav getSubSideNav() {
+        SideNav subSideNav = new SideNav();
+        subSideNav.addItem(
+                createNavItem("Impressum", "/impressum", LineAwesomeIcon.INFO_CIRCLE_SOLID.create(), LumoUtility.FontSize.XSMALL),
+                createNavItem("Datenschutzerklärung", "/datenschutzerklaerung", LineAwesomeIcon.SHIELD_ALT_SOLID.create(), LumoUtility.FontSize.XSMALL)
+        );
+        return subSideNav;
+    }
+
+    private SideNavItem createNavItem(String title, String route, Component icon, String className) {
+        SideNavItem item = new SideNavItem(title, route, icon);
+        item.addClassName(className);
+        return item;
+    }
+
+}
