@@ -125,6 +125,7 @@ public class MainView extends AppLayout {
     private SideNav getSubSideNav() {
         SideNav subSideNav = new SideNav();
         subSideNav.addItem(
+                createNavItem("About", "https://github.com/whosFritz/Rail-Insights", LineAwesomeIcon.USER_SOLID.create(), LumoUtility.FontSize.XSMALL),
                 createNavItem("Impressum", "/impressum", LineAwesomeIcon.INFO_CIRCLE_SOLID.create(), LumoUtility.FontSize.XSMALL),
                 createNavItem("Datenschutzerklärung", "/datenschutzerklaerung", LineAwesomeIcon.SHIELD_ALT_SOLID.create(), LumoUtility.FontSize.XSMALL)
         );
