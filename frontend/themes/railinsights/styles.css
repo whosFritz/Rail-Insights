@@ -36,16 +36,6 @@ html {
     --lumo-tint-70pct: rgba(252, 245, 255, 0.7);
     --lumo-tint-80pct: rgba(252, 245, 255, 0.8);
     --lumo-tint-90pct: rgba(252, 245, 255, 0.9);
-    --lumo-shade-5pct: rgba(40, 45, 55, 0.05);
-    --lumo-shade-10pct: rgba(40, 45, 55, 0.1);
-    --lumo-shade-20pct: rgba(40, 45, 55, 0.2);
-    --lumo-shade-30pct: rgba(40, 45, 55, 0.3);
-    --lumo-shade-40pct: rgba(40, 45, 55, 0.4);
-    --lumo-shade-50pct: rgba(40, 45, 55, 0.5);
-    --lumo-shade-60pct: rgba(40, 45, 55, 0.6);
-    --lumo-shade-70pct: rgba(40, 45, 55, 0.7);
-    --lumo-shade-80pct: rgba(40, 45, 55, 0.8);
-    --lumo-shade-90pct: rgba(40, 45, 55, 0.9);
     --lumo-primary-text-color: rgb(236, 0, 22);
     --lumo-primary-color-50pct: rgba(236, 0, 22, 0.5);
     --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
@@ -55,9 +45,8 @@ html {
     --lumo-success-text-color: rgb(99, 166, 21);
     --lumo-success-color-50pct: rgba(99, 166, 21, 0.5);
     --lumo-success-color-10pct: rgba(99, 166, 21, 0.1);
-    --lumo-base-color: #3C414B;
+    --lumo-base-color: #132039;
     --lumo-tint: hsl(285, 100%, 98%);
-    --lumo-shade: #282D37;
     --lumo-primary-color: #EC0016;
     --lumo-error-color: hsl(346, 100%, 61%);
     --lumo-success-color: #63A615;
@@ -73,6 +62,7 @@ html {
     --lumo-warning-color-50pct: rgba(255, 162, 0, 0.5);
     --lumo-warning-color-10pct: rgba(255, 162, 0, 0.1);
 }
+
 
 vaadin-button {
     :host(:not([theme~="tertiary"])) {
