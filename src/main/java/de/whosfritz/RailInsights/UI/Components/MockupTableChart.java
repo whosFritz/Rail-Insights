@@ -5,55 +5,52 @@ import com.vaadin.flow.component.html.Div;
 
 import java.util.List;
 
-public class MockupTableChart
-        extends Div {
+public class MockupTableChart extends Div {
 
     public MockupTableChart() {
         // tag::snippet[]
         Grid<Person> grid = new Grid<>(Person.class, false);
-        grid.addColumn(Person::getWert1).setHeader("Wert1");
-        grid.addColumn(Person::getWert2).setHeader("Wert2");
-        grid.addColumn(Person::getWert3).setHeader("Wert3");
-        grid.addColumn(Person::getWert4).setHeader("Wert4");
+        grid.addColumn(Person::getWert1).setHeader("Abfahrtsbahnhof");
+        grid.addColumn(Person::getWert2).setHeader("Ankunftsbahnhof");
+        grid.addColumn(Person::getWert3).setHeader("Zugnummer");
+        grid.addColumn(Person::getWert4).setHeader("Abfahrtszeit");
 
         List<Person> people = List.of(
-                new Person("ABC", "123", 42, "Xyz"),
-                new Person("DEF", "456", 21, "Abc"),
-                new Person("GHI", "789", 35, "Mno"),
-                new Person("JKL", "012", 28, "Pqr"),
-                new Person("MNO", "345", 39, "Def"),
-                new Person("PQR", "678", 45, "Jkl"),
-                new Person("STU", "901", 32, "Ghi"),
-                new Person("VWX", "234", 27, "Uvw"),
-                new Person("YZA", "567", 31, "Bcd"),
-                new Person("BCD", "890", 36, "Lmn"),
-                new Person("EFG", "123", 29, "Ijk"),
-                new Person("HIJ", "456", 40, "Efg"),
-                new Person("KLM", "789", 33, "Stu"),
-                new Person("NOP", "012", 26, "Vwx"),
-                new Person("QRS", "345", 37, "Yza"),
-                new Person("TUV", "678", 24, "Efg"),
-                new Person("WXY", "901", 38, "Rst"),
-                new Person("ZAB", "234", 30, "Hij"),
-                new Person("CDE", "567", 43, "Klm"),
-                new Person("FGH", "890", 22, "Qrs"),
-                new Person("IJK", "123", 34, "Nop"),
-                new Person("LMN", "456", 41, "Tuv"),
-                new Person("OPQ", "789", 25, "Wxy"),
-                new Person("RST", "012", 44, "Zab"),
-                new Person("UVW", "345", 27, "Cde"),
-                new Person("XYZ", "678", 32, "Ijk"),
-                new Person("123", "901", 39, "Def"),
-                new Person("456", "234", 28, "Pqr"),
-                new Person("789", "567", 35, "Mno")
+                new Person("Hauptbahnhof", "Stadtmitte", 123, "08:00"),
+                new Person("Westbahnhof", "Nordstadt", 456, "10:30"),
+                new Person("Ostbahnhof", "Südstadt", 789, "12:45"),
+                new Person("Nordbahnhof", "Weststadt", 012, "15:20"),
+                new Person("Südbahnhof", "Oststadt", 345, "17:55"),
+                new Person("Stadtmitte", "Hauptbahnhof", 678, "19:30"),
+                new Person("Nordstadt", "Westbahnhof", 901, "22:15"),
+                new Person("Südstadt", "Ostbahnhof", 234, "07:40"),
+                new Person("Weststadt", "Nordbahnhof", 567, "09:10"),
+                new Person("Oststadt", "Südbahnhof", 890, "11:25"),
+                new Person("Zentralbahnhof", "Stadtzentrum", 111, "14:00"),
+                new Person("Schnellbahnhof", "Fernstadt", 222, "16:30"),
+                new Person("Regionalbahnhof", "Vorort", 333, "18:45"),
+                new Person("Fernbahnhof", "Schnellstadt", 444, "21:20"),
+                new Person("Stadtzentrum", "Zentralbahnhof", 555, "23:55"),
+                new Person("Fernstadt", "Regionalbahnhof", 666, "02:30"),
+                new Person("Vorort", "Fernbahnhof", 777, "04:45"),
+                new Person("Schnellstadt", "Stadtzentrum", 888, "06:10"),
+                new Person("Bahnhof Mitte", "Bahnhof West", 999, "09:30"),
+                new Person("Bahnhof West", "Bahnhof Ost", 000, "12:15"),
+                new Person("Bahnhof Ost", "Bahnhof Nord", 111, "14:40"),
+                new Person("Bahnhof Nord", "Bahnhof Süd", 222, "17:05"),
+                new Person("Bahnhof Süd", "Bahnhof Mitte", 333, "19:30"),
+                new Person("Zentrum Bahnhof", "Stadtmitte Bahnhof", 444, "21:55"),
+                new Person("Mitte Bahnhof", "Zentrum Bahnhof", 555, "00:20"),
+                new Person("Süd Bahnhof", "Nord Bahnhof", 666, "03:45"),
+                new Person("Ost Bahnhof", "West Bahnhof", 777, "06:10"),
+                new Person("West Bahnhof", "Süd Bahnhof", 888, "08:35"),
+                new Person("Nord Bahnhof", "Ost Bahnhof", 999, "11:00")
         );
-
 
         grid.setItems(people);
         // end::snippet[]
 
         add(grid);
-        setSizeFull();
     }
 
 }
