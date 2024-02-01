@@ -17,11 +17,9 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
-import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import de.whosfritz.RailInsights.UI.Components.EvenBetterDarkModeToggle;
-import de.whosfritz.RailInsights.UI.Pages.GeneralView;
 import jakarta.servlet.http.Cookie;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
@@ -35,11 +33,13 @@ public class MainView extends AppLayout {
 
         DrawerToggle drawerToggle = new DrawerToggle();
 
-        RouterLink viewTitle = new RouterLink("Rail Insights", GeneralView.class);
-        viewTitle.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.BOLD);
+//        RouterLink viewTitle = new RouterLink("Rail Insights", GeneralView.class);
+//        viewTitle.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.BOLD);
 
         HorizontalLayout wrapper = new HorizontalLayout();
-        wrapper.add(drawerToggle, viewTitle);
+        wrapper.add(drawerToggle
+//                , viewTitle
+        );
         wrapper.setSizeFull();
         wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
