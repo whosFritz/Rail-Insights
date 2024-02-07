@@ -16,7 +16,6 @@ import java.util.Locale;
 public class GeneralView extends VerticalLayout {
 
     public GeneralView() {
-        getStyle().set("padding-left", "8rem");
 
         Locale finnishLocale = new Locale("fi", "FI");
 
