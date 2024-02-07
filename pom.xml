@@ -92,23 +92,7 @@
             <artifactId>line-awesome</artifactId>
             <version>2.0.0</version>
         </dependency>
-            <artifactId>vaadin-charts-flow</artifactId>
-        </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.vaadin.teemu</groupId>-->
-        <!--            <artifactId>switch</artifactId>-->
-        <!--            <version>3.0.0</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.vaadin.componentfactory</groupId>-->
-        <!--            <artifactId>togglebutton</artifactId>-->
-        <!--            <version>1.0.2</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.vaadin.addons.papertogglebutton</groupId>-->
-        <!--            <artifactId>papertogglebutton</artifactId>-->
-        <!--            <version>1.1.1</version>-->
-        <!--        </dependency>-->
+
         <dependency>
             <groupId>org.vaadin.addons.taefi</groupId>
             <artifactId>toggle-button-group</artifactId>
@@ -134,14 +118,6 @@
         </dependency>
         <!-- Other End -->
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.10.1</version>
-        <!--        <dependency>-->
-        <!--            <groupId>com.vaadin</groupId>-->
-        <!--            <artifactId>vaadin</artifactId>-->
-        <!--        </dependency>-->
-        <dependency>
             <groupId>org.parttio</groupId>
             <artifactId>line-awesome</artifactId>
             <version>2.0.0</version>
@@ -160,17 +136,6 @@
             <version>2.0.0</version>
         </dependency>
 
-        <!-- Own End -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-test</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
-        <dependency>
-            <groupId>de.olech2412.adapter</groupId>
-            <artifactId>db-adapter-v6</artifactId>
-            <version>1.1.0</version>
-        </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-charts-flow-svg-generator</artifactId>
