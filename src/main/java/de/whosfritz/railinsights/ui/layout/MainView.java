@@ -33,13 +33,8 @@ public class MainView extends AppLayout {
 
         DrawerToggle drawerToggle = new DrawerToggle();
 
-//        RouterLink viewTitle = new RouterLink("Rail Insights", GeneralView.class);
-//        viewTitle.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.BOLD);
-
         HorizontalLayout wrapper = new HorizontalLayout();
-        wrapper.add(drawerToggle
-//                , viewTitle
-        );
+        wrapper.add(drawerToggle);
         wrapper.setSizeFull();
         wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
 
