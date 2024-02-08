@@ -110,6 +110,19 @@
         </dependency>
         <!-- Database End -->
 
+        <!-- Observability -->
+        <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>1.12.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- Observability End -->
+
         <!-- Other -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -133,10 +146,6 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-testbench-junit5</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <!-- Testing End -->
     </dependencies>

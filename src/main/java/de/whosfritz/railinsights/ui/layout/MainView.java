@@ -186,7 +186,6 @@ public class MainView extends AppLayout {
                 notification.open();
             }
         }
-
         VerticalLayout status = new VerticalLayout();
         status.add(span);
         status.setAlignItems(FlexComponent.Alignment.CENTER);
