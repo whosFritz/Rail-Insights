@@ -5,10 +5,7 @@ import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.AnchorTarget;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -20,6 +17,7 @@ import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import de.whosfritz.railinsights.ui.components.DarkModeToggle;
+import de.whosfritz.railinsights.ui.services.DataProviderService;
 import jakarta.servlet.http.Cookie;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
@@ -27,6 +25,7 @@ public class MainView extends AppLayout {
     Notification cookieNotification = new Notification();
 
     public MainView() {
+
         VerticalLayout views = getNavigationBar();
 
         Scroller scroller = new Scroller(views);
@@ -41,6 +40,7 @@ public class MainView extends AppLayout {
         HorizontalLayout wrapper2 = new HorizontalLayout();
         wrapper2.addClassName(LumoUtility.Margin.XSMALL);
         DarkModeToggle myToggleButton = new DarkModeToggle();
+        wrapper2.add(createUpdateBadge());
         wrapper2.add(myToggleButton);
         addToDrawer(scroller);
         addToNavbar(wrapper, wrapper2);
@@ -106,6 +106,7 @@ public class MainView extends AppLayout {
     private SideNav getMainSideNav() {
         SideNav mainSideNav = new SideNav();
         mainSideNav.addItem(
+                createNavItem("Home", "/", VaadinIcon.HOME.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("Trips", "/trips", VaadinIcon.SUITCASE.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("Bahnhöfe", "/stations", LineAwesomeIcon.CITY_SOLID.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("ICE", "/ice", LineAwesomeIcon.TRAIN_SOLID.create(), LumoUtility.FontSize.MEDIUM),
@@ -125,6 +126,32 @@ public class MainView extends AppLayout {
                 createNavItem("Datenschutzerklärung", "/datenschutzerklaerung", LineAwesomeIcon.SHIELD_ALT_SOLID.create(), LumoUtility.FontSize.XSMALL)
         );
         return subSideNav;
+    }
+
+    private VerticalLayout createUpdateBadge() {
+        // get Spring bean
+        DataProviderService dataProviderService = VaadinService.getCurrent().getInstantiator().getOrCreate(DataProviderService.class);
+        Span span = new Span();
+        switch (dataProviderService.getState()) {
+            case READY -> {
+                span.add(VaadinIcon.CHECK.create());
+                span.getElement().getThemeList().add("badge success pill");
+                span.setTitle("Du bist auf dem neusten Stand");
+            }
+            case PENDING -> {
+                span.add(VaadinIcon.CLOCK.create());
+                span.getElement().getThemeList().add("badge pill");
+                span.setTitle("Es werden gerade Daten aktualisiert");
+            }
+        }
+
+        VerticalLayout status = new VerticalLayout();
+        status.add(span);
+        status.setAlignItems(FlexComponent.Alignment.CENTER);
+        status.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        status.setAlignSelf(FlexComponent.Alignment.CENTER);
+
+        return status;
     }
 
     private SideNavItem createNavItem(String title, String route, Component icon, String className) {

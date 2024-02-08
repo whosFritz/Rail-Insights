@@ -7,9 +7,9 @@ html {
     --lumo-error-text-color: rgb(255, 56, 103);
     --lumo-error-color-50pct: rgba(255, 56, 103, 0.5);
     --lumo-error-color-10pct: rgba(255, 56, 103, 0.1);
-    --lumo-success-text-color: rgb(99, 166, 21);
-    --lumo-success-color-50pct: rgba(99, 166, 21, 0.5);
-    --lumo-success-color-10pct: rgba(99, 166, 21, 0.1);
+    --lumo-success-text-color: rgb(64, 131, 53);
+    --lumo-success-color-50pct: rgba(64, 131, 53, 0.5);
+    --lumo-success-color-10pct: rgba(64, 131, 53, 0.1);
     --lumo-primary-color: #EC0016;
     --lumo-error-color: hsl(346, 100%, 61%);
     --lumo-success-color: #63A615;

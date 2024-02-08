@@ -1,7 +1,8 @@
-package de.whosfritz.railinsights.ui.components;
+package de.whosfritz.railinsights.ui.components.charts;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import de.whosfritz.railinsights.ui.components.Person;
 
 import java.util.List;
 

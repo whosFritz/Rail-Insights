@@ -128,7 +128,6 @@ public class TripService {
                         stopFromDB = stopService.saveStop(trip.getStop());
                     }
                 } else {
-                    log.info("Found stop with equal name, but different stop_id: " + stopToSave.getName() + " " + stopToSave.getStopId() + " solution is to take the stop from the database");
                     Stop stop = stopService.findByName(stopToSave.getName()).get(0);
                     stopFromDB = Result.success(stop);
 
@@ -148,7 +147,6 @@ public class TripService {
                             destinationStopFromDB = stopService.saveStop(trip.getDestination());
                         }
                     } else {
-                        log.info("Found stop with equal name, but different stop_id: " + stopToSave.getName() + " " + stopToSave.getStopId() + " solution is to take the stop from the database");
                         Stop stop = stopService.findByName(stopToSave.getName()).get(0);
                         destinationStopFromDB = Result.success(stop);
                     }

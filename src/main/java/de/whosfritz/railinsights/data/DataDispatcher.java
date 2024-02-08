@@ -62,7 +62,7 @@ public class DataDispatcher {
                             .add(RequestParametersNames.SUBWAY, false)
                             .add(RequestParametersNames.TAXI, false)
                             .add(RequestParametersNames.RESULTS, 9999)
-                            .add(RequestParametersNames.DURATION, 60)
+                            .add(RequestParametersNames.DURATION, 90)
                             .build());
 
                     Result<Trip[], Error> departuresByStopId = db_adapter_v6.getDeparturesByStopId(Math.toIntExact(stops.get(i).getStopId()), new Parameter.ParameterBuilder()
@@ -77,7 +77,7 @@ public class DataDispatcher {
                             .add(RequestParametersNames.SUBWAY, false)
                             .add(RequestParametersNames.TAXI, false)
                             .add(RequestParametersNames.RESULTS, 9999)
-                            .add(RequestParametersNames.DURATION, 60)
+                            .add(RequestParametersNames.DURATION, 90)
                             .build());
 
                     if (departuresByStopId.isSuccess() && arrivalsByStopId.isSuccess()) {

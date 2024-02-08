@@ -6,7 +6,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.Route;
-import de.whosfritz.railinsights.ui.components.MockupTableChart;
+import de.whosfritz.railinsights.ui.components.charts.MockupTableChart;
 import de.whosfritz.railinsights.ui.layout.MainView;
 
 @Route(value = "stations", layout = MainView.class)

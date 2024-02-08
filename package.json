@@ -10,6 +10,7 @@
     "@vaadin/app-layout": "24.3.3",
     "@vaadin/avatar": "24.3.3",
     "@vaadin/avatar-group": "24.3.3",
+    "@vaadin/board": "24.3.3",
     "@vaadin/bundles": "24.3.3",
     "@vaadin/button": "24.3.3",
     "@vaadin/charts": "24.3.3",
@@ -20,6 +21,8 @@
     "@vaadin/component-base": "24.3.3",
     "@vaadin/confirm-dialog": "24.3.3",
     "@vaadin/context-menu": "24.3.3",
+    "@vaadin/cookie-consent": "24.3.3",
+    "@vaadin/crud": "24.3.3",
     "@vaadin/custom-field": "24.3.3",
     "@vaadin/date-picker": "24.3.3",
     "@vaadin/date-time-picker": "24.3.3",
@@ -30,6 +33,7 @@
     "@vaadin/field-highlighter": "24.3.3",
     "@vaadin/form-layout": "24.3.3",
     "@vaadin/grid": "24.3.3",
+    "@vaadin/grid-pro": "24.3.3",
     "@vaadin/horizontal-layout": "24.3.3",
     "@vaadin/icon": "24.3.3",
     "@vaadin/icons": "24.3.3",
@@ -39,6 +43,7 @@
     "@vaadin/list-box": "24.3.3",
     "@vaadin/lit-renderer": "24.3.3",
     "@vaadin/login": "24.3.3",
+    "@vaadin/map": "24.3.3",
     "@vaadin/menu-bar": "24.3.3",
     "@vaadin/message-input": "24.3.3",
     "@vaadin/message-list": "24.3.3",
@@ -50,6 +55,7 @@
     "@vaadin/polymer-legacy-adapter": "24.3.3",
     "@vaadin/progress-bar": "24.3.3",
     "@vaadin/radio-group": "24.3.3",
+    "@vaadin/rich-text-editor": "24.3.3",
     "@vaadin/router": "1.7.5",
     "@vaadin/scroller": "24.3.3",
     "@vaadin/select": "24.3.3",
@@ -69,11 +75,10 @@
     "@vaadin/vaadin-usage-statistics": "2.1.2",
     "@vaadin/vertical-layout": "24.3.3",
     "@vaadin/virtual-list": "24.3.3",
-    "apexcharts": "3.45.1",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
     "lit": "3.1.0",
-    "onecolor": "4.1.0"
+    "proj4": "2.9.2"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "5.0.4",
@@ -102,6 +107,7 @@
       "@vaadin/app-layout": "24.3.3",
       "@vaadin/avatar": "24.3.3",
       "@vaadin/avatar-group": "24.3.3",
+      "@vaadin/board": "24.3.3",
       "@vaadin/bundles": "24.3.3",
       "@vaadin/button": "24.3.3",
       "@vaadin/charts": "24.3.3",
@@ -112,6 +118,8 @@
       "@vaadin/component-base": "24.3.3",
       "@vaadin/confirm-dialog": "24.3.3",
       "@vaadin/context-menu": "24.3.3",
+      "@vaadin/cookie-consent": "24.3.3",
+      "@vaadin/crud": "24.3.3",
       "@vaadin/custom-field": "24.3.3",
       "@vaadin/date-picker": "24.3.3",
       "@vaadin/date-time-picker": "24.3.3",
@@ -122,6 +130,7 @@
       "@vaadin/field-highlighter": "24.3.3",
       "@vaadin/form-layout": "24.3.3",
       "@vaadin/grid": "24.3.3",
+      "@vaadin/grid-pro": "24.3.3",
       "@vaadin/horizontal-layout": "24.3.3",
       "@vaadin/icon": "24.3.3",
       "@vaadin/icons": "24.3.3",
@@ -131,6 +140,7 @@
       "@vaadin/list-box": "24.3.3",
       "@vaadin/lit-renderer": "24.3.3",
       "@vaadin/login": "24.3.3",
+      "@vaadin/map": "24.3.3",
       "@vaadin/menu-bar": "24.3.3",
       "@vaadin/message-input": "24.3.3",
       "@vaadin/message-list": "24.3.3",
@@ -142,6 +152,7 @@
       "@vaadin/polymer-legacy-adapter": "24.3.3",
       "@vaadin/progress-bar": "24.3.3",
       "@vaadin/radio-group": "24.3.3",
+      "@vaadin/rich-text-editor": "24.3.3",
       "@vaadin/router": "1.7.5",
       "@vaadin/scroller": "24.3.3",
       "@vaadin/select": "24.3.3",
@@ -161,11 +172,10 @@
       "@vaadin/vaadin-usage-statistics": "2.1.2",
       "@vaadin/vertical-layout": "24.3.3",
       "@vaadin/virtual-list": "24.3.3",
-      "apexcharts": "3.45.1",
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
       "lit": "3.1.0",
-      "onecolor": "4.1.0"
+      "proj4": "2.9.2"
     },
     "devDependencies": {
       "@rollup/plugin-replace": "5.0.4",
@@ -185,7 +195,7 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "e039e4367f1efa9d7de4247b5bf5b098c5be00a519e5fa321e4eef1fbb1f6de1"
+    "hash": "b89a193ad48fbb5e47d22a4fed379f425a6def91b0cc1d066206d865a31c583a"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -254,10 +264,15 @@
     "lit": "$lit",
     "@polymer/polymer": "$@polymer/polymer",
     "@vaadin/charts": "$@vaadin/charts",
-    "apexcharts": "$apexcharts",
-    "onecolor": "$onecolor",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "date-fns": "$date-fns",
-    "@vaadin-component-factory/vcf-popup": "$@vaadin-component-factory/vcf-popup"
+    "@vaadin-component-factory/vcf-popup": "$@vaadin-component-factory/vcf-popup",
+    "@vaadin/board": "$@vaadin/board",
+    "@vaadin/cookie-consent": "$@vaadin/cookie-consent",
+    "@vaadin/crud": "$@vaadin/crud",
+    "@vaadin/grid-pro": "$@vaadin/grid-pro",
+    "@vaadin/map": "$@vaadin/map",
+    "@vaadin/rich-text-editor": "$@vaadin/rich-text-editor",
+    "proj4": "$proj4"
   }
 }
