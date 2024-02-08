@@ -9,11 +9,11 @@ import lombok.Getter;
 @Getter
 public enum ColorScheme {
 
-    PRIMARY("#1455C0"),
-    SECONDARY("#309FD1"),
+    PRIMARY("#EC0016"),
+    SECONDARY("#F75056"),
     SUCCESS("#408335"),
-    ERROR("#EC0016"),
-    CRITICAL("#9B000E"),
+    ERROR("#740009"),
+    CRITICAL("#4D0820"),
     WARNING_HARD("#F39200"),
     WARNING_SOFT("#FFD800"),
     CONTRAST("#646973"),
