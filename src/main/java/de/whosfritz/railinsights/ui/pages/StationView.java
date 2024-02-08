@@ -4,9 +4,12 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import de.whosfritz.railinsights.ui.layout.MainView;
 
-@Route(value = "ic", layout = MainView.class)
-public class ICView extends VerticalLayout {
-    public ICView() {
-        add("ICView");
+
+@Route(value = "bahnhöfe", layout = MainView.class)
+public class StationView extends VerticalLayout {
+
+    public StationView() {
+
+        add("Bahnhöfe");
     }
 }

@@ -4,12 +4,10 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import de.whosfritz.railinsights.ui.layout.MainView;
 
+@Route(value = "csv-export", layout = MainView.class)
 
-@Route(value = "map", layout = MainView.class)
-public class MapView extends VerticalLayout {
-
-    public MapView() {
-
-        add("MapView");
+public class CsvExportView extends VerticalLayout {
+    public CsvExportView() {
+        add("CSV-Export");
     }
 }

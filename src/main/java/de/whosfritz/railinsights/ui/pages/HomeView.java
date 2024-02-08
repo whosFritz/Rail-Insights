@@ -26,12 +26,12 @@ import java.util.Map;
 
 @Route(value = "/", layout = MainView.class)
 @PageTitle("RailInsights")
-public class GeneralView extends VerticalLayout {
+public class HomeView extends VerticalLayout {
 
     @Autowired
     private DataProviderService dataProviderService;
 
-    public GeneralView(DataProviderService dataProviderService) {
+    public HomeView(DataProviderService dataProviderService) {
         this.dataProviderService = dataProviderService;
 
         add(new H1("Willkommen bei RailInsights!"));

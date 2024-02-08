@@ -137,12 +137,11 @@ public class MainView extends AppLayout {
         SideNav mainSideNav = new SideNav();
         mainSideNav.addItem(
                 createNavItem("Home", "/", VaadinIcon.HOME.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("Trips", "/trips", VaadinIcon.SUITCASE.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("Bahnhöfe", "/stations", LineAwesomeIcon.CITY_SOLID.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("ICE", "/ice", LineAwesomeIcon.TRAIN_SOLID.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("IC", "/ic", VaadinIcon.TRAIN.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("Regionalbahn", "/regionalbahn", LineAwesomeIcon.SUBWAY_SOLID.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("Interaktive Karte", "/map", LineAwesomeIcon.ROUTE_SOLID.create(), LumoUtility.FontSize.MEDIUM)
+                createNavItem("Verspätungen", "/verspätungen", VaadinIcon.TIMER.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("Ausfälle", "/ausfälle", LineAwesomeIcon.BAN_SOLID.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("Bahnhöfe", "/bahnhöfe", LineAwesomeIcon.BUILDING.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("Verbindungsprognose", "/verbindungsprognose", VaadinIcon.TIME_BACKWARD.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("CSV-Export", "/csv-export", LineAwesomeIcon.FILE_CSV_SOLID.create(), LumoUtility.FontSize.MEDIUM)
         );
         mainSideNav.setSizeFull();
         return mainSideNav;
