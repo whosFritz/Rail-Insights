@@ -17,10 +17,16 @@ import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import de.whosfritz.railinsights.ui.components.DarkModeToggle;
+import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
+import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
 import jakarta.servlet.http.Cookie;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
+/**
+ * MainView class extends AppLayout and represents the main layout of the application.
+ * It includes the navigation bar, cookie consent banner, and other UI components.
+ */
 public class MainView extends AppLayout {
     Notification cookieNotification = new Notification();
 
@@ -48,6 +54,11 @@ public class MainView extends AppLayout {
         getCookieConsentBanner();
     }
 
+    /**
+     * Creates a wrapper component for the cookie consent banner.
+     *
+     * @return Scroller containing the cookie consent banner.
+     */
     private Component getWrapper() {
         Div wrapper = new Div();
         Text text1 = new Text("Wir benötigen Ihre Zustimmung, bevor Sie unsere Website weiter besuchen können." +
@@ -66,6 +77,11 @@ public class MainView extends AppLayout {
         return new Scroller(wrapper);
     }
 
+    /**
+     * Creates the navigation bar.
+     *
+     * @return VerticalLayout containing the main and sub navigation bars.
+     */
     private VerticalLayout getNavigationBar() {
         VerticalLayout wrapper = new VerticalLayout();
         SideNav mainSideNav = getMainSideNav();
@@ -75,6 +91,10 @@ public class MainView extends AppLayout {
         return wrapper;
     }
 
+    /**
+     * Retrieves a cookie by its name.
+     * @return Cookie if found, null otherwise.
+     */
     private Cookie getCookieByName() {
         Cookie[] cookies = VaadinService.getCurrentRequest().getCookies();
 
@@ -86,6 +106,9 @@ public class MainView extends AppLayout {
         return null;
     }
 
+    /**
+     * Displays the cookie consent banner if the consent cookie is not set or its value is not true.
+     */
     private void getCookieConsentBanner() {
         Cookie rlConsentCookie = getCookieByName();
         if (rlConsentCookie == null || (rlConsentCookie.getValue() != null && !rlConsentCookie.getValue().equals("true"))) {
@@ -96,6 +119,9 @@ public class MainView extends AppLayout {
         }
     }
 
+    /**
+     * Sets the consent cookie with a value of true and a max age of one year.
+     */
     private void setCookieConsent() {
         Cookie consentCookie = new Cookie("RlConsentCookie", "true");
         consentCookie.setMaxAge(60 * 60 * 24 * 365);
@@ -103,6 +129,10 @@ public class MainView extends AppLayout {
         VaadinService.getCurrentResponse().addCookie(consentCookie);
     }
 
+    /**
+     * Creates the main navigation bar.
+     * @return SideNav containing the main navigation items.
+     */
     private SideNav getMainSideNav() {
         SideNav mainSideNav = new SideNav();
         mainSideNav.addItem(
@@ -118,6 +148,10 @@ public class MainView extends AppLayout {
         return mainSideNav;
     }
 
+    /**
+     * Creates the sub navigation bar.
+     * @return SideNav containing the sub navigation items.
+     */
     private SideNav getSubSideNav() {
         SideNav subSideNav = new SideNav();
         subSideNav.addItem(
@@ -128,10 +162,15 @@ public class MainView extends AppLayout {
         return subSideNav;
     }
 
+    /**
+     * Creates the update badge.
+     * @return VerticalLayout containing the update badge.
+     */
     private VerticalLayout createUpdateBadge() {
         // get Spring bean
         DataProviderService dataProviderService = VaadinService.getCurrent().getInstantiator().getOrCreate(DataProviderService.class);
         Span span = new Span();
+        Notification notification;
         switch (dataProviderService.getState()) {
             case READY -> {
                 span.add(VaadinIcon.CHECK.create());
@@ -142,6 +181,9 @@ public class MainView extends AppLayout {
                 span.add(VaadinIcon.CLOCK.create());
                 span.getElement().getThemeList().add("badge pill");
                 span.setTitle("Es werden gerade Daten aktualisiert");
+                notification = NotificationFactory.createwNotification(NotificationTypes.INFO, "Wir aktualisieren " +
+                        "gerade die Daten, aktualisiere die Seite in ein paar Sekunden");
+                notification.open();
             }
         }
 
@@ -154,6 +196,14 @@ public class MainView extends AppLayout {
         return status;
     }
 
+    /**
+     * Creates a navigation item.
+     * @param title The title of the navigation item.
+     * @param route The route of the navigation item.
+     * @param icon The icon of the navigation item.
+     * @param className The class name to be added to the navigation item.
+     * @return SideNavItem representing the navigation item.
+     */
     private SideNavItem createNavItem(String title, String route, Component icon, String className) {
         SideNavItem item = new SideNavItem(title, route, icon);
         item.addClassName(className);

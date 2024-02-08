@@ -17,7 +17,8 @@ public enum ColorScheme {
     WARNING_HARD("#F39200"),
     WARNING_SOFT("#FFD800"),
     CONTRAST("#646973"),
-    INFO("#00A099");
+    INFO("#1455C0"),
+    INFO_LIGHT("#73AEF4");
 
     private final String color;
 

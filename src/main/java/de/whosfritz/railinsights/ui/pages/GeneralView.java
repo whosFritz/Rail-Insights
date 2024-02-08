@@ -8,6 +8,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
+import de.whosfritz.railinsights.ui.color_scheme.ColorScheme;
 import de.whosfritz.railinsights.ui.components.InfoPanel;
 import de.whosfritz.railinsights.ui.components.boards.RailInsightsInfoBoard;
 import de.whosfritz.railinsights.ui.components.boards.board_components.Indicator;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +42,10 @@ public class GeneralView extends VerticalLayout {
 
     private static StoppsOverTimeChart createStoppsOverTimeChart(Map<LocalDate, Integer> dailyTripCounts) {
         DataSeries dataSeries = new DataSeries();
+        dataSeries.setName("Stopps");
         for (Map.Entry<LocalDate, Integer> entry : dailyTripCounts.entrySet()) {
-            DataSeriesItem dataSeriesItem = new DataSeriesItem(Date.from(entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant()), entry.getValue());
-            dataSeriesItem.setColor(new SolidColor("#1455C0"));
+            DataSeriesItem dataSeriesItem = new DataSeriesItem(entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(), entry.getValue());
+            dataSeriesItem.setColor(new SolidColor(ColorScheme.INFO_LIGHT.getColor()));
             dataSeries.add(dataSeriesItem);
         }
 
@@ -92,11 +93,11 @@ public class GeneralView extends VerticalLayout {
 
         DataSeries dataSeries = new DataSeries();
         DataSeriesItem cancelled = new DataSeriesItem("Ausgefallen (Ersatzfahrten nicht berücksichtigt)", percentageCancelled);
-        cancelled.setColor(new SolidColor("#EC0016"));
+        cancelled.setColor(new SolidColor(ColorScheme.ERROR.getColor()));
         DataSeriesItem delayed = new DataSeriesItem("Verspätet", percentageDelayed);
-        delayed.setColor(new SolidColor("#FFD800"));
+        delayed.setColor(new SolidColor(ColorScheme.WARNING_SOFT.getColor()));
         DataSeriesItem onTime = new DataSeriesItem("Pünktlich", percentageOnTime);
-        onTime.setColor(new SolidColor("#63A615"));
+        onTime.setColor(new SolidColor(ColorScheme.SUCCESS.getColor()));
 
         dataSeries.add(cancelled);
         dataSeries.add(delayed);
