@@ -2,6 +2,7 @@ package de.whosfritz.railinsights;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.theme.Theme;
+import de.whosfritz.railinsights.data.DataDispatcher;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
@@ -17,8 +18,17 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class RailInsightsApplication implements AppShellConfigurator {
 
+    /**
+     * Main method to start the application
+     * Fetches the data and calculates the data
+     *
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(RailInsightsApplication.class, args);
+
+        DataDispatcher dataDispatcher = context.getBean(DataDispatcher.class);
+        dataDispatcher.fetchData();
 
         DataProviderService dataProviderService = context.getBean(DataProviderService.class);
         dataProviderService.calculateData();

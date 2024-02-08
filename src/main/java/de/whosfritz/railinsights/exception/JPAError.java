@@ -1,4 +1,4 @@
-package de.whosfritz.railinsights.jpa;
+package de.whosfritz.railinsights.exception;
 
 import de.olech2412.adapter.dbadapter.exception.Error;
 
