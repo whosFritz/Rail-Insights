@@ -130,11 +130,10 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.10.1</version>
+            <groupId>de.olech2412.adapter</groupId>
+            <artifactId>db-adapter-v6</artifactId>
+            <version>2.1.0</version>
         </dependency>
         <!-- Other End -->
 
