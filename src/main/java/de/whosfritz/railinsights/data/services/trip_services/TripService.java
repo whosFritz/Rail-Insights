@@ -19,6 +19,8 @@ import de.whosfritz.railinsights.exception.JPAErrors;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -260,8 +262,9 @@ public class TripService {
                 trip.setRemarks(remarks);
             }
 
-            tripsRepository.findAllByTripIdAndStopAndCreatedAtAfter(trip.getTripId(), stopFromDB.getData(), LocalDateTime.now().minusHours(48))
-                    .ifPresent(existingTrips -> tripsRepository.deleteAll(existingTrips));
+            Pageable pageable = PageRequest.of(0, 90000); // Begrenze auf 90.000 Ergebnisse
+            Optional<List<Trip>> trips = tripsRepository.findAllByTripIdAndStopAndCreatedAtAfter(trip.getTripId(), stopFromDB.getData(), LocalDateTime.now().minusHours(48), pageable);
+            trips.ifPresent(tripList -> tripsRepository.deleteAll(tripList));
 
             tripsRepository.save(trip);
             return Result.success(trip);
