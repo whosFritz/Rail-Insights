@@ -2,6 +2,8 @@ package de.whosfritz.railinsights.data.repositories.trip_repositories;
 
 import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,5 +20,11 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
     Optional<List<Trip>> findAllByTripIdAndStopAndCreatedAtAfter(String tripId, Stop stop, LocalDateTime createdAt);
 
     Optional<Trip> findByTripIdAndStop(String tripId, Stop stop);
+
+    Page<List<Trip>> findAllByLineName(String lineName, Pageable pageable);
+
+    Optional<List<Trip>> findAllByStopIdAndWhenIsAfter(Long stopId, LocalDateTime when);
+
+    Optional<List<Trip>> findAllByTripId(String tripId);
 
 }

@@ -4,6 +4,7 @@ import de.olech2412.adapter.dbadapter.model.station.Station;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,5 +14,7 @@ import java.util.Optional;
 public interface StationRepository extends ListCrudRepository<Station, Long> {
 
     Optional<Station> findByStationId(Long stationId);
+
+    Optional<List<Station>> findByNameContainingIgnoreCase(String name);
 
 }
