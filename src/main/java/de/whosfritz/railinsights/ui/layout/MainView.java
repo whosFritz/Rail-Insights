@@ -173,6 +173,7 @@ public class MainView extends AppLayout {
         switch (dataProviderService.getState()) {
             case READY -> {
                 span.add(VaadinIcon.CHECK.create());
+                span.setClassName(LumoUtility.Padding.MEDIUM);
                 span.getElement().getThemeList().add("badge success pill");
                 span.setTitle("Du bist auf dem neusten Stand");
             }
