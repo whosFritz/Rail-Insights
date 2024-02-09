@@ -172,8 +172,11 @@ public class MainView extends AppLayout {
         Notification notification;
         switch (dataProviderService.getState()) {
             case READY -> {
-                span.add(VaadinIcon.CHECK.create());
-                span.setClassName(LumoUtility.Padding.MEDIUM);
+                VerticalLayout status = new VerticalLayout();
+                status.addClassName(LumoUtility.Padding.XSMALL);
+                status.addClassName(LumoUtility.BorderRadius.MEDIUM);
+                status.add(VaadinIcon.CHECK.create());
+                span.add(status);
                 span.getElement().getThemeList().add("badge success pill");
                 span.setTitle("Du bist auf dem neusten Stand");
             }
