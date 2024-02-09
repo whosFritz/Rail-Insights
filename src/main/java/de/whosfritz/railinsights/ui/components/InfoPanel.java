@@ -13,7 +13,7 @@ public class InfoPanel extends VerticalLayout {
                 "vorausschauend. Damit du ein möglichst flüssiges Ergebnis in der Navigation hast, aktualisieren wir " +
                 "die Daten, in der Benutzeroberfläche, nur alle 20 Minuten. Ob du gerade einen aktuellen Stand siehst oder " +
                 "gerade neue Daten geladen werden siehst du oben rechts an dem angezeigten Icon. Durch aktualisieren " +
-                "der Seite, kannst du immer prüfen, ob du auf dem aktuellen Stand bist.In dem Navigationsmenü auf der " +
+                "der Seite, kannst du immer prüfen, ob du auf dem aktuellen Stand bist. In dem Navigationsmenü auf der " +
                 "linken Seite findest du verschiedene Bereiche, die du dir anschauen kannst. Viel Spaß beim Erkunden!");
         Paragraph infoForCalculation = new Paragraph("Informationen zu den Berechnungen: Alle angezeigten Statistiken" +
                 " werden nach Berechnungsgrundlage der Deutschen Bahn berechnet erstellt (wenn nicht anders angegeben)." +

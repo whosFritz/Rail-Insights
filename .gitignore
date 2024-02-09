@@ -37,3 +37,4 @@ build/
 /frontend/index.html
 /.flow-node-tasks.lock
 /application.log
+/src/main/bundles/
