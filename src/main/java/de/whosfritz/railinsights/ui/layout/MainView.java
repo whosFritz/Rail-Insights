@@ -170,14 +170,17 @@ public class MainView extends AppLayout {
         DataProviderService dataProviderService = VaadinService.getCurrent().getInstantiator().getOrCreate(DataProviderService.class);
         Span span = new Span();
         Notification notification;
+        VerticalLayout iconLayout = new VerticalLayout();
+        iconLayout.addClassName(LumoUtility.Padding.XSMALL);
+        iconLayout.addClassName(LumoUtility.BorderRadius.MEDIUM);
         switch (dataProviderService.getState()) {
             case READY -> {
-                span.add(VaadinIcon.CHECK.create());
+                iconLayout.add(VaadinIcon.CHECK.create());
                 span.getElement().getThemeList().add("badge success pill");
                 span.setTitle("Du bist auf dem neusten Stand");
             }
             case PENDING -> {
-                span.add(VaadinIcon.CLOCK.create());
+                iconLayout.add(VaadinIcon.CLOCK.create());
                 span.getElement().getThemeList().add("badge pill");
                 span.setTitle("Es werden gerade Daten aktualisiert");
                 notification = NotificationFactory.createwNotification(NotificationTypes.INFO, "Wir aktualisieren " +
@@ -185,6 +188,7 @@ public class MainView extends AppLayout {
                 notification.open();
             }
         }
+        span.add(iconLayout);
         VerticalLayout status = new VerticalLayout();
         status.add(span);
         status.setAlignItems(FlexComponent.Alignment.CENTER);
