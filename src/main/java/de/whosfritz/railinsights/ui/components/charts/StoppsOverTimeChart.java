@@ -12,6 +12,7 @@ public class StoppsOverTimeChart extends Div {
         Chart chart = new Chart(ChartType.AREA);
 
         Configuration configuration = chart.getConfiguration();
+        configuration.getChart().setStyledMode(true);
 
         configuration.setTitle("Stopps - Zeitverlauf");
         configuration.setSubTitle("Zeitlicher Verlauf der erfassten Stopps");

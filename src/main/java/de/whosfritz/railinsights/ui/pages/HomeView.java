@@ -33,11 +33,9 @@ public class HomeView extends VerticalLayout {
 
     public HomeView(DataProviderService dataProviderService) {
         this.dataProviderService = dataProviderService;
-
         add(new H1("Willkommen bei RailInsights!"));
         add(new InfoPanel());
         add(initRailInsightsBoard());
-
     }
 
     private static StoppsOverTimeChart createStoppsOverTimeChart(Map<LocalDate, Integer> dailyTripCounts) {
