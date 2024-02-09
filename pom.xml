@@ -50,7 +50,6 @@
 
     <dependencies>
         <!-- Spring Boot -->
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -71,44 +70,20 @@
         <!-- Spring Boot End -->
 
         <!-- Vaadin -->
-
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
-            <!-- Replace artifactId with vaadin-core to use only free components -->
             <artifactId>vaadin</artifactId>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-testbench-junit5</artifactId>
-            <scope>test</scope>
+            <artifactId>vaadin-charts-flow-svg-generator</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.parttio</groupId>
-            <artifactId>line-awesome</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-            <artifactId>vaadin-charts-flow</artifactId>
-        </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.vaadin.teemu</groupId>-->
-        <!--            <artifactId>switch</artifactId>-->
-        <!--            <version>3.0.0</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.vaadin.componentfactory</groupId>-->
-        <!--            <artifactId>togglebutton</artifactId>-->
-        <!--            <version>1.0.2</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.vaadin.addons.papertogglebutton</groupId>-->
-        <!--            <artifactId>papertogglebutton</artifactId>-->
-        <!--            <version>1.1.1</version>-->
-        <!--        </dependency>-->
+        <!-- Vaadin Addons -->
         <dependency>
             <groupId>org.vaadin.addons.taefi</groupId>
             <artifactId>toggle-button-group</artifactId>
@@ -120,11 +95,33 @@
             <version>24.0.4</version>
         </dependency>
         <dependency>
+            <groupId>org.parttio</groupId>
+            <artifactId>line-awesome</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <!-- Vaadin Addons End -->
+        <!-- Vaadin -->
+
+        <!-- Database -->
+        <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <scope>runtime</scope>
         </dependency>
         <!-- Database End -->
+
+        <!-- Observability -->
+        <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>1.12.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- Observability End -->
 
         <!-- Other -->
         <dependency>
@@ -132,59 +129,25 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>de.olech2412.adapter</groupId>
+            <artifactId>db-adapter-v6</artifactId>
+            <version>2.1.0</version>
+        </dependency>
         <!-- Other End -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.10.1</version>
-        <!--        <dependency>-->
-        <!--            <groupId>com.vaadin</groupId>-->
-        <!--            <artifactId>vaadin</artifactId>-->
-        <!--        </dependency>-->
-        <dependency>
-            <groupId>org.parttio</groupId>
-            <artifactId>line-awesome</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
+
+        <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.olech2412.adapter</groupId>
-            <artifactId>db-adapter-v6</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-
-        <!-- Own End -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-test</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
-        <dependency>
-            <groupId>de.olech2412.adapter</groupId>
-            <artifactId>db-adapter-v6</artifactId>
-            <version>1.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-charts-flow-svg-generator</artifactId>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-testbench-junit5</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.github.appreciated</groupId>
-            <artifactId>apexcharts</artifactId>
-            <version>24.0.0</version>
-        </dependency>
+        <!-- Testing End -->
     </dependencies>
 
     <build>
