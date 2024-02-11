@@ -14,7 +14,6 @@ public class Indicator extends VerticalLayout {
     public Indicator(String title, String current, String change, int development) {
         H4 header = new H4(title);
         Paragraph currentValue = new Paragraph(current);
-
         Icon icon = null;
         Span changeValue = new Span();
 
@@ -36,8 +35,10 @@ public class Indicator extends VerticalLayout {
                 yield VaadinIcon.PLUS_MINUS.create();
             }
         };
-
-        changeValue.add(icon, new Paragraph(change));
+        icon.getStyle().set("margin", "var(--lumo-space-s)");
+        Paragraph p_change = new Paragraph(change);
+        p_change.getStyle().set("margin", "var(--lumo-space-s)");
+        changeValue.add(icon, p_change);
 
         add(header, currentValue, changeValue);
     }
