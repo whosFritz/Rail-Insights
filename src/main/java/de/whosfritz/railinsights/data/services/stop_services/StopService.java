@@ -1,6 +1,7 @@
 package de.whosfritz.railinsights.data.services.stop_services;
 
 import de.olech2412.adapter.dbadapter.exception.Result;
+import de.olech2412.adapter.dbadapter.model.station.Station;
 import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.stop.sub.StopLocation;
 import de.whosfritz.railinsights.data.repositories.stop_repositories.StopRepository;
@@ -11,6 +12,8 @@ import de.whosfritz.railinsights.exception.JPAErrors;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -165,6 +168,28 @@ public class StopService {
 
     public List<Stop> findByName(String name) {
         return stopRepository.findByName(name);
+    }
+
+    /**
+     * Combines all stops with their corresponding stations.
+     * <p>
+     * Runs once per day
+     */
+    @Scheduled(cron = "0 0 0 * * *") // once per day
+    @Async
+    @Transactional
+    public void combineStationAndStops() {
+        for (Stop stop : getAllStops()) {
+            if (stop.getStation() != null) {
+                continue;
+            }
+            Result<Station, JPAError> stationResult = stationService.findStationByStationId(stop.getStopId());
+            if (stationResult.isSuccess()) {
+                stop.setStation(stationResult.getData());
+                updateStop(stop);
+                log.info("Station found for stop: " + stop.getName());
+            }
+        }
     }
 
 }

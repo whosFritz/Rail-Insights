@@ -8,6 +8,7 @@ import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.olech2412.adapter.dbadapter.request.parameters.Parameter;
 import de.olech2412.adapter.dbadapter.request.parameters.RequestParametersNames;
+import de.whosfritz.railinsights.data.repositories.station_repositories.StationRepository;
 import de.whosfritz.railinsights.data.services.stop_services.StopService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
 import lombok.extern.log4j.Log4j2;
@@ -26,6 +27,9 @@ public class DataDispatcher {
 
     @Autowired
     StopService stopService;
+
+    @Autowired
+    StationRepository stationRepository;
 
     @Autowired
     TripService tripService;

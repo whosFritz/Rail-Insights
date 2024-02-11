@@ -2,6 +2,7 @@ package de.whosfritz.railinsights.ui.services;
 
 import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
+import de.whosfritz.railinsights.data.dto.StopDto;
 import de.whosfritz.railinsights.data.repositories.stop_repositories.StopRepository;
 import de.whosfritz.railinsights.data.repositories.trip_repositories.TripsRepository;
 import lombok.Getter;
@@ -119,6 +120,29 @@ public class DataProviderService {
      */
     public List<Trip> getAllTripsWithDistinctTripIdAndLocalDate(LocalDate localDate) {
         return getAllTripsForLocalDate(localDate).stream().distinct().toList();
+    }
+
+    /**
+     * Get all stops as DTOs.
+     *
+     * @return the converted stopDTOs list
+     */
+    public List<StopDto> getAllStopsConvertedToDto() {
+        List<StopDto> stopDtos = new ArrayList<>();
+        allStops.forEach(stop -> stopDtos.add(new StopDto(stop.getStopId().toString(), stop.getName(), stop.getLocation().getLatitude(), stop.getLocation().getLongitude(), stop.getStation())));
+        return stopDtos;
+    }
+
+    /**
+     * Get all national stops as DTOs.
+     *
+     * @return the converted stopDTOs list
+     */
+    public List<StopDto> getAllNationalStopsConvertedToDto() {
+        List<StopDto> stopDtos = new ArrayList<>();
+        allStops.stream().filter(stop -> stop.getProducts().isNational()).toList().forEach(stop ->
+                stopDtos.add(new StopDto(stop.getStopId().toString(), stop.getName(), stop.getLocation().getLatitude(), stop.getLocation().getLongitude(), stop.getStation())));
+        return stopDtos;
     }
 
 }
