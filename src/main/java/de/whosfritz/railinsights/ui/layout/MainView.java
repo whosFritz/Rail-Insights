@@ -2,6 +2,7 @@ package de.whosfritz.railinsights.ui.layout;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
@@ -52,6 +53,18 @@ public class MainView extends AppLayout {
         addToNavbar(wrapper, wrapper2);
         setPrimarySection(Section.DRAWER);
         getCookieConsentBanner();
+        getCookieAndSetPreferedTheme();
+    }
+
+    private void getCookieAndSetPreferedTheme() {
+        Cookie[] cookies = VaadinService.getCurrentRequest().getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("RlThemeCookie")) {
+                if (cookie.getValue().equals("dark")) {
+                    UI.getCurrent().getElement().setAttribute("theme", "dark");
+                }
+            }
+        }
     }
 
     /**
@@ -93,6 +106,7 @@ public class MainView extends AppLayout {
 
     /**
      * Retrieves a cookie by its name.
+     *
      * @return Cookie if found, null otherwise.
      */
     private Cookie getCookieByName() {
@@ -131,6 +145,7 @@ public class MainView extends AppLayout {
 
     /**
      * Creates the main navigation bar.
+     *
      * @return SideNav containing the main navigation items.
      */
     private SideNav getMainSideNav() {
@@ -149,6 +164,7 @@ public class MainView extends AppLayout {
 
     /**
      * Creates the sub navigation bar.
+     *
      * @return SideNav containing the sub navigation items.
      */
     private SideNav getSubSideNav() {
@@ -163,6 +179,7 @@ public class MainView extends AppLayout {
 
     /**
      * Creates the update badge.
+     *
      * @return VerticalLayout containing the update badge.
      */
     private VerticalLayout createUpdateBadge() {
@@ -200,9 +217,10 @@ public class MainView extends AppLayout {
 
     /**
      * Creates a navigation item.
-     * @param title The title of the navigation item.
-     * @param route The route of the navigation item.
-     * @param icon The icon of the navigation item.
+     *
+     * @param title     The title of the navigation item.
+     * @param route     The route of the navigation item.
+     * @param icon      The icon of the navigation item.
      * @param className The class name to be added to the navigation item.
      * @return SideNavItem representing the navigation item.
      */
