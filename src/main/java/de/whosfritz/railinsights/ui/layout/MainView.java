@@ -5,7 +5,10 @@ import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -66,7 +69,7 @@ public class MainView extends AppLayout {
                 " der Webseite. Durch Klick auf Akzeptieren sind Sie damit einverstanden." +
                 " Mehr Informationen finden Sie in unserer "
         );
-        Anchor datenschutzLink = new Anchor("/datenschutzerklaerung", "Datenschutzerklärung.", AnchorTarget.BLANK);
+        Anchor datenschutzLink = new Anchor("/datenschutzerklaerung", "Datenschutzerklärung.");
         Paragraph text2 = new Paragraph("Sie können Ihre Auswahl jederzeit unter Ihren Browser-Einstellungen widerrufen oder anpassen.");
         wrapper.add(text1, datenschutzLink, text2);
         wrapper.addClassName(LumoUtility.Padding.MEDIUM);
@@ -93,6 +96,7 @@ public class MainView extends AppLayout {
 
     /**
      * Retrieves a cookie by its name.
+     *
      * @return Cookie if found, null otherwise.
      */
     private Cookie getCookieByName() {
@@ -131,6 +135,7 @@ public class MainView extends AppLayout {
 
     /**
      * Creates the main navigation bar.
+     *
      * @return SideNav containing the main navigation items.
      */
     private SideNav getMainSideNav() {
@@ -149,6 +154,7 @@ public class MainView extends AppLayout {
 
     /**
      * Creates the sub navigation bar.
+     *
      * @return SideNav containing the sub navigation items.
      */
     private SideNav getSubSideNav() {
@@ -163,6 +169,7 @@ public class MainView extends AppLayout {
 
     /**
      * Creates the update badge.
+     *
      * @return VerticalLayout containing the update badge.
      */
     private VerticalLayout createUpdateBadge() {
@@ -200,9 +207,10 @@ public class MainView extends AppLayout {
 
     /**
      * Creates a navigation item.
-     * @param title The title of the navigation item.
-     * @param route The route of the navigation item.
-     * @param icon The icon of the navigation item.
+     *
+     * @param title     The title of the navigation item.
+     * @param route     The route of the navigation item.
+     * @param icon      The icon of the navigation item.
      * @param className The class name to be added to the navigation item.
      * @return SideNavItem representing the navigation item.
      */

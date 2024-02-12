@@ -6,8 +6,9 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
+import de.whosfritz.railinsights.ui.layout.MainView;
 
-@Route(value = "impressum")
+@Route(value = "impressum", layout = MainView.class)
 public class ImpressumPage extends VerticalLayout {
 
     public ImpressumPage() {
