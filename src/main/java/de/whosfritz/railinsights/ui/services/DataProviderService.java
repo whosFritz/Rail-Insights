@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,9 @@ public class DataProviderService {
     List<Trip> allTrips = new ArrayList<>();
 
     List<Stop> allStops = new ArrayList<>();
-
+    Double stopsPercentageOnTime;
+    Double stopsPercentageDelayed;
+    Double stopsPercentageCancelled;
     @Autowired
     private TripsRepository tripsRepository;
     @Autowired
@@ -51,6 +54,40 @@ public class DataProviderService {
         log.info("Data calculation started...");
         allTrips = tripsRepository.findAll();
         allStops = stopRepository.findAll();
+
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setGroupingUsed(false);
+
+        double percentageCancelled = ((double) allTrips.stream().filter(trip -> {
+            if (trip.getCancelled() != null) {
+                return trip.getCancelled();
+            }
+            return false;
+        }).count() / allTrips.size());
+
+        stopsPercentageCancelled = (Math.round(percentageCancelled * 100.0) / 100.0) * 100;
+        String formatted = df.format(stopsPercentageCancelled);
+        stopsPercentageCancelled = Double.parseDouble(formatted);
+
+        double percentageDelayed = ((double) allTrips.stream().filter(trip -> {
+            if (trip.getCancelled() == null || !trip.getCancelled()) {
+                if (trip.getDelay() != null) {
+                    return trip.getDelay() >= 300;
+                }
+            }
+            return false;
+        }).count() / allTrips.size());
+
+        stopsPercentageDelayed = (Math.round(percentageDelayed * 100.0) / 100.0) * 100;
+        formatted = df.format(stopsPercentageDelayed);
+        stopsPercentageDelayed = Double.parseDouble(formatted);
+
+        double percentageOnTime = (1 - percentageCancelled - percentageDelayed);
+
+        stopsPercentageOnTime = (Math.round(percentageOnTime * 100.0) / 100.0) * 100;
+        formatted = df.format(stopsPercentageOnTime);
+        stopsPercentageOnTime = Double.parseDouble(formatted);
+
         log.info("Data calculation finished...");
         state = DataProviderServiceState.READY; // Set the state to ready
     }

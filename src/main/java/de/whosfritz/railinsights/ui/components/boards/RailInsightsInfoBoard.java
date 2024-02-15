@@ -7,6 +7,7 @@ import com.vaadin.flow.component.board.Board;
 public class RailInsightsInfoBoard extends Board {
 
     public RailInsightsInfoBoard() {
+        addClassName("dashboard-railinsights");
         setWidth("100%");
         setHeight("100%");
     }

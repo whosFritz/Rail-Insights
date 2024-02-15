@@ -3,7 +3,6 @@ package de.whosfritz.railinsights;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.theme.Theme;
 import de.whosfritz.railinsights.data.DataDispatcher;
-import de.whosfritz.railinsights.data.services.stop_services.StopService;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
@@ -30,11 +29,8 @@ public class RailInsightsApplication implements AppShellConfigurator {
 
         // Fetch the data
         DataDispatcher dataDispatcher = context.getBean(DataDispatcher.class);
+        dataDispatcher.fixTrips();
         dataDispatcher.fetchData();
-
-        // Combine the stations and stops
-        StopService stopService = context.getBean(StopService.class);
-        stopService.combineStationAndStops();
 
         // Load the data to the UI
         DataProviderService dataProviderService = context.getBean(DataProviderService.class);

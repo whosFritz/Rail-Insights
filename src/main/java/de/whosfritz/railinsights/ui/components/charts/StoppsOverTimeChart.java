@@ -22,7 +22,6 @@ public class StoppsOverTimeChart extends Div {
         XAxis xAxis = configuration.getxAxis();
         xAxis.setType(AxisType.DATETIME);
         xAxis.setTitle("Zeit");
-        xAxis.addUnit(new TimeUnitMultiples(TimeUnit.DAY, 1));
 
         configuration.getTooltip().setValueSuffix(" Stopps");
 
