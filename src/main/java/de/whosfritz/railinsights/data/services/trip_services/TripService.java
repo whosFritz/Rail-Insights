@@ -75,7 +75,6 @@ public class TripService {
      *
      * @param id the id of the trip to delete
      */
-    @Transactional
     public Result<Trip, JPAError> deleteTripById(Long id) {
         try {
             Trip trip = tripsRepository.findById(id).orElse(null);
@@ -92,12 +91,9 @@ public class TripService {
         }
     }
 
-    @Transactional
     public Result<Trip, JPAError> updateTrip(Trip trip) {
         try {
             Trip updatedTrip = tripsRepository.save(trip);
-            // force Hibernate to persist the changes
-            Hibernate.initialize(updatedTrip);
             return Result.success(updatedTrip);
         } catch (Exception e) {
             log.error("Error while updating trip: " + e.getMessage() + " " + e.getCause());

@@ -14,7 +14,6 @@ import de.whosfritz.railinsights.data.services.LineService;
 import de.whosfritz.railinsights.data.services.stop_services.StopService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
 import de.whosfritz.railinsights.exception.JPAError;
-import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -26,9 +25,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Log4j2
@@ -121,14 +117,11 @@ public class DataDispatcher {
         }
     }
 
-    @Transactional
     public void fixTrips() {
         List<Line> lines = lineService.getAllLines();
         int totalLines = lines.size();
-        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
         for (Line line : lines) {
-            executorService.submit(() -> {
                 // show progress
                 log.info("Processing line " + line.getFahrtNr() + " (" + lines.indexOf(line) + "/" + totalLines + ")");
                 for (LocalDateTime date = LocalDateTime.parse("2024-01-29T00:00:00.000"); date.isBefore(LocalDateTime.now()); date = date.plusDays(1)) {
@@ -158,17 +151,13 @@ public class DataDispatcher {
                             trips.addAll(theRealTrips);
                             trips.forEach(tripService::updateTrip);
                         }
+
+                        theTrashTrips.removeAll(theRealTrips);
+
+                        if (!theTrashTrips.isEmpty())
+                            theTrashTrips.forEach(trip -> tripService.deleteTripById(trip.getId()));
                     }
                 }
-            });
-        }
-
-        executorService.shutdown();
-        try {
-            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException e) {
-            log.error("Error occurred while waiting for threads to finish.", e);
-            Thread.currentThread().interrupt();
         }
     }
 }
