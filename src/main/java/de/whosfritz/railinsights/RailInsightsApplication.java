@@ -29,7 +29,6 @@ public class RailInsightsApplication implements AppShellConfigurator {
 
         // Fetch the data
         DataDispatcher dataDispatcher = context.getBean(DataDispatcher.class);
-        dataDispatcher.fixTrips();
         dataDispatcher.fetchData();
 
         // Load the data to the UI

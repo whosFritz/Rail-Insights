@@ -40,7 +40,7 @@ import de.whosfritz.railinsights.data.dataprovider.TripFilter;
 import de.whosfritz.railinsights.data.dto.StopDto;
 import de.whosfritz.railinsights.data.services.stop_services.StopService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
-import de.whosfritz.railinsights.ui.components.boards.DashboardView;
+import de.whosfritz.railinsights.ui.components.boards.StationViewDashboard;
 import de.whosfritz.railinsights.ui.components.dialogs.ArrivalDepartureDialog;
 import de.whosfritz.railinsights.ui.components.dialogs.GeneralRailInsightsDialog;
 import de.whosfritz.railinsights.ui.components.dialogs.StopInfoDialog;
@@ -160,6 +160,8 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         mapLayout.setWidth(100f, Unit.PERCENTAGE);
         mapLayout.setMaxHeight(100f, Unit.PERCENTAGE);
         mapLayout.setMaxWidth(100f, Unit.PERCENTAGE);
+        mapLayout.setMinHeight(100f, Unit.PERCENTAGE);
+        mapLayout.setMinWidth(100f, Unit.PERCENTAGE);
         mapLayout.add(map, sidebar);
 
         HorizontalLayout infoLayout = new HorizontalLayout(infoButton, whenAfter, whenBefore);
@@ -173,6 +175,8 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         cardList.setMaxWidth(100f, Unit.PERCENTAGE);
         cardList.setHeight(100f, Unit.PERCENTAGE);
         cardList.setMaxHeight(100f, Unit.PERCENTAGE);
+        cardList.setMinHeight(100f, Unit.PERCENTAGE);
+        cardList.setMinWidth(100f, Unit.PERCENTAGE);
 
         setFlexGrow(0);
         setFlexShrink(0);
@@ -185,6 +189,8 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         setSizeFull();
         setMaxHeight(100f, Unit.PERCENTAGE);
         setMaxWidth(100f, Unit.PERCENTAGE);
+        setMinHeight(100f, Unit.PERCENTAGE);
+        setMinWidth(100f, Unit.PERCENTAGE);
     }
 
     private void centerMapOn(StopDto stop) {
@@ -403,23 +409,28 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         }
 
         // convert the percentage values to 2 decimal places
-        double percentageNationalTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().equals("national")).toList().size() * 100) / tripToEvaluate.size();
+        double percentageNationalTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().equals("national")).toList().size()) / tripToEvaluate.size();
+        percentageNationalTrips = (Math.round(percentageNationalTrips * 100.0) / 100.0) * 100;
         String percentageNationalTripsFormatted = df.format(percentageNationalTrips);
         percentageNationalTrips = Double.parseDouble(percentageNationalTripsFormatted);
 
-        double percentageNationalExpressTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().equals("nationalExpress")).toList().size() * 100) / tripToEvaluate.size();
+        double percentageNationalExpressTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().equals("nationalExpress")).toList().size()) / tripToEvaluate.size();
+        percentageNationalExpressTrips = (Math.round(percentageNationalExpressTrips * 100.0) / 100.0) * 100;
         String percentageNationalExpressTripsFormatted = df.format(percentageNationalExpressTrips);
         percentageNationalExpressTrips = Double.parseDouble(percentageNationalExpressTripsFormatted);
 
-        double subUrbanTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().contains("suburban")).toList().size() * 100) / tripToEvaluate.size();
+        double subUrbanTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().contains("suburban")).toList().size()) / tripToEvaluate.size();
+        subUrbanTrips = (Math.round(subUrbanTrips * 100.0) / 100.0) * 100;
         String subUrbanTripsFormatted = df.format(subUrbanTrips);
         subUrbanTrips = Double.parseDouble(subUrbanTripsFormatted);
 
-        double percentageRegionalExpressTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().equals("regionalExpress")).toList().size() * 100) / tripToEvaluate.size();
+        double percentageRegionalExpressTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().equals("regionalExpress")).toList().size()) / tripToEvaluate.size();
+        percentageRegionalExpressTrips = (Math.round(percentageRegionalExpressTrips * 100.0) / 100.0) * 100;
         String percentageRegionalExpressTripsFormatted = df.format(percentageRegionalExpressTrips);
         percentageRegionalExpressTrips = Double.parseDouble(percentageRegionalExpressTripsFormatted);
 
-        double percentageRegionalTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().equals("regional")).toList().size() * 100) / tripToEvaluate.size();
+        double percentageRegionalTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().equals("regional")).toList().size()) / tripToEvaluate.size();
+        percentageRegionalTrips = (Math.round(percentageRegionalTrips * 100.0) / 100.0) * 100;
         String percentageRegionalTripsFormatted = df.format(percentageRegionalTrips);
         percentageRegionalTrips = Double.parseDouble(percentageRegionalTripsFormatted);
 
@@ -432,22 +443,22 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
 
         List<Trip> topDelayedTrips = tripToEvaluate.stream().filter(trip -> trip.getDelay() != null).sorted((o1, o2) -> o2.getDelay().compareTo(o1.getDelay())).limit(10).toList();
 
-        DashboardView dashboardView;
+        StationViewDashboard stationViewDashboard;
 
         if (dailyTripCounts.isEmpty()) {
-            dashboardView = new DashboardView(tripCount, percentageOnTime, dataProviderService.getStopsPercentageOnTime(),
+            stationViewDashboard = new StationViewDashboard(tripCount, percentageOnTime, dataProviderService.getStopsPercentageOnTime(),
                     percentageDelayed, dataProviderService.getStopsPercentageDelayed(), percentageCancelled,
                     dataProviderService.getStopsPercentageCancelled(), hourlyTripRegionalCountSeries,
                     hourlyTripLongDistanceCountSeries, hourlyTripCountSeries, nationalRegionalSeries, topDelayedTrips);
         } else {
-            dashboardView = new DashboardView(tripCount, percentageOnTime, dataProviderService.getStopsPercentageOnTime(),
+            stationViewDashboard = new StationViewDashboard(tripCount, percentageOnTime, dataProviderService.getStopsPercentageOnTime(),
                     percentageDelayed, dataProviderService.getStopsPercentageDelayed(), percentageCancelled,
                     dataProviderService.getStopsPercentageCancelled(),
                     dailyTripRegionalCountSeries, dailyTripLongDistanceCountSeries, dailyTripCountSeries,
                     nationalRegionalSeries, topDelayedTrips);
         }
 
-        return dashboardView;
+        return stationViewDashboard;
     }
 
     private void openArrivalDepartureDialog(StopDto stop) {

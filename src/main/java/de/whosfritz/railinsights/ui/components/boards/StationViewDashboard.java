@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class DashboardView extends VerticalLayout {
+public class StationViewDashboard extends VerticalLayout {
 
     private final DataSeries seriesRegional;
 
@@ -32,9 +32,9 @@ public class DashboardView extends VerticalLayout {
 
     private final DataSeries nationalRegioSeries;
 
-    public DashboardView(int stopCount, double stopsPercentageOnTime, double globalPercentageOnTime, double stopsPercentageDelayed, double globalPercentageDelayed,
-                         double stopsPercentageCancelled, double globalPercentageCancelled, DataSeries seriesRegional, DataSeries seriesLongDistance,
-                         DataSeries seriesTotal, DataSeries nationalRegioSeries, List<Trip> topDelayedTrips) {
+    public StationViewDashboard(int stopCount, double stopsPercentageOnTime, double globalPercentageOnTime, double stopsPercentageDelayed, double globalPercentageDelayed,
+                                double stopsPercentageCancelled, double globalPercentageCancelled, DataSeries seriesRegional, DataSeries seriesLongDistance,
+                                DataSeries seriesTotal, DataSeries nationalRegioSeries, List<Trip> topDelayedTrips) {
         addClassName("dashboard-railinsights");
 
         this.seriesRegional = seriesRegional;

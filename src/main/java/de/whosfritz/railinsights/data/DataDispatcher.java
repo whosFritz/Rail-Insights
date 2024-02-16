@@ -5,7 +5,6 @@ import de.olech2412.adapter.dbadapter.DB_Adapter_v6;
 import de.olech2412.adapter.dbadapter.exception.Error;
 import de.olech2412.adapter.dbadapter.exception.Result;
 import de.olech2412.adapter.dbadapter.model.stop.Stop;
-import de.olech2412.adapter.dbadapter.model.stop.sub.Line;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.olech2412.adapter.dbadapter.request.parameters.Parameter;
 import de.olech2412.adapter.dbadapter.request.parameters.RequestParametersNames;
@@ -13,7 +12,7 @@ import de.whosfritz.railinsights.data.repositories.station_repositories.StationR
 import de.whosfritz.railinsights.data.services.LineService;
 import de.whosfritz.railinsights.data.services.stop_services.StopService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
-import de.whosfritz.railinsights.exception.JPAError;
+import de.whosfritz.railinsights.ui.services.DataProviderService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -21,13 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Log4j2
@@ -45,6 +38,9 @@ public class DataDispatcher {
 
     @Autowired
     LineService lineService;
+
+    @Autowired
+    DataProviderService dataProviderService;
 
     /**
      * Fetch all departures for all stops
@@ -117,61 +113,6 @@ public class DataDispatcher {
             log.info("---- Finished fetching departures ----");
         } else {
             log.error("No stops found. Please provide some stops in the database.");
-        }
-    }
-
-    public void fixTrips() {
-        List<Line> lines = lineService.getAllLines();
-        int totalLines = lines.size();
-        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-        for (Line line : lines) {
-            executorService.submit(() -> {
-                // show progress
-                log.info("Processing line " + line.getFahrtNr() + " (" + lines.indexOf(line) + "/" + totalLines + ")");
-                for (LocalDateTime date = LocalDateTime.parse("2024-01-29T00:00:00.000"); date.isBefore(LocalDateTime.now()); date = date.plusDays(1)) {
-                    Result<List<Trip>, JPAError> result = tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(date.toLocalDate().atStartOfDay(), date.toLocalDate().atStartOfDay().plusDays(1), line.getFahrtNr());
-                    if (result.isSuccess() && !result.getData().isEmpty()) {
-                        List<Trip> trips = result.getData();
-                        String originTripId = trips.get(0).getTripId();
-                        String originLine = trips.get(0).getLine().getLineId();
-                        List<Trip> theRealTrips = new ArrayList<>();
-                        List<Trip> theTrashTrips = new ArrayList<>();
-
-                        for (Trip trip : trips) {
-                            if (!trip.getTripId().equals(originTripId) && trip.getLine().getLineId().equals(originLine)) {
-                                if (theTrashTrips.contains(trip)) {
-                                    continue;
-                                }
-                                log.error("TripId is not the same for all trips: " + originTripId + " on " + trip.getPlannedWhen() + " and " + trip.getLine().getFahrtNr());
-                                Trip newestTrip = trips.stream().filter(t -> t.getStop().equals(trip.getStop())).max(Comparator.comparing(Trip::getCreatedAt)).get();
-                                newestTrip.setTripId(originTripId);
-                                theRealTrips.add(newestTrip);
-                                theTrashTrips.addAll(trips.stream().filter(t -> t.getStop().equals(newestTrip.getStop())).toList());
-                            }
-                        }
-
-                        if (!theRealTrips.isEmpty() && !theTrashTrips.isEmpty()) {
-                            trips.removeAll(theTrashTrips);
-                            trips.addAll(theRealTrips);
-                            trips.forEach(tripService::updateTrip);
-                        }
-
-                        theTrashTrips.removeAll(theRealTrips);
-
-                        if (!theTrashTrips.isEmpty())
-                            theTrashTrips.forEach(trip -> tripService.deleteTripById(trip.getId()));
-                    }
-                }
-            });
-        }
-
-        executorService.shutdown();
-        try {
-            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException e) {
-            log.error("Error occurred while waiting for threads to finish.", e);
-            Thread.currentThread().interrupt();
         }
     }
 }

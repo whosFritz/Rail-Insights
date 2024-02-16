@@ -1,10 +1,15 @@
 package de.whosfritz.railinsights.ui.services;
 
+import com.vaadin.flow.component.charts.model.DataSeries;
+import com.vaadin.flow.component.charts.model.DataSeriesItem;
+import com.vaadin.flow.component.charts.model.style.SolidColor;
 import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.whosfritz.railinsights.data.dto.StopDto;
 import de.whosfritz.railinsights.data.repositories.stop_repositories.StopRepository;
 import de.whosfritz.railinsights.data.repositories.trip_repositories.TripsRepository;
+import de.whosfritz.railinsights.ui.color_scheme.ColorScheme;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -17,8 +22,11 @@ import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Getter
@@ -30,12 +38,24 @@ public class DataProviderService {
 
     DataProviderServiceState state = DataProviderServiceState.PENDING;
 
-    List<Trip> allTrips = new ArrayList<>();
-
     List<Stop> allStops = new ArrayList<>();
+
     Double stopsPercentageOnTime;
+
     Double stopsPercentageDelayed;
+
     Double stopsPercentageCancelled;
+
+    DataSeries stoppsOverTimeDataSeries;
+
+    int totalTrips;
+
+    int totalStops;
+
+    int totalTripsToday;
+
+    int nationalStops;
+
     @Autowired
     private TripsRepository tripsRepository;
     @Autowired
@@ -49,11 +69,12 @@ public class DataProviderService {
      */
     @Scheduled(cron = "0 0/20 * * * ?")
     @Async
+    @Transactional
     public void calculateData() {
         state = DataProviderServiceState.PENDING; // Set the state to pending
         log.info("Data calculation started...");
-        allTrips = tripsRepository.findAll();
         allStops = stopRepository.findAll();
+        List<Trip> allTrips = tripsRepository.findAll();
 
         DecimalFormat df = new DecimalFormat("#.##");
         df.setGroupingUsed(false);
@@ -88,86 +109,45 @@ public class DataProviderService {
         formatted = df.format(stopsPercentageOnTime);
         stopsPercentageOnTime = Double.parseDouble(formatted);
 
+        generateHomeViewStatistics(allTrips);
+
+        totalTrips = allTrips.size();
+        totalStops = allStops.size();
+        totalTripsToday = (int) allTrips.stream().filter(trip -> trip.getCreatedAt().toLocalDate().equals(LocalDate.now())).count();
+        nationalStops = (int) allStops.stream().filter(stop -> stop.getProducts().isNational()).count();
+
         log.info("Data calculation finished...");
         state = DataProviderServiceState.READY; // Set the state to ready
     }
 
-    /**
-     * Get all trips for a specific local date.
-     * If the trip has a "when" date, it will be used otherwise the "plannedWhen" date will be used and if that is also null, the "createdAt" date will be used.
-     *
-     * @param localDate the local date to get the trips for
-     * @return a list of trips for the given local date
-     */
-    public List<Trip> getAllTripsForLocalDate(java.time.LocalDate localDate) {
-        return allTrips.stream().filter(trip -> {
+    private void generateHomeViewStatistics(List<Trip> allTrips) {
+        // HashMap zur Speicherung der Summe der Trips pro Tag
+        Map<LocalDate, Integer> dailyTripCounts = new HashMap<>();
+
+        // Iteration durch alle Trips
+        for (Trip trip : allTrips) {
+            LocalDate tripDate;
+            // Wenn trip.getWhen() vorhanden ist, verwenden wir dieses Datum, ansonsten trip.getPlannedWhen() oder trip.getCreatedAt()
             if (trip.getWhen() != null) {
-                return trip.getWhen().toLocalDate().isEqual(localDate);
+                tripDate = trip.getWhen().toLocalDate();
             } else if (trip.getPlannedWhen() != null) {
-                return trip.getPlannedWhen().toLocalDate().isEqual(localDate);
+                tripDate = trip.getPlannedWhen().toLocalDate();
             } else {
-                return trip.getCreatedAt().toLocalDate().isEqual(localDate);
+                tripDate = trip.getCreatedAt().toLocalDate();
             }
-        }).toList();
-    }
 
-    /**
-     * Get all trips for a specific local date range.
-     *
-     * @param startDate the start date of the range
-     * @param endDate   the end date of the range
-     * @return a list of trips for the given local date range
-     */
-    public List<Trip> getAllTripsForLocalDateInRange(java.time.LocalDate startDate, java.time.LocalDate endDate) {
-        return allTrips.stream().filter(trip -> {
-            if (trip.getWhen() != null) {
-                return trip.getWhen().toLocalDate().isAfter(startDate) && trip.getWhen().toLocalDate().isBefore(endDate);
-            } else if (trip.getPlannedWhen() != null) {
-                return trip.getPlannedWhen().toLocalDate().isAfter(startDate) && trip.getPlannedWhen().toLocalDate().isBefore(endDate);
-            } else {
-                return trip.getCreatedAt().toLocalDate().isAfter(startDate) && trip.getCreatedAt().toLocalDate().isBefore(endDate);
-            }
-        }).toList();
-    }
+            // Aktuellen Wert für den Tag holen und um 1 erhöhen
+            dailyTripCounts.put(tripDate, dailyTripCounts.getOrDefault(tripDate, 0) + 1);
+        }
 
-    /**
-     * Get all trips for a specific trip id.
-     *
-     * @param tripId the trip id to get the trips for
-     * @return a list of trips for the given trip id
-     */
-    public List<Trip> getAllTripsForSpecificTripId(String tripId) {
-        return allTrips.stream().filter(trip -> trip.getTripId().equals(tripId)).toList();
-    }
-
-    /**
-     * Get all trips with distinct trip id.
-     *
-     * @return a list of trips for the given trip id
-     */
-    public List<Trip> getAllTripsWithDistinctTripId() {
-        return allTrips.stream().distinct().toList();
-    }
-
-    /**
-     * Get all trips with distinct trip id and local date.
-     *
-     * @param localDate the local date to get the trips for
-     * @return a list of trips for the given local date
-     */
-    public List<Trip> getAllTripsWithDistinctTripIdAndLocalDate(LocalDate localDate) {
-        return getAllTripsForLocalDate(localDate).stream().distinct().toList();
-    }
-
-    /**
-     * Get all stops as DTOs.
-     *
-     * @return the converted stopDTOs list
-     */
-    public List<StopDto> getAllStopsConvertedToDto() {
-        List<StopDto> stopDtos = new ArrayList<>();
-        allStops.forEach(stop -> stopDtos.add(new StopDto(stop.getStopId().toString(), stop.getName(), stop.getLocation().getLatitude(), stop.getLocation().getLongitude(), stop.getStation())));
-        return stopDtos;
+        DataSeries dataSeries = new DataSeries();
+        dataSeries.setName("Stopps");
+        for (Map.Entry<LocalDate, Integer> entry : dailyTripCounts.entrySet()) {
+            DataSeriesItem dataSeriesItem = new DataSeriesItem(entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(), entry.getValue());
+            dataSeriesItem.setColor(new SolidColor(ColorScheme.INFO_LIGHT.getColor()));
+            dataSeries.add(dataSeriesItem);
+        }
+        stoppsOverTimeDataSeries = dataSeries;
     }
 
     /**

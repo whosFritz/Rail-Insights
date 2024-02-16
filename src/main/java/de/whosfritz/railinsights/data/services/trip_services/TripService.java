@@ -91,6 +91,7 @@ public class TripService {
         }
     }
 
+    @Transactional
     public Result<Trip, JPAError> updateTrip(Trip trip) {
         try {
             Trip updatedTrip = tripsRepository.save(trip);
@@ -319,7 +320,7 @@ public class TripService {
     @Transactional
     public Result<List<Trip>, JPAError> findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(LocalDateTime plannedWhenAfter, LocalDateTime plannedWhenBefore, String fahrtNr) {
         try {
-            Optional<List<Trip>> trip = tripsRepository.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(plannedWhenAfter, plannedWhenBefore, fahrtNr);
+            Optional<List<Trip>> trip = tripsRepository.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(plannedWhenAfter, plannedWhenBefore, "2178");
             return trip.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
         } catch (Exception e) {
             log.error("Error while finding trip by planned when is after and planned when is before and line fahrt nr: " + e.getMessage() + " " + e.getCause());
