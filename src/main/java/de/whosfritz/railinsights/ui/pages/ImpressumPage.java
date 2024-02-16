@@ -19,8 +19,9 @@ public class ImpressumPage extends VerticalLayout {
                 new Paragraph("Fritz Schubert"),
                 new Paragraph("Schiebestraße 14, 04129 Leipzig"),
                 new Paragraph("Vertreten durch:"),
-                new Paragraph("Fritz Schubert"),
                 new Paragraph("Ole Einar Christoph"),
+                new Paragraph("Eric Jarka"),
+                new Paragraph("Fritz Schubert"),
                 new Paragraph("Kontakt:"),
                 new Paragraph("Telefon: +49-1627497832"),
                 new Paragraph("E-Mail: fritzschubert21@outlook.de"),
@@ -42,8 +43,8 @@ public class ImpressumPage extends VerticalLayout {
                 new Paragraph(
                         """ 
                                         Datenschutz
-                                        Die Nutzung unserer Webseite ist in der Regel ohne Angabe personenbezogener Daten möglich. Soweit auf unseren Seiten personenbezogene Daten (beispielsweise Name, Anschrift oder eMail-Adressen) erhoben werden, erfolgt dies, soweit möglich, stets auf freiwilliger Basis. Diese Daten werden ohne Ihre ausdrückliche Zustimmung nicht an Dritte weitergegeben. 
-                                        Wir weisen darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation per E-Mail) Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich. 
+                                        Die Nutzung unserer Webseite ist in der Regel ohne Angabe personenbezogener Daten möglich. Soweit auf unseren Seiten personenbezogene Daten (beispielsweise Name, Anschrift oder eMail-Adressen) erhoben werden, erfolgt dies, soweit möglich, stets auf freiwilliger Basis. Diese Daten werden ohne Ihre ausdrückliche Zustimmung nicht an Dritte weitergegeben.
+                                        Wir weisen darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation per E-Mail) Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich.
                                         Der Nutzung von im Rahmen der Impressumspflicht veröffentlichten Kontaktdaten durch Dritte zur Übersendung von nicht ausdrücklich angeforderter Werbung und Informationsmaterialien wird hiermit ausdrücklich widersprochen. Die Betreiber der Seiten behalten sich ausdrücklich rechtliche Schritte im Falle der unverlangten Zusendung von Werbeinformationen, etwa durch Spam-Mails, vor.
                                 """),
                 new Paragraph(
