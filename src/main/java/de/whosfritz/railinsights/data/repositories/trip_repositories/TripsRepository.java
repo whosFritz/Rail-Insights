@@ -24,6 +24,12 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
             @Param("createdAt") LocalDateTime createdAt,
             Pageable pageable);
 
+    Optional<List<Trip>> findAllByLineFahrtNrAndStopAndCreatedAtAfterAndTripIdContains(
+            @Param("fahrtNr") String fahrtNr,
+            @Param("stop") Stop stop,
+            @Param("createdAt") LocalDateTime createdAt,
+            @Param("tripId") String tripId);
+
     Optional<Trip> findByTripIdAndStop(String tripId, Stop stop);
 
     Page<List<Trip>> findAllByLineName(String lineName, Pageable pageable);
@@ -31,5 +37,16 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
     Optional<List<Trip>> findAllByStopIdAndWhenIsAfter(Long stopId, LocalDateTime when);
 
     Optional<List<Trip>> findAllByTripId(String tripId);
+
+    Optional<List<Trip>> findAllByStop(Stop stop);
+
+    Optional<List<Trip>> findAllByStopAndPlannedWhenAfterAndWhenBeforeOrderByPlannedWhenAsc(Stop stop, LocalDateTime whenAfter, LocalDateTime whenBefore);
+
+    Optional<List<Trip>> findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(
+            LocalDateTime plannedWhenAfter,
+            LocalDateTime plannedWhenBefore,
+            String fahrtNr);
+
+    int countAllByStopAndPlannedWhenAfterAndWhenBefore(Stop stop, LocalDateTime whenAfter, LocalDateTime whenBefore);
 
 }

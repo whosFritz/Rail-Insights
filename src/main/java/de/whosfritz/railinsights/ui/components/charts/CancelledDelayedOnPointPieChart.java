@@ -7,7 +7,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 public class CancelledDelayedOnPointPieChart extends Div {
     public CancelledDelayedOnPointPieChart(DataSeries dataSeries) {
-        // tag::snippet[]
         Chart chart = new Chart(ChartType.PIE);
 
         Configuration conf = chart.getConfiguration();
@@ -18,6 +17,7 @@ public class CancelledDelayedOnPointPieChart extends Div {
 
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(1);
+        tooltip.setValueSuffix(" %");
         conf.setTooltip(tooltip);
 
         PlotOptionsPie plotOptions = new PlotOptionsPie();
