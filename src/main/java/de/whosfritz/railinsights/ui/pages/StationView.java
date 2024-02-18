@@ -54,6 +54,7 @@ import de.whosfritz.railinsights.ui.services.DataProviderService;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 
 @Route(value = "bahnhöfe", layout = MainView.class)
@@ -361,11 +362,13 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         });
 
         DateTimePicker whenBefore = new DateTimePicker();
+        whenBefore.setLocale(new Locale("de", "DE"));
         whenBefore.setLabel("Bis wann");
         whenBefore.setValue(LocalDateTime.now().plusDays(1));
         whenBefore.setVisible(true);
 
         DateTimePicker whenAfter = new DateTimePicker();
+        whenAfter.setLocale(new Locale("de", "DE"));
         whenAfter.setLabel("Ab wann");
         whenAfter.setValue(LocalDateTime.now());
         whenAfter.setVisible(true);

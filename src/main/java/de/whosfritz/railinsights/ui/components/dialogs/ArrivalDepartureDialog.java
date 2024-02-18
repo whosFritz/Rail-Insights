@@ -16,6 +16,7 @@ import de.olech2412.adapter.dbadapter.model.trip.sub.Remark;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
 
@@ -31,6 +32,9 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
         content.add(searchLayout);
         content.setWidth("100%");
         content.setHeight("100%");
+
+        whenAfter.setLocale(new Locale("de", "DE"));
+        whenBefore.setLocale(new Locale("de", "DE"));
 
         grid = new Grid<>();
         grid.setWidth("100%");
