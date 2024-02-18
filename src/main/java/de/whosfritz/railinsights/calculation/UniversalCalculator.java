@@ -233,7 +233,7 @@ public class UniversalCalculator {
 
         double percentageCancelled = calculatePercentage(cancelledTrips.get(), totalTrips);
         double percentageDelayed = calculatePercentage(delayedTrips.get(), totalTrips);
-        double percentageOnTime = 100 - percentageCancelled - percentageDelayed;
+        double percentageOnTime = PercentageUtil.convertToTwoDecimalPlaces(100 - percentageCancelled - percentageDelayed);
 
         return new TripStatistics(percentageCancelled, percentageDelayed, percentageOnTime);
     }

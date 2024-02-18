@@ -301,10 +301,10 @@ public class TripService {
     }
 
     @Transactional
-    public Result<List<Trip>, JPAError> findAllByStopAndPlannedWhenAfterAndWhenBefore(Stop stop, LocalDateTime start, LocalDateTime end) {
+    public Result<List<Trip>, JPAError> findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(Stop stop, LocalDateTime start, LocalDateTime end) {
         try {
             // Ensure that also the lazy loaded objects are loaded
-            Optional<List<Trip>> trip = tripsRepository.findAllByStopAndPlannedWhenAfterAndWhenBeforeOrderByPlannedWhenAsc(stop, start, end);
+            Optional<List<Trip>> trip = tripsRepository.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(stop, start, end);
             for (Trip t : trip.get()) {
                 Hibernate.initialize(t.getRemarks());
             }

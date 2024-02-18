@@ -59,7 +59,7 @@ public class TripDataProvider extends AbstractBackEndDataProvider<Trip, TripFilt
 
     @Override
     protected Stream<Trip> fetchFromBackEnd(Query<Trip, TripFilter> query) {
-        Stream<Trip> stream = tripService.findAllByStopAndPlannedWhenAfterAndWhenBefore(currentStop, whenAfter, whenBefore).getData().stream();
+        Stream<Trip> stream = tripService.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(currentStop, whenAfter, whenBefore).getData().stream();
 
         // Filtering
         if (query.getFilter().isPresent()) {

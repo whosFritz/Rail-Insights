@@ -11,7 +11,6 @@ import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.olech2412.adapter.dbadapter.model.trip.sub.Remark;
 import de.whosfritz.railinsights.ui.components.Divider;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ public class RemarksDialog extends GeneralRailInsightsDialog {
     public RemarksDialog(List<Remark> remarks, Trip trip) {
         super();
 
-        setHeaderTitle("Informationen für die Linie " + trip.getLine().getName() + " um " + trip.getWhen().format(DateTimeFormatter.ofPattern("HH:mm dd.MM.uuuu")));
+        setHeaderTitle("Informationen für die Linie " + trip.getLine().getName() + " an der Haltestelle " + trip.getStop().getName());
         setWidth("50%");
         setHeight("50%");
 
