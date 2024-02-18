@@ -10,7 +10,7 @@ import com.vaadin.flow.router.Route;
 import de.whosfritz.railinsights.ui.color_scheme.ColorScheme;
 import de.whosfritz.railinsights.ui.components.InfoPanel;
 import de.whosfritz.railinsights.ui.components.boards.RailInsightsInfoBoard;
-import de.whosfritz.railinsights.ui.components.boards.board_components.Indicator;
+import de.whosfritz.railinsights.ui.components.boards.board_components.Highlight;
 import de.whosfritz.railinsights.ui.components.charts.CancelledDelayedOnPointPieChart;
 import de.whosfritz.railinsights.ui.components.charts.StoppsOverTimeChart;
 import de.whosfritz.railinsights.ui.layout.MainView;
@@ -43,9 +43,9 @@ public class HomeView extends VerticalLayout {
     private RailInsightsInfoBoard initRailInsightsBoard() {
         RailInsightsInfoBoard railInsightsInfoBoard = new RailInsightsInfoBoard();
         railInsightsInfoBoard.addRow(
-                new Indicator("Erfasste Stopps insgesamt: ", String.valueOf(dataProviderService.getTotalTrips()), "Erfasste Stopps heute: " + dataProviderService.getTotalTripsToday(), 1),
-                new Indicator("Erfasste Haltepunkte insgesamt: ", dataProviderService.getTotalStops() + " Regional- und Fernverkehrshaltepunkte"),
-                new Indicator("Haltepunkte für die Stopps erfasst werden: ", dataProviderService.getNationalStops() + " Fernverkehrshaltepunkte")
+                new Highlight("Erfasste Stopps insgesamt: ", String.valueOf(dataProviderService.getTotalTrips()), (double) dataProviderService.getTotalTripsToday(), "Erfasste Stopps heute", true),
+                new Highlight("Erfasste Haltepunkte insgesamt (Regional- und Fernverkehrshaltepunkte): ", String.valueOf(dataProviderService.getTotalStops())),
+                new Highlight("Haltepunkte für die Stopps erfasst werden (Fernverkehrshaltepunkte): ", String.valueOf(dataProviderService.getNationalStops()))
         );
 
         railInsightsInfoBoard.addRow(
@@ -57,7 +57,7 @@ public class HomeView extends VerticalLayout {
     }
 
     private CancelledDelayedOnPointPieChart createCancelledDelayedOnPointPieChart() {
-        DataSeries dataSeries = new DataSeries();
+        DataSeries dataSeries = new DataSeries("Anteil in Prozent: ");
         DataSeriesItem cancelled = new DataSeriesItem("Ausgefallen (Ersatzfahrten nicht berücksichtigt)", dataProviderService.getStopsPercentageCancelled());
         cancelled.setColor(new SolidColor(ColorScheme.ERROR.getColor()));
         DataSeriesItem delayed = new DataSeriesItem("Verspätet", dataProviderService.getStopsPercentageDelayed());

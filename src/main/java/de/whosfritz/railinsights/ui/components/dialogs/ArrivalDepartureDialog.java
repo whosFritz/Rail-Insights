@@ -46,7 +46,7 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
             return tooltip;
         });
 
-        grid.addColumn(Trip::getTripId).setHeader("Fahrtnummer");
+        grid.addColumn(Trip::getTripId).setHeader("Fahrt ID");
         grid.addColumn(o -> o.getLine().getName()).setHeader("Linie").setAutoWidth(true);
         grid.addColumn(Trip::getDirection).setHeader("Richtung").setAutoWidth(true);
         grid.addColumn(o -> {
@@ -91,9 +91,13 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
 
         grid.addComponentColumn(o -> {
             try {
-                return Boolean.TRUE.equals(o.getCancelled()) ? new Icon(VaadinIcon.CHECK) : new Icon(VaadinIcon.CLOSE);
+                if (Boolean.TRUE.equals(o.getCancelled())) {
+                    return new Text("Ja");
+                } else {
+                    return new Text("");
+                }
             } catch (NullPointerException nullPointerException) {
-                return new Icon(VaadinIcon.CHECK);
+                return new Text("");
             }
         }).setHeader("Ausgefallen").setAutoWidth(true);
 

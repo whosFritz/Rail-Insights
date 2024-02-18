@@ -16,6 +16,7 @@ import de.whosfritz.railinsights.data.services.stop_services.StopService;
 import de.whosfritz.railinsights.data.services.trip_services.sub.RemarkService;
 import de.whosfritz.railinsights.exception.JPAError;
 import de.whosfritz.railinsights.exception.JPAErrors;
+import de.whosfritz.railinsights.utils.TripUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Hibernate;
@@ -303,10 +304,14 @@ public class TripService {
     public Result<List<Trip>, JPAError> findAllByStopAndPlannedWhenAfterAndWhenBefore(Stop stop, LocalDateTime start, LocalDateTime end) {
         try {
             // Ensure that also the lazy loaded objects are loaded
-            Optional<List<Trip>> trip = tripsRepository.findAllByStopAndPlannedWhenAfterAndWhenBefore(stop, start, end);
+            Optional<List<Trip>> trip = tripsRepository.findAllByStopAndPlannedWhenAfterAndWhenBeforeOrderByPlannedWhenAsc(stop, start, end);
             for (Trip t : trip.get()) {
                 Hibernate.initialize(t.getRemarks());
             }
+
+            List<Trip> cleanedTrips = TripUtil.removeDuplicates(trip.get());
+            trip = Optional.of(cleanedTrips);
+
             return trip.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
         } catch (Exception e) {
             log.error("Error while finding trip by stop and when after and when before: " + e.getMessage() + " " + e.getCause());

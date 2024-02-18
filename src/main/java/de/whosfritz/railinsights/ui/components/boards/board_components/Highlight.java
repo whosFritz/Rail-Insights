@@ -17,19 +17,32 @@ public class Highlight extends VerticalLayout {
      * @param percentage  the percentage of the highlight
      * @param explanation the explanation of the percentage value for the highlight
      */
-    public Highlight(String title, String value, Double percentage, String explanation) {
+    public Highlight(String title, String value, Double percentage, String explanation, boolean inverted) {
         VaadinIcon icon = VaadinIcon.ARROW_UP;
         String prefix = "";
         String theme = "badge";
 
         if (percentage == 0) {
-            prefix = "±";
+            prefix = "± ";
+            icon = VaadinIcon.MINUS;
+            theme += " warning";
         } else if (percentage > 0) {
-            prefix = "+";
-            theme += " error";
+            prefix = "+ ";
+            if (inverted) {
+                icon = VaadinIcon.ARROW_UP;
+                theme += " success";
+            } else {
+                icon = VaadinIcon.ARROW_UP;
+                theme += " error";
+            }
         } else if (percentage < 0) {
-            icon = VaadinIcon.ARROW_DOWN;
-            theme += " success";
+            if (inverted) {
+                icon = VaadinIcon.ARROW_DOWN;
+                theme += " error";
+            } else {
+                icon = VaadinIcon.ARROW_DOWN;
+                theme += " success";
+            }
         }
 
         H2 h2 = new H2(title);

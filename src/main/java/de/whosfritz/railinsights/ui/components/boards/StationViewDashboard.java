@@ -17,6 +17,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.whosfritz.railinsights.ui.components.boards.board_components.Highlight;
+import de.whosfritz.railinsights.utils.DateTimeLabelFormatsUtil;
+import de.whosfritz.railinsights.utils.PercentageUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -46,6 +48,10 @@ public class StationViewDashboard extends VerticalLayout {
         double percentageDelayed = stopsPercentageDelayed - globalPercentageDelayed;
         double percentageCancelled = stopsPercentageCancelled - globalPercentageCancelled;
 
+        percentage = PercentageUtil.convertToTwoDecimalPlaces(percentage);
+        percentageDelayed = PercentageUtil.convertToTwoDecimalPlaces(percentageDelayed);
+        percentageCancelled = PercentageUtil.convertToTwoDecimalPlaces(percentageCancelled);
+
         seriesRegional.setName("Regionalverkehr");
         seriesLongDistance.setName("Fernverkehr");
         seriesTotal.setName("Gesamt");
@@ -60,9 +66,9 @@ public class StationViewDashboard extends VerticalLayout {
 
         Board board = new Board();
         board.addRow(createHighlight("Abfahrten/Ankünfte", String.valueOf(stopCount)),
-                createHighlight("Pünktliche Stopps", stopsPercentageOnTime + " %", percentage, "Pünktlichkeit im globalen Vergleich"),
-                createHighlight("Verspätete Stopps", stopsPercentageDelayed + " %", percentageDelayed, "Verspätungen im globalen Vergleich"),
-                createHighlight("Ausgefallene Stopps", stopsPercentageCancelled + " %", percentageCancelled, "Ausfälle im globalen Vergleich")
+                createHighlight("Pünktliche Stopps", stopsPercentageOnTime + " %", percentage, "Pünktlichkeit im globalen Vergleich", true),
+                createHighlight("Verspätete Stopps", stopsPercentageDelayed + " %", percentageDelayed, "Verspätungen im globalen Vergleich", false),
+                createHighlight("Ausgefallene Stopps", stopsPercentageCancelled + " %", percentageCancelled, "Ausfälle im globalen Vergleich", false)
         );
         board.addRow(createStopsOverTimeChart());
         board.addRow(createRegionalLongDistanceChart());
@@ -137,8 +143,8 @@ public class StationViewDashboard extends VerticalLayout {
         return viewEvents;
     }
 
-    private Component createHighlight(String title, String value, Double percentage, String explanation) {
-        return new Highlight(title, value, percentage, explanation);
+    private Component createHighlight(String title, String value, Double percentage, String explanation, boolean inverted) {
+        return new Highlight(title, value, percentage, explanation, inverted);
     }
 
     private Component createHighlight(String title, String value) {
@@ -148,23 +154,29 @@ public class StationViewDashboard extends VerticalLayout {
     private Component createStopsOverTimeChart() {
         HorizontalLayout header = createHeader("Stopps - Zeitverlauf", "Aufgeteilt nach Regional, Fern und Gesamtverkehr");
 
+        ChartType chartType = ChartType.COLUMN;
+
         // Chart
-        Chart chart = new Chart(ChartType.COLUMN);
+        Chart chart = new Chart(chartType);
         Configuration conf = chart.getConfiguration();
         conf.getTooltip().setValueSuffix(" Stopps");
         conf.setExporting(true);
         conf.getChart().setStyledMode(true);
 
+        Tooltip tooltip = chart.getConfiguration().getTooltip();
+        tooltip.setDateTimeLabelFormats(DateTimeLabelFormatsUtil.getCleanedDateTimeLabelFormat());
+
         XAxis xAxis = new XAxis();
         xAxis.setType(AxisType.DATETIME);
         conf.addxAxis(xAxis);
 
-        conf.getyAxis().setTitle("Values");
+        conf.getyAxis().setTitle("Anzahl der Stopps");
 
         PlotOptionsAreaspline plotOptions = new PlotOptionsAreaspline();
         plotOptions.setPointPlacement(PointPlacement.ON);
         plotOptions.setMarker(new Marker(false));
         plotOptions.setConnectNulls(false);
+        plotOptions.setStacking(Stacking.NONE);
         conf.addPlotOptions(plotOptions);
 
         conf.addSeries(seriesLongDistance);

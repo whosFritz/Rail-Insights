@@ -6,7 +6,6 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.model.DataSeries;
-import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.html.ListItem;
@@ -35,9 +34,12 @@ import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
+import de.whosfritz.railinsights.calculation.UniversalCalculator;
 import de.whosfritz.railinsights.data.dataprovider.TripDataProvider;
 import de.whosfritz.railinsights.data.dataprovider.TripFilter;
 import de.whosfritz.railinsights.data.dto.StopDto;
+import de.whosfritz.railinsights.data.dto.TripCounts;
+import de.whosfritz.railinsights.data.dto.TripStatistics;
 import de.whosfritz.railinsights.data.services.stop_services.StopService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
 import de.whosfritz.railinsights.ui.components.boards.StationViewDashboard;
@@ -49,10 +51,7 @@ import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
 
-import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 
@@ -68,6 +67,8 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
 
     private LocalDateTime whenAfter = LocalDateTime.now().minusDays(1);
     private LocalDateTime whenBefore = LocalDateTime.now();
+
+    private UniversalCalculator universalCalculator = new UniversalCalculator();
 
     public StationView() {
         addClassName("map-view");
@@ -193,16 +194,28 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         setMinWidth(100f, Unit.PERCENTAGE);
     }
 
+    /**
+     * Centers the map on a specific stop
+     *
+     * @param stop the stop to center the map on
+     */
     private void centerMapOn(StopDto stop) {
         View view = map.getView();
         view.setCenter(new Coordinate(stop.getLongitude(), stop.getLatitude()));
         view.setZoom(14);
     }
 
+    /**
+     * Scrolls to the card of a specific stop
+     * @param stop the stop to scroll to
+     */
     private void scrollToCard(StopDto stop) {
         stopToCard.get(stop).scrollIntoView();
     }
 
+    /**
+     * Centers the map on Germany and sets the default zoom level
+     */
     private void centerMapDefault() {
         View view = new View();
         view.setCenter(new Coordinate(9.588, 51.28));
@@ -210,6 +223,9 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         map.setView(view);
     }
 
+    /**
+     * Configures the map and adds the feature click listener
+     */
     private void configureMap() {
 
         this.centerMapDefault();
@@ -224,6 +240,9 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         this.updateFilter("");
     }
 
+    /**
+     * Updates the card list with the current filtered stops
+     */
     private void updateCardList() {
         cardList.removeAll();
         stopToCard.clear();
@@ -269,6 +288,11 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         }
     }
 
+    /**
+     * Creates a dashboard layout for a specific stop
+     * @param stop the stop to create the dashboard for
+     * @return the dashboard layout
+     */
     private Component createDashboardLayout(StopDto stop) {
         TripService tripService = VaadinService.getCurrent().getInstantiator().getOrCreate(TripService.class);
         StopService stopService = VaadinService.getCurrent().getInstantiator().getOrCreate(StopService.class);
@@ -281,178 +305,33 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
 
         List<Trip> tripToEvaluate = tripService.findAllByStopAndPlannedWhenAfterAndWhenBefore(fullStop, from, to).getData();
 
-        DecimalFormat df = new DecimalFormat("#.##");
-        df.setGroupingUsed(false);
-
-        double percentageCancelled = ((double) tripToEvaluate.stream().filter(trip -> {
-            if (trip.getCancelled() != null) {
-                return trip.getCancelled();
-            }
-            return false;
-        }).count() / tripToEvaluate.size());
-
-        // round up to 2 decimal places
-        percentageCancelled = (Math.round(percentageCancelled * 100.0) / 100.0) * 100;
-        String percentageCancelledFormatted = df.format(percentageCancelled);
-        percentageCancelled = Double.parseDouble(percentageCancelledFormatted);
-
-        double percentageDelayed = ((double) tripToEvaluate.stream().filter(trip -> {
-            if (trip.getCancelled() == null || !trip.getCancelled()) {
-                if (trip.getDelay() != null) {
-                    return trip.getDelay() >= 300;
-                }
-            }
-            return false;
-        }).count() / tripToEvaluate.size());
-
-        // round up to 2 decimal places
-        percentageDelayed = (Math.round(percentageDelayed * 100.0) / 100.0) * 100;
-        String percantageDelayedFormatted = df.format(percentageDelayed);
-        percentageDelayed = Double.parseDouble(percantageDelayedFormatted);
-
-        double percentageOnTime = (100 - percentageCancelled - percentageDelayed);
-        String percentageOnTimeFormatted = df.format(percentageOnTime);
-        percentageOnTime = Double.parseDouble(percentageOnTimeFormatted);
+        TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripToEvaluate);
 
         int tripCount = tripToEvaluate.size();
 
-        HashMap<LocalDate, Integer> dailyTripCounts = new HashMap<>();
-        HashMap<LocalDate, Integer> dailyTripLongDistanceCounts = new HashMap<>();
-        HashMap<LocalDate, Integer> dailyTripRegionalCounts = new HashMap<>();
+        TripCounts tripCounts = universalCalculator.countTrips(tripToEvaluate, from, to);
 
-        HashMap<LocalDateTime, Integer> hourlyTripCounts = new HashMap<>();
-        HashMap<LocalDateTime, Integer> hourlyTripLongDistanceCounts = new HashMap<>();
-        HashMap<LocalDateTime, Integer> hourlyTripRegionalCounts = new HashMap<>();
+        DataSeries dailyTripCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripCounts());
+        DataSeries dailyTripLongDistanceCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripLongDistanceCounts());
+        DataSeries dailyTripRegionalCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripRegionalCounts());
+        DataSeries hourlyTripCountSeries = universalCalculator.buildHourlyTripCountSeries(tripCounts.getHourlyTripCounts());
+        DataSeries hourlyTripLongDistanceCountSeries = universalCalculator.buildHourlyTripCountSeries(tripCounts.getHourlyTripLongDistanceCounts());
+        DataSeries hourlyTripRegionalCountSeries = universalCalculator.buildHourlyTripCountSeries(tripCounts.getHourlyTripRegionalCounts());
 
-        for (Trip trip : tripToEvaluate) {
-            LocalDateTime date;
-            if (trip.getPlannedWhen() != null) {
-                date = trip.getPlannedWhen();
-            } else if (trip.getWhen() != null) {
-                date = trip.getWhen();
-            } else {
-                date = trip.getCreatedAt();
-            }
+        DataSeries nationalRegionalSeries = universalCalculator.calculatePercentageTripRegioVsFernverkehr(tripToEvaluate);
 
-            if (date != null) {
-                LocalDate localDate = date.toLocalDate();
-                if (from.toLocalDate().until(to.toLocalDate()).getDays() > 5) {
-                    if (!dailyTripCounts.containsKey(localDate)) {
-                        dailyTripCounts.put(localDate, 0); // Füge einen neuen Eintrag hinzu, falls keiner vorhanden ist
-                    }
-                    dailyTripCounts.put(localDate, dailyTripCounts.get(localDate) + 1);
-                    if (trip.getLine().getProduct().contains("national")) {
-                        if (!dailyTripLongDistanceCounts.containsKey(localDate)) {
-                            dailyTripLongDistanceCounts.put(localDate, 0); // Füge einen neuen Eintrag hinzu, falls keiner vorhanden ist
-                        }
-                        dailyTripLongDistanceCounts.put(localDate, dailyTripLongDistanceCounts.get(localDate) + 1);
-                    } else {
-                        if (!dailyTripRegionalCounts.containsKey(localDate)) {
-                            dailyTripRegionalCounts.put(localDate, 0); // Füge einen neuen Eintrag hinzu, falls keiner vorhanden ist
-                        }
-                        dailyTripRegionalCounts.put(localDate, dailyTripRegionalCounts.get(localDate) + 1);
-                    }
-                } else {
-                    date = date.withMinute(0).withSecond(0).withNano(0);
-                    if (!hourlyTripCounts.containsKey(date)) {
-                        hourlyTripCounts.put(date, 0); // Füge einen neuen Eintrag hinzu, falls keiner vorhanden ist
-                    }
-                    hourlyTripCounts.put(date, hourlyTripCounts.get(date) + 1);
-                    if (trip.getLine().getProduct().contains("national")) {
-                        if (!hourlyTripLongDistanceCounts.containsKey(date)) {
-                            hourlyTripLongDistanceCounts.put(date, 0); // Füge einen neuen Eintrag hinzu, falls keiner vorhanden ist
-                        }
-                        hourlyTripLongDistanceCounts.put(date, hourlyTripLongDistanceCounts.get(date) + 1);
-                    } else {
-                        if (!hourlyTripRegionalCounts.containsKey(date)) {
-                            hourlyTripRegionalCounts.put(date, 0); // Füge einen neuen Eintrag hinzu, falls keiner vorhanden ist
-                        }
-                        hourlyTripRegionalCounts.put(date, hourlyTripRegionalCounts.get(date) + 1);
-                    }
-                }
-            }
-        }
-
-        DataSeries dailyTripCountSeries = new DataSeries();
-        DataSeries dailyTripLongDistanceCountSeries = new DataSeries();
-        DataSeries dailyTripRegionalCountSeries = new DataSeries();
-
-        DataSeries hourlyTripCountSeries = new DataSeries();
-        DataSeries hourlyTripLongDistanceCountSeries = new DataSeries();
-        DataSeries hourlyTripRegionalCountSeries = new DataSeries();
-
-        // check if we have hourly or daily data fill them and sort them after time
-        if (dailyTripCounts.isEmpty()) {
-            hourlyTripCounts.entrySet().stream().sorted(java.util.Map.Entry.comparingByKey()).forEach(entry -> {
-                hourlyTripCountSeries.add(new DataSeriesItem(entry.getKey().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), entry.getValue()));
-            });
-
-            hourlyTripLongDistanceCounts.entrySet().stream().sorted(java.util.Map.Entry.comparingByKey()).forEach(entry -> {
-                hourlyTripLongDistanceCountSeries.add(new DataSeriesItem(entry.getKey().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), entry.getValue()));
-            });
-
-            hourlyTripRegionalCounts.entrySet().stream().sorted(java.util.Map.Entry.comparingByKey()).forEach(entry -> {
-                hourlyTripRegionalCountSeries.add(new DataSeriesItem(entry.getKey().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), entry.getValue()));
-            });
-        } else {
-            dailyTripCounts.entrySet().stream().sorted(java.util.Map.Entry.comparingByKey()).forEach(entry -> {
-                dailyTripCountSeries.add(new DataSeriesItem(entry.getKey().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), entry.getValue()));
-            });
-
-            dailyTripLongDistanceCounts.entrySet().stream().sorted(java.util.Map.Entry.comparingByKey()).forEach(entry -> {
-                dailyTripLongDistanceCountSeries.add(new DataSeriesItem(entry.getKey().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), entry.getValue()));
-            });
-
-            dailyTripRegionalCounts.entrySet().stream().sorted(java.util.Map.Entry.comparingByKey()).forEach(entry -> {
-                dailyTripRegionalCountSeries.add(new DataSeriesItem(entry.getKey().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), entry.getValue()));
-            });
-        }
-
-        // convert the percentage values to 2 decimal places
-        double percentageNationalTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().equals("national")).toList().size()) / tripToEvaluate.size();
-        percentageNationalTrips = (Math.round(percentageNationalTrips * 100.0) / 100.0) * 100;
-        String percentageNationalTripsFormatted = df.format(percentageNationalTrips);
-        percentageNationalTrips = Double.parseDouble(percentageNationalTripsFormatted);
-
-        double percentageNationalExpressTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().equals("nationalExpress")).toList().size()) / tripToEvaluate.size();
-        percentageNationalExpressTrips = (Math.round(percentageNationalExpressTrips * 100.0) / 100.0) * 100;
-        String percentageNationalExpressTripsFormatted = df.format(percentageNationalExpressTrips);
-        percentageNationalExpressTrips = Double.parseDouble(percentageNationalExpressTripsFormatted);
-
-        double subUrbanTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().contains("suburban")).toList().size()) / tripToEvaluate.size();
-        subUrbanTrips = (Math.round(subUrbanTrips * 100.0) / 100.0) * 100;
-        String subUrbanTripsFormatted = df.format(subUrbanTrips);
-        subUrbanTrips = Double.parseDouble(subUrbanTripsFormatted);
-
-        double percentageRegionalExpressTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().equals("regionalExpress")).toList().size()) / tripToEvaluate.size();
-        percentageRegionalExpressTrips = (Math.round(percentageRegionalExpressTrips * 100.0) / 100.0) * 100;
-        String percentageRegionalExpressTripsFormatted = df.format(percentageRegionalExpressTrips);
-        percentageRegionalExpressTrips = Double.parseDouble(percentageRegionalExpressTripsFormatted);
-
-        double percentageRegionalTrips = (double) (tripToEvaluate.stream().filter(trip -> trip.getLine().getProduct().equals("regional")).toList().size()) / tripToEvaluate.size();
-        percentageRegionalTrips = (Math.round(percentageRegionalTrips * 100.0) / 100.0) * 100;
-        String percentageRegionalTripsFormatted = df.format(percentageRegionalTrips);
-        percentageRegionalTrips = Double.parseDouble(percentageRegionalTripsFormatted);
-
-        DataSeries nationalRegionalSeries = new DataSeries();
-        nationalRegionalSeries.add(new DataSeriesItem("Fernverkehr", percentageNationalTrips));
-        nationalRegionalSeries.add(new DataSeriesItem("Fernverkehr (Express)", percentageNationalExpressTrips));
-        nationalRegionalSeries.add(new DataSeriesItem("Nahverkehr (Regional)", percentageRegionalTrips));
-        nationalRegionalSeries.add(new DataSeriesItem("Nahverkehr (RegionalExpress)", percentageRegionalExpressTrips));
-        nationalRegionalSeries.add(new DataSeriesItem("Nahverkehr (S-Bahn)", subUrbanTrips));
-
-        List<Trip> topDelayedTrips = tripToEvaluate.stream().filter(trip -> trip.getDelay() != null).sorted((o1, o2) -> o2.getDelay().compareTo(o1.getDelay())).limit(10).toList();
+        List<Trip> topDelayedTrips = universalCalculator.calculateTopDelayedTripsOrderedByDelay(tripToEvaluate, 10);
 
         StationViewDashboard stationViewDashboard;
 
-        if (dailyTripCounts.isEmpty()) {
-            stationViewDashboard = new StationViewDashboard(tripCount, percentageOnTime, dataProviderService.getStopsPercentageOnTime(),
-                    percentageDelayed, dataProviderService.getStopsPercentageDelayed(), percentageCancelled,
+        if (dailyTripCountSeries.getData().isEmpty()) {
+            stationViewDashboard = new StationViewDashboard(tripCount, tripStatistics.getPercentageOnTime(), dataProviderService.getStopsPercentageOnTime(),
+                    tripStatistics.getPercentageDelayed(), dataProviderService.getStopsPercentageDelayed(), tripStatistics.getPercentageCancelled(),
                     dataProviderService.getStopsPercentageCancelled(), hourlyTripRegionalCountSeries,
                     hourlyTripLongDistanceCountSeries, hourlyTripCountSeries, nationalRegionalSeries, topDelayedTrips);
         } else {
-            stationViewDashboard = new StationViewDashboard(tripCount, percentageOnTime, dataProviderService.getStopsPercentageOnTime(),
-                    percentageDelayed, dataProviderService.getStopsPercentageDelayed(), percentageCancelled,
+            stationViewDashboard = new StationViewDashboard(tripCount, tripStatistics.getPercentageOnTime(), dataProviderService.getStopsPercentageOnTime(),
+                    tripStatistics.getPercentageDelayed(), dataProviderService.getStopsPercentageDelayed(), tripStatistics.getPercentageCancelled(),
                     dataProviderService.getStopsPercentageCancelled(),
                     dailyTripRegionalCountSeries, dailyTripLongDistanceCountSeries, dailyTripCountSeries,
                     nationalRegionalSeries, topDelayedTrips);

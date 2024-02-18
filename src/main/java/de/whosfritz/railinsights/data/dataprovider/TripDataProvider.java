@@ -35,7 +35,7 @@ public class TripDataProvider extends AbstractBackEndDataProvider<Trip, TripFilt
         return sortOrders.stream().map(sortOrder -> {
             Comparator<Trip> comparator = tripFieldComparator(sortOrder.getSorted());
 
-            if (sortOrder.getDirection() == SortDirection.DESCENDING) {
+            if (sortOrder.getDirection() == SortDirection.ASCENDING) {
                 comparator = comparator.reversed();
             }
 

@@ -40,7 +40,7 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
 
     Optional<List<Trip>> findAllByStop(Stop stop);
 
-    Optional<List<Trip>> findAllByStopAndPlannedWhenAfterAndWhenBefore(Stop stop, LocalDateTime whenAfter, LocalDateTime whenBefore);
+    Optional<List<Trip>> findAllByStopAndPlannedWhenAfterAndWhenBeforeOrderByPlannedWhenAsc(Stop stop, LocalDateTime whenAfter, LocalDateTime whenBefore);
 
     Optional<List<Trip>> findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(
             LocalDateTime plannedWhenAfter,

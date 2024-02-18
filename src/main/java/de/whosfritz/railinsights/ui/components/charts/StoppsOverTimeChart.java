@@ -2,19 +2,20 @@ package de.whosfritz.railinsights.ui.components.charts;
 
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
-import com.vaadin.flow.component.charts.model.style.SolidColor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import de.whosfritz.railinsights.ui.color_scheme.ColorScheme;
+import de.whosfritz.railinsights.utils.DateTimeLabelFormatsUtil;
 
 public class StoppsOverTimeChart extends Div {
     public StoppsOverTimeChart(DataSeries dataSeries) {
         Chart chart = new Chart(ChartType.AREA);
 
         Configuration configuration = chart.getConfiguration();
-
         configuration.setTitle("Stopps - Zeitverlauf");
         configuration.setSubTitle("Zeitlicher Verlauf der erfassten Stopps");
+
+        Tooltip tooltip = configuration.getTooltip();
+        tooltip.setDateTimeLabelFormats(DateTimeLabelFormatsUtil.getCleanedDateTimeLabelFormat());
 
         YAxis yAxis = configuration.getyAxis();
         yAxis.setTitle("Anzahl Stopps");
@@ -24,10 +25,6 @@ public class StoppsOverTimeChart extends Div {
         xAxis.setTitle("Zeit");
 
         configuration.getTooltip().setValueSuffix(" Stopps");
-
-        PlotOptionsSeries plotOptionsSeries = new PlotOptionsSeries();
-        plotOptionsSeries.setColor(new SolidColor(ColorScheme.INFO.getColor()));
-        configuration.setPlotOptions(plotOptionsSeries);
 
         configuration.addSeries(dataSeries);
 
