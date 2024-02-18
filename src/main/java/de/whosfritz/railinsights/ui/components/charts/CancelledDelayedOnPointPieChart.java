@@ -10,6 +10,7 @@ public class CancelledDelayedOnPointPieChart extends Div {
         Chart chart = new Chart(ChartType.PIE);
 
         Configuration conf = chart.getConfiguration();
+        conf.getChart().setStyledMode(true);
 
         conf.setTitle("Übersicht ausgefallener, verspäteter und pünktlicher Stopps");
         conf.setSubTitle("Statistik umfasst alle bisher erfassten Stopps");
