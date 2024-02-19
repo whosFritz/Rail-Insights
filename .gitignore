@@ -38,3 +38,5 @@ build/
 /.flow-node-tasks.lock
 /*.log*
 /src/main/bundles/
+/package.json
+/package-lock.json
