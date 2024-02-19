@@ -19,7 +19,9 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import de.whosfritz.railinsights.ui.components.DarkModeToggle;
+import de.whosfritz.railinsights.ui.color_scheme.ThemeUtil;
+import de.whosfritz.railinsights.ui.color_scheme.ThemeVariant;
+import de.whosfritz.railinsights.ui.components.DarkModeToggle3;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
@@ -48,13 +50,25 @@ public class MainView extends AppLayout {
 
         HorizontalLayout wrapper2 = new HorizontalLayout();
         wrapper2.addClassName(LumoUtility.Margin.XSMALL);
-        DarkModeToggle myToggleButton = new DarkModeToggle();
+        DarkModeToggle3 darkModeToggle3 = new DarkModeToggle3();
         wrapper2.add(createUpdateBadge());
-        wrapper2.add(myToggleButton);
+        wrapper2.add(darkModeToggle3);
         addToDrawer(scroller);
         addToNavbar(wrapper, wrapper2);
         setPrimarySection(Section.DRAWER);
         getCookieConsentBanner();
+        getCookieAndSetPreferredTheme();
+    }
+
+    private void getCookieAndSetPreferredTheme() {
+        Cookie[] cookies = VaadinService.getCurrentRequest().getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("RlThemeCookie")) {
+                if (cookie.getValue().equals("dark")) {
+                    ThemeUtil.selectThemeVariant(ThemeVariant.DARK);
+                }
+            }
+        }
     }
 
     /**
