@@ -82,7 +82,7 @@ public class CSVExporter {
             return szentraleService.getAllSzentrales();
         } else if (selectedTable.equals("Fahrplanbüro")) {
             return timeTableOfficeService.getAllTimeTableOffices();
-        } else if (selectedTable.equals("Reisen")) {
+        } else if (selectedTable.equals("Fahrten")) {
             return tripService.getAllTrips();
         }
         return null;

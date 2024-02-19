@@ -1,15 +1,21 @@
 package de.whosfritz.railinsights.ui.pages;
 
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import de.whosfritz.railinsights.data.services.csv_export_service.CSVExporter;
+import de.whosfritz.railinsights.ui.components.dialogs.GeneralRailInsightsDialog;
 import de.whosfritz.railinsights.ui.layout.MainView;
 import org.vaadin.firitin.components.DynamicFileDownloader;
 
@@ -23,10 +29,8 @@ import java.util.stream.Collectors;
 @Route(value = "csv-export", layout = MainView.class)
 
 public class CsvExportView extends VerticalLayout {
-    private final CSVExporter csvExporter;
 
     public CsvExportView(CSVExporter csvExporter) {
-        this.csvExporter = csvExporter;
 
         FormLayout comboboxLayout = new FormLayout();
 
@@ -49,7 +53,7 @@ public class CsvExportView extends VerticalLayout {
                 "Haltestelle",
                 "Zentrale",
                 "Fahrplanbüro",
-                "Reisen"
+                "Fahrten"
         );
 
         DateTimePicker startDateTimePicker = new DateTimePicker("Start Date");
@@ -61,6 +65,9 @@ public class CsvExportView extends VerticalLayout {
         });
 
         DynamicFileDownloader dynamicFileDownloader = new DynamicFileDownloader(out -> {
+            if (tableSelection.getValue() == null || tableSelection.getValue().isEmpty()) {
+                return;
+            }
             PrintWriter writer = new PrintWriter(out);
             Class<?> clazz = null;
             Set<String> excludedFields = csvExporter.getExcludedFields(tableSelection.getValue());
@@ -89,22 +96,57 @@ public class CsvExportView extends VerticalLayout {
             }
             writer.close();
         });
-        dynamicFileDownloader.setText("Download CSV");
+        dynamicFileDownloader.setDisableOnClick(true);
+        dynamicFileDownloader.addDownloadFinishedListener(e -> new Thread(() -> {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+            dynamicFileDownloader.getUI().ifPresent(ui -> ui.access(() -> dynamicFileDownloader.setEnabled(true)));
+        }).start());
+
+        UI.getCurrent().setPollInterval(500);
+
+        dynamicFileDownloader.setEnabled(false);
         dynamicFileDownloader.asButton();
+        dynamicFileDownloader.getButton().setIcon(new Icon(VaadinIcon.DOWNLOAD));
 
         FormLayout datumFormLayout = new FormLayout();
+        datumFormLayout.setVisible(false);
 
         tableSelection.addValueChangeListener(event -> {
             String selectedTable = event.getValue();
             dynamicFileDownloader.setFileName(LocalDateTime.now() + "_" + selectedTable + ".csv");
-            datumFormLayout.setVisible(event.getValue().equals("Reisen"));
+            datumFormLayout.setVisible(event.getValue() != null && event.getValue().equals("Fahrten"));
+            dynamicFileDownloader.setEnabled(event.getValue() != null);
         });
 
         comboboxLayout.add(tableSelection);
 
         datumFormLayout.add(startDateTimePicker, endDateTimePicker);
 
+        Paragraph infoParagraph = new Paragraph("Diese Seite ermöglicht es, Daten aus der Datenbank als CSV-Datei herunterzuladen." +
+                " Wähle dazu eine Tabelle aus und klicke auf den Download-Button. ");
 
+        Button infoButton = new Button("Informationen");
+        infoButton.setIcon(new Icon(VaadinIcon.INFO_CIRCLE));
+        infoButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SMALL);
+        infoButton.setTooltipText("Klicke hier für mehr Informationen zu dieser Seite.");
+        infoButton.setAriaLabel("Informationen");
+        infoButton.addClickListener(e -> {
+            HorizontalLayout infoLayout = new HorizontalLayout(new VerticalLayout(infoParagraph));
+            infoLayout.setWidth(100f, Unit.PERCENTAGE);
+            infoLayout.setMaxWidth(100f, Unit.PERCENTAGE);
+
+            GeneralRailInsightsDialog dialog = new GeneralRailInsightsDialog();
+            dialog.setHeaderTitle("Informationen zur Seite");
+            dialog.add(infoLayout);
+            dialog.add();
+            dialog.open();
+        });
+
+        add(infoButton);
         add(comboboxLayout);
         add(datumFormLayout);
         add(new FormLayout(dynamicFileDownloader));

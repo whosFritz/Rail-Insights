@@ -208,6 +208,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
 
     /**
      * Scrolls to the card of a specific stop
+     *
      * @param stop the stop to scroll to
      */
     private void scrollToCard(StopDto stop) {
@@ -291,6 +292,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
 
     /**
      * Creates a dashboard layout for a specific stop
+     *
      * @param stop the stop to create the dashboard for
      * @return the dashboard layout
      */
@@ -425,7 +427,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         // inform the user, that mobile devices are currently not supported if he is using one
         if (UI.getCurrent().getSession().getBrowser().isAndroid() || UI.getCurrent().getSession().getBrowser().isIPhone()) {
-            Notification mobileDeviceNotification = NotificationFactory.createwNotification(NotificationTypes.CRITICAL,
+            Notification mobileDeviceNotification = NotificationFactory.createNotification(NotificationTypes.CRITICAL,
                     "Mobile Geräte werden aktuell nicht unterstützt. Es kommt zu Darstellungsproblemen. Bitte benutze einen Desktop-Browser.");
             mobileDeviceNotification.open();
         }
