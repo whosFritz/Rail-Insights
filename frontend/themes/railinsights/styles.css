@@ -4,7 +4,7 @@ html {
     --lumo-primary-text-color: rgb(236, 0, 22);
     --lumo-primary-color-50pct: rgba(236, 0, 22, 0.5);
     --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
-    --lumo-error-text-color: #740009;
+    --lumo-error-text-color: #ffffff;
     --lumo-error-color-50pct: #740009;
     --lumo-error-color-10pct: #740009;
     --lumo-success-text-color: rgb(64, 131, 53);
@@ -48,10 +48,10 @@ html {
     --lumo-tint-70pct: rgba(252, 245, 255, 0.7);
     --lumo-tint-80pct: rgba(252, 245, 255, 0.8);
     --lumo-tint-90pct: rgba(252, 245, 255, 0.9);
-    --lumo-primary-text-color: rgb(236, 0, 22);
+    --lumo-primary-text-color: rgb(255, 255, 255);
     --lumo-primary-color-50pct: rgba(236, 0, 22, 0.5);
     --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
-    --lumo-error-text-color: rgb(255, 56, 103);
+    --lumo-error-text-color: rgb(255, 255, 255);
     --lumo-error-color-50pct: rgba(255, 56, 103, 0.5);
     --lumo-error-color-10pct: rgba(255, 56, 103, 0.1);
     --lumo-success-text-color: rgb(99, 166, 21);

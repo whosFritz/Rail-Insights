@@ -8,8 +8,11 @@ import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.olech2412.adapter.dbadapter.request.parameters.Parameter;
 import de.olech2412.adapter.dbadapter.request.parameters.RequestParametersNames;
+import de.whosfritz.railinsights.data.repositories.station_repositories.StationRepository;
+import de.whosfritz.railinsights.data.services.LineService;
 import de.whosfritz.railinsights.data.services.stop_services.StopService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
+import de.whosfritz.railinsights.ui.services.DataProviderService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -28,7 +31,16 @@ public class DataDispatcher {
     StopService stopService;
 
     @Autowired
+    StationRepository stationRepository;
+
+    @Autowired
     TripService tripService;
+
+    @Autowired
+    LineService lineService;
+
+    @Autowired
+    DataProviderService dataProviderService;
 
     /**
      * Fetch all departures for all stops
@@ -62,7 +74,7 @@ public class DataDispatcher {
                             .add(RequestParametersNames.SUBWAY, false)
                             .add(RequestParametersNames.TAXI, false)
                             .add(RequestParametersNames.RESULTS, 9999)
-                            .add(RequestParametersNames.DURATION, 90)
+                            .add(RequestParametersNames.DURATION, 60)
                             .build());
 
                     Result<Trip[], Error> departuresByStopId = db_adapter_v6.getDeparturesByStopId(Math.toIntExact(stops.get(i).getStopId()), new Parameter.ParameterBuilder()
@@ -77,7 +89,7 @@ public class DataDispatcher {
                             .add(RequestParametersNames.SUBWAY, false)
                             .add(RequestParametersNames.TAXI, false)
                             .add(RequestParametersNames.RESULTS, 9999)
-                            .add(RequestParametersNames.DURATION, 90)
+                            .add(RequestParametersNames.DURATION, 60)
                             .build());
 
                     if (departuresByStopId.isSuccess() && arrivalsByStopId.isSuccess()) {

@@ -16,8 +16,10 @@ import de.whosfritz.railinsights.data.services.stop_services.StopService;
 import de.whosfritz.railinsights.data.services.trip_services.sub.RemarkService;
 import de.whosfritz.railinsights.exception.JPAError;
 import de.whosfritz.railinsights.exception.JPAErrors;
+import de.whosfritz.railinsights.utils.TripUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -90,13 +92,35 @@ public class TripService {
         }
     }
 
+    @Transactional
+    public Result<Trip, JPAError> updateTrip(Trip trip) {
+        try {
+            Trip updatedTrip = tripsRepository.save(trip);
+            return Result.success(updatedTrip);
+        } catch (Exception e) {
+            log.error("Error while updating trip: " + e.getMessage() + " " + e.getCause());
+            log.error("Trip: " + trip.toString());
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
+    }
+
     /**
      * Returns all {@link Trip} objects.
      *
      * @return all trips
      */
-    public Iterable<Trip> getAllTrips() {
+    public List<Trip> getAllTrips() {
         return tripsRepository.findAll();
+    }
+
+    /**
+     * Returns all {@link Trip} objects with the given stop.
+     *
+     * @param stop the stop to search for
+     * @return all trips with the given stop
+     */
+    public List<Trip> getAllTripsByStop(Stop stop) {
+        return tripsRepository.findAllByStop(stop).orElse(null);
     }
 
     /**
@@ -274,7 +298,53 @@ public class TripService {
             log.error("Trip: " + trip.toString());
             throw e;
         }
+    }
 
+    @Transactional
+    public Result<List<Trip>, JPAError> findAllByStopAndPlannedWhenAfterAndWhenBefore(Stop stop, LocalDateTime start, LocalDateTime end) {
+        try {
+            // Ensure that also the lazy loaded objects are loaded
+            Optional<List<Trip>> trip = tripsRepository.findAllByStopAndPlannedWhenAfterAndWhenBeforeOrderByPlannedWhenAsc(stop, start, end);
+            for (Trip t : trip.get()) {
+                Hibernate.initialize(t.getRemarks());
+            }
 
+            List<Trip> cleanedTrips = TripUtil.removeDuplicates(trip.get());
+            trip = Optional.of(cleanedTrips);
+
+            return trip.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
+        } catch (Exception e) {
+            log.error("Error while finding trip by stop and when after and when before: " + e.getMessage() + " " + e.getCause());
+            log.error("Stop: " + stop.toString());
+            log.error("Start: " + start.toString());
+            log.error("End: " + end.toString());
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
+    }
+
+    @Transactional
+    public Result<List<Trip>, JPAError> findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(LocalDateTime plannedWhenAfter, LocalDateTime plannedWhenBefore, String fahrtNr) {
+        try {
+            Optional<List<Trip>> trip = tripsRepository.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(plannedWhenAfter, plannedWhenBefore, "2178");
+            return trip.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
+        } catch (Exception e) {
+            log.error("Error while finding trip by planned when is after and planned when is before and line fahrt nr: " + e.getMessage() + " " + e.getCause());
+            log.error("Planned when after: " + plannedWhenAfter.toString());
+            log.error("Planned when before: " + plannedWhenBefore.toString());
+            log.error("FahrtNr: " + fahrtNr);
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
+    }
+
+    @Transactional
+    public Result<List<Trip>, JPAError> findAllByStop(Stop stop) {
+        try {
+            Optional<List<Trip>> trip = tripsRepository.findAllByStop(stop);
+            return trip.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
+        } catch (Exception e) {
+            log.error("Error while finding trip by stop: " + e.getMessage() + " " + e.getCause());
+            log.error("Stop: " + stop.toString());
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
     }
 }

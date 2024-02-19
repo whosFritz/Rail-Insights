@@ -27,9 +27,11 @@ public class RailInsightsApplication implements AppShellConfigurator {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(RailInsightsApplication.class, args);
 
+        // Fetch the data
         DataDispatcher dataDispatcher = context.getBean(DataDispatcher.class);
         dataDispatcher.fetchData();
 
+        // Load the data to the UI
         DataProviderService dataProviderService = context.getBean(DataProviderService.class);
         dataProviderService.calculateData();
     }

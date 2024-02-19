@@ -71,7 +71,7 @@ public class LineService {
      *
      * @return all lines
      */
-    public Iterable<Line> getAllLines() {
+    public List<Line> getAllLines() {
         return lineRepository.findAll();
     }
 

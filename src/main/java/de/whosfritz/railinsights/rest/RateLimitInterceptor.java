@@ -15,7 +15,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
     private static final long MAX_REQUESTS_PER_MINUTE = 4;
     private static final long ONE_MINUTE_MILLIS = TimeUnit.MINUTES.toMillis(1);
-    private ConcurrentHashMap<String, Long> requestCounts = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Long> requestCounts = new ConcurrentHashMap<>();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
