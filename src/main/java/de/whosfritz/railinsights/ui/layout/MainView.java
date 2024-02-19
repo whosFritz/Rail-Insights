@@ -6,7 +6,10 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -79,7 +82,7 @@ public class MainView extends AppLayout {
                 " der Webseite. Durch Klick auf Akzeptieren sind Sie damit einverstanden." +
                 " Mehr Informationen finden Sie in unserer "
         );
-        Anchor datenschutzLink = new Anchor("/datenschutzerklaerung", "Datenschutzerklärung.", AnchorTarget.BLANK);
+        Anchor datenschutzLink = new Anchor("/datenschutzerklaerung", "Datenschutzerklärung.");
         Paragraph text2 = new Paragraph("Sie können Ihre Auswahl jederzeit unter Ihren Browser-Einstellungen widerrufen oder anpassen.");
         wrapper.add(text1, datenschutzLink, text2);
         wrapper.addClassName(LumoUtility.Padding.MEDIUM);

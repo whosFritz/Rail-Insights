@@ -3,8 +3,9 @@ package de.whosfritz.railinsights.ui.pages;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
+import de.whosfritz.railinsights.ui.layout.MainView;
 
-@Route(value = "datenschutzerklaerung")
+@Route(value = "datenschutzerklaerung", layout = MainView.class)
 public class DatenSchutzerklaerung extends VerticalLayout {
 
     public DatenSchutzerklaerung() {

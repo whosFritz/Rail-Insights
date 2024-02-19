@@ -1,0 +1,17 @@
+.dashboard-railinsights vaadin-board-row > * {
+    border-bottom: 1px solid var(--lumo-contrast-10pct);
+    border-right: 1px solid var(--lumo-contrast-10pct);
+}
+
+.dashboard-railinsights vaadin-board-row.small > * {
+    border-right: none;
+}
+
+.dashboard-railinsights vaadin-board-row.medium > *:nth-child(even),
+.dashboard-railinsights vaadin-board-row.medium > *:only-child {
+    border-right: none;
+}
+
+.dashboard-railinsights vaadin-board-row.large > *:last-child {
+    border-right: none;
+}
