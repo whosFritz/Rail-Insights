@@ -21,8 +21,7 @@ import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import de.whosfritz.railinsights.ui.color_scheme.ThemeUtil;
 import de.whosfritz.railinsights.ui.color_scheme.ThemeVariant;
-import de.whosfritz.railinsights.ui.components.DarkModeToggle;
-import de.whosfritz.railinsights.ui.components.DarkModeToggle2;
+import de.whosfritz.railinsights.ui.components.DarkModeToggle3;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
@@ -51,10 +50,9 @@ public class MainView extends AppLayout {
 
         HorizontalLayout wrapper2 = new HorizontalLayout();
         wrapper2.addClassName(LumoUtility.Margin.XSMALL);
-        DarkModeToggle myToggleButton = new DarkModeToggle();
-        DarkModeToggle2 darkModeToggle2 = new DarkModeToggle2();
+        DarkModeToggle3 darkModeToggle3 = new DarkModeToggle3();
         wrapper2.add(createUpdateBadge());
-        wrapper2.add(darkModeToggle2);
+        wrapper2.add(darkModeToggle3);
         addToDrawer(scroller);
         addToNavbar(wrapper, wrapper2);
         setPrimarySection(Section.DRAWER);
