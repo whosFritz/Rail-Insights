@@ -2,13 +2,12 @@ package de.whosfritz.railinsights.ui.layout;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -103,9 +102,30 @@ public class MainView extends AppLayout {
         VerticalLayout wrapper = new VerticalLayout();
         SideNav mainSideNav = getMainSideNav();
         SideNav subSideNav = getSubSideNav();
-        wrapper.add(mainSideNav, subSideNav);
+        wrapper.add(mainSideNav, createDrawerContent(), subSideNav);
         wrapper.setSizeFull();
         return wrapper;
+    }
+
+    private Component createDrawerContent() {
+        VerticalLayout iconContent = new VerticalLayout();
+        Image logo = new Image(
+                getLogoSrc(ThemeUtil.getCurrentThemeVariant()), "Dynamic Theme Demo logo");
+        ThemeUtil.addThemeChangedListener(
+                UI.getCurrent(),
+                e -> logo.setSrc(getLogoSrc(e.getThemeVariant()))
+        );
+        logo.setWidth(180, Unit.PIXELS);
+        iconContent.setSizeFull();
+        iconContent.add(logo);
+        return iconContent;
+    }
+
+    private String getLogoSrc(ThemeVariant themeVariant) {
+        if (themeVariant == ThemeVariant.DARK) {
+            return "images/darkmode.png";
+        }
+        return "images/lightmode.png";
     }
 
     /**
@@ -162,7 +182,6 @@ public class MainView extends AppLayout {
                 createNavItem("Verbindungsprognose", "/verbindungsprognose", VaadinIcon.TIME_BACKWARD.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("CSV-Export", "/csv-export", LineAwesomeIcon.FILE_CSV_SOLID.create(), LumoUtility.FontSize.MEDIUM)
         );
-        mainSideNav.setSizeFull();
         return mainSideNav;
     }
 
