@@ -2,7 +2,6 @@ package de.whosfritz.railinsights.ui.layout;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
@@ -20,7 +19,10 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import de.whosfritz.railinsights.ui.color_scheme.ThemeUtil;
+import de.whosfritz.railinsights.ui.color_scheme.ThemeVariant;
 import de.whosfritz.railinsights.ui.components.DarkModeToggle;
+import de.whosfritz.railinsights.ui.components.DarkModeToggle2;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
@@ -50,21 +52,22 @@ public class MainView extends AppLayout {
         HorizontalLayout wrapper2 = new HorizontalLayout();
         wrapper2.addClassName(LumoUtility.Margin.XSMALL);
         DarkModeToggle myToggleButton = new DarkModeToggle();
+        DarkModeToggle2 darkModeToggle2 = new DarkModeToggle2();
         wrapper2.add(createUpdateBadge());
-        wrapper2.add(myToggleButton);
+        wrapper2.add(darkModeToggle2);
         addToDrawer(scroller);
         addToNavbar(wrapper, wrapper2);
         setPrimarySection(Section.DRAWER);
         getCookieConsentBanner();
-        getCookieAndSetPreferedTheme();
+        getCookieAndSetPreferredTheme();
     }
 
-    private void getCookieAndSetPreferedTheme() {
+    private void getCookieAndSetPreferredTheme() {
         Cookie[] cookies = VaadinService.getCurrentRequest().getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("RlThemeCookie")) {
                 if (cookie.getValue().equals("dark")) {
-                    UI.getCurrent().getElement().setAttribute("theme", "dark");
+                    ThemeUtil.selectThemeVariant(ThemeVariant.DARK);
                 }
             }
         }

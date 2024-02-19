@@ -23,8 +23,6 @@ public class DarkModeToggle extends VerticalLayout {
         toggleGroup.setValue(Direction.LIGHT);
         toggleGroup.addValueChangeListener(this::valueChanged);
         add(toggleGroup);
-
-
     }
 
     private void changeThemeAndIcon() {
@@ -35,6 +33,8 @@ public class DarkModeToggle extends VerticalLayout {
                 case LIGHT -> false;
                 case DARK -> true;
             });
+
+
             Cookie cookie = new Cookie("RlThemeCookie", "light");
             cookie.setMaxAge(60 * 60 * 24 * 365);
             cookie.setPath("/");
@@ -46,6 +46,8 @@ public class DarkModeToggle extends VerticalLayout {
                 case LIGHT -> true;
                 case DARK -> false;
             });
+
+
             Cookie cookie = new Cookie("RlThemeCookie", "dark");
             cookie.setMaxAge(60 * 60 * 24 * 365);
             cookie.setPath("/");
