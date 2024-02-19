@@ -94,6 +94,7 @@
             <artifactId>viritin</artifactId>
             <version>2.7.3</version>
         </dependency>
+        <dependency>
             <groupId>com.vaadin.componentfactory</groupId>
             <artifactId>togglebutton</artifactId>
             <version>3.0.0</version>
