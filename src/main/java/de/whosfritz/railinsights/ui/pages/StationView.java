@@ -304,7 +304,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
 
         Stop fullStop = stopService.findStopByStopId(Long.valueOf(stop.getStopId())).getData();
 
-        List<Trip> tripToEvaluate = tripService.findAllByStopAndPlannedWhenAfterAndWhenBefore(fullStop, from, to).getData();
+        List<Trip> tripToEvaluate = tripService.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(fullStop, from, to).getData();
 
         TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripToEvaluate);
 
