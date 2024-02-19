@@ -323,6 +323,27 @@ public class TripService {
     }
 
     @Transactional
+    public Result<List<Trip>, JPAError> findAllByPlannedWhenAfterAndPlannedWhenBefore(LocalDateTime start, LocalDateTime end) {
+        try {
+            // Ensure that also the lazy loaded objects are loaded
+            Optional<List<Trip>> trip = tripsRepository.findAllByPlannedWhenAfterAndPlannedWhenBefore(start, end);
+            for (Trip t : trip.get()) {
+                Hibernate.initialize(t.getRemarks());
+            }
+
+            List<Trip> cleanedTrips = TripUtil.removeDuplicates(trip.get());
+            trip = Optional.of(cleanedTrips);
+
+            return trip.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
+        } catch (Exception e) {
+            log.error("Error while finding trip by stop and when after and when before: " + e.getMessage() + " " + e.getCause());
+            log.error("Start: " + start.toString());
+            log.error("End: " + end.toString());
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
+    }
+
+    @Transactional
     public Result<List<Trip>, JPAError> findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(LocalDateTime plannedWhenAfter, LocalDateTime plannedWhenBefore, String fahrtNr) {
         try {
             Optional<List<Trip>> trip = tripsRepository.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(plannedWhenAfter, plannedWhenBefore, "2178");

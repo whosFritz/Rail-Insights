@@ -71,7 +71,7 @@ public class CsvExportView extends VerticalLayout {
             PrintWriter writer = new PrintWriter(out);
             Class<?> clazz = null;
             Set<String> excludedFields = csvExporter.getExcludedFields(tableSelection.getValue());
-            for (Object x : csvExporter.getItems(tableSelection.getValue())) {
+            for (Object x : csvExporter.getItems(tableSelection.getValue(), startDateTimePicker.getValue(), endDateTimePicker.getValue())) {
                 if (clazz == null) {
                     clazz = x.getClass();
                     Field[] fields = clazz.getDeclaredFields();

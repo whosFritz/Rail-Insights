@@ -10,6 +10,7 @@ import de.whosfritz.railinsights.data.services.trip_services.TripService;
 import de.whosfritz.railinsights.data.services.trip_services.sub.RemarkService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -51,7 +52,7 @@ public class CSVExporter {
         this.tripService = tripService;
     }
 
-    public Iterable<?> getItems(String selectedTable) {
+    public Iterable<?> getItems(String selectedTable, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         if (selectedTable.equals("Adressen")) {
             return addressService.getAllAddresses();
         } else if (selectedTable.equals("Geographische Koordinaten")) {
@@ -83,7 +84,8 @@ public class CSVExporter {
         } else if (selectedTable.equals("Fahrplanbüro")) {
             return timeTableOfficeService.getAllTimeTableOffices();
         } else if (selectedTable.equals("Fahrten")) {
-            return tripService.getAllTrips();
+            Iterable<?> trips = tripService.findAllByPlannedWhenAfterAndPlannedWhenBefore(startDateTime, endDateTime).getData();
+            return trips;
         }
         return null;
     }
