@@ -78,7 +78,7 @@ public class CsvExportView extends VerticalLayout {
                     String fieldNames = Arrays.stream(fields)
                             .map(Field::getName)
                             .filter(name -> !excludedFields.contains(name)) // Exclude fields
-                            .collect(Collectors.joining(","));
+                            .collect(Collectors.joining(";"));
                     writer.println(fieldNames);
                 }
                 String fieldValues = Arrays.stream(clazz.getDeclaredFields())
@@ -91,7 +91,7 @@ public class CsvExportView extends VerticalLayout {
                                 return ""; // Handle exception appropriately
                             }
                         })
-                        .collect(Collectors.joining(","));
+                        .collect(Collectors.joining(";"));
                 writer.println(fieldValues);
             }
             writer.close();
