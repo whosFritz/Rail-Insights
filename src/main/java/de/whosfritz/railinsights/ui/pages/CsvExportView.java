@@ -7,7 +7,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -34,8 +33,6 @@ public class CsvExportView extends VerticalLayout {
 
         FormLayout comboboxLayout = new FormLayout();
 
-        Grid<Object> grid = new Grid<>();
-        grid.setSizeFull();
         ComboBox<String> tableSelection = new ComboBox<>("Tabellen");
         tableSelection.setItems(
                 "Adressen",
@@ -59,10 +56,6 @@ public class CsvExportView extends VerticalLayout {
         DateTimePicker startDateTimePicker = new DateTimePicker("Start Date");
 
         DateTimePicker endDateTimePicker = new DateTimePicker("End Date");
-        Button searchButton = new Button("Search");
-        searchButton.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
-        searchButton.addClickListener(e -> {
-        });
 
         DynamicFileDownloader dynamicFileDownloader = new DynamicFileDownloader(out -> {
             if (tableSelection.getValue() == null || tableSelection.getValue().isEmpty()) {
@@ -117,9 +110,11 @@ public class CsvExportView extends VerticalLayout {
 
         tableSelection.addValueChangeListener(event -> {
             String selectedTable = event.getValue();
+
             dynamicFileDownloader.setFileName(LocalDateTime.now() + "_" + selectedTable + ".csv");
-            datumFormLayout.setVisible(event.getValue() != null && event.getValue().equals("Fahrten"));
             dynamicFileDownloader.setEnabled(event.getValue() != null);
+
+            datumFormLayout.setVisible(event.getValue() != null && event.getValue().equals("Fahrten"));
         });
 
         comboboxLayout.add(tableSelection);
@@ -150,8 +145,5 @@ public class CsvExportView extends VerticalLayout {
         add(comboboxLayout);
         add(datumFormLayout);
         add(new FormLayout(dynamicFileDownloader));
-        add(searchButton);
-        add(grid);
-
     }
 }

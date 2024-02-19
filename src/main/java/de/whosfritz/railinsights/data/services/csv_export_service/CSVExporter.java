@@ -84,8 +84,7 @@ public class CSVExporter {
         } else if (selectedTable.equals("Fahrplanbüro")) {
             return timeTableOfficeService.getAllTimeTableOffices();
         } else if (selectedTable.equals("Fahrten")) {
-            Iterable<?> trips = tripService.findAllByPlannedWhenAfterAndPlannedWhenBefore(startDateTime, endDateTime).getData();
-            return trips;
+            return tripService.findAllByPlannedWhenAfterAndPlannedWhenBefore(startDateTime, endDateTime).getData();
         }
         return null;
     }
@@ -104,8 +103,6 @@ public class CSVExporter {
         tableExclusions.put("Station", new HashSet<>(Arrays.asList("ril100Identifiers", "stop")));
         tableExclusions.put("Zentrale", new HashSet<>(Arrays.asList("stations")));
         tableExclusions.put("Fahrplanbüro", new HashSet<>(Arrays.asList("stations")));
-
-
         return tableExclusions.getOrDefault(tableName, new HashSet<>());
     }
 
