@@ -10,6 +10,8 @@ import de.whosfritz.railinsights.data.services.trip_services.TripService;
 import de.whosfritz.railinsights.data.services.trip_services.sub.RemarkService;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+
 @Service
 public class CSVExporter {
 
@@ -49,46 +51,60 @@ public class CSVExporter {
         this.tripService = tripService;
     }
 
-    // ... rest of the class
-
-
     public Iterable<?> getItems(String selectedTable) {
-        if (selectedTable.equals("Address")) {
+        if (selectedTable.equals("Adressen")) {
             return addressService.getAllAddresses();
-        } else if (selectedTable.equals("GeographicCoordinates")) {
+        } else if (selectedTable.equals("Geographische Koordinaten")) {
             return geographicCoordinatesService.getAllGeographicCoordinates();
-        } else if (selectedTable.equals("Line")) {
+        } else if (selectedTable.equals("Linie")) {
             return lineService.getAllLines();
-        } else if (selectedTable.equals("Operator")) {
-            System.out.println("OperatorService.getAllOperators()");
-            Iterable<?> allOperators = operatorService.getAllOperators();
-            return allOperators;
-        } else if (selectedTable.equals("ProductLine")) {
+        } else if (selectedTable.equals("Betreiber")) {
+            return operatorService.getAllOperators();
+        } else if (selectedTable.equals("Produktlinie")) {
             return productLineService.getAllProductLines();
         } else if (selectedTable.equals("Regionalbereich")) {
             return regionalbereichService.getAllRegionalbereiches();
-        } else if (selectedTable.equals("Remark")) {
+        } else if (selectedTable.equals("Bemerkung")) {
             return remarkService.getAllRemarks();
-        } else if (selectedTable.equals("Ril100Identifier")) {
+        } else if (selectedTable.equals("Ril100Kennzeichnung")) {
             return ril100IdentifierService.getAllRil100Identifiers();
-        } else if (selectedTable.equals("StationLocation")) {
+        } else if (selectedTable.equals("Standort Station")) {
             return stationLocationService.getAllStationLocations();
-        } else if (selectedTable.equals("StationManagement")) {
+        } else if (selectedTable.equals("Station Management")) {
             return stationManagementService.getAllStationManagements();
         } else if (selectedTable.equals("Station")) {
             return stationService.getAllStations();
-        } else if (selectedTable.equals("StopLocation")) {
+        } else if (selectedTable.equals("Standort Haltestelle")) {
             return stopLocationService.getAllStopLocations();
-        } else if (selectedTable.equals("Stop")) {
+        } else if (selectedTable.equals("Haltestelle")) {
             return stopService.getAllStops();
-        } else if (selectedTable.equals("Szentrale")) {
+        } else if (selectedTable.equals("Zentrale")) {
             return szentraleService.getAllSzentrales();
-        } else if (selectedTable.equals("TimeTableOffice")) {
+        } else if (selectedTable.equals("Fahrplanbüro")) {
             return timeTableOfficeService.getAllTimeTableOffices();
-        } else if (selectedTable.equals("Trip")) {
+        } else if (selectedTable.equals("Reisen")) {
             return tripService.getAllTrips();
         }
         return null;
+    }
+
+    public Set<String> getExcludedFields(String tableName) {
+        Map<String, Set<String>> tableExclusions = new HashMap<>();
+        tableExclusions.put("Betreiber", new HashSet<>(Arrays.asList("lines", "stations")));
+        tableExclusions.put("Adressen", new HashSet<>(Arrays.asList("stations")));
+        tableExclusions.put("Linie", new HashSet<>(Arrays.asList("trips")));
+        tableExclusions.put("Produktlinie", new HashSet<>(Arrays.asList("stations")));
+        tableExclusions.put("Standort Haltestelle", new HashSet<>(Arrays.asList("stopList")));
+        tableExclusions.put("Regionalbereich", new HashSet<>(Arrays.asList("stations")));
+        tableExclusions.put("Bemerkung", new HashSet<>(Arrays.asList("trips")));
+        tableExclusions.put("Ril100Kennzeichnung", new HashSet<>(Arrays.asList("geographicCoordinates")));
+        tableExclusions.put("Station Management", new HashSet<>(Arrays.asList("stations")));
+        tableExclusions.put("Station", new HashSet<>(Arrays.asList("ril100Identifiers", "stop")));
+        tableExclusions.put("Zentrale", new HashSet<>(Arrays.asList("stations")));
+        tableExclusions.put("Fahrplanbüro", new HashSet<>(Arrays.asList("stations")));
+
+
+        return tableExclusions.getOrDefault(tableName, new HashSet<>());
     }
 
 }
