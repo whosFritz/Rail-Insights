@@ -1,6 +1,7 @@
 package de.whosfritz.railinsights;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import de.whosfritz.railinsights.data.DataDispatcher;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
@@ -16,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EntityScan(basePackages = {"de.olech2412.adapter.dbadapter.model"}) // scan JPA entities from the dbadapter
 @Log4j2
 @EnableScheduling
+@PWA(name = "RailInsights", shortName = "RailInsights")
 public class RailInsightsApplication implements AppShellConfigurator {
 
     /**
