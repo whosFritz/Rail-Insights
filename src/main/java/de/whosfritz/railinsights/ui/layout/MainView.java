@@ -102,23 +102,23 @@ public class MainView extends AppLayout {
         VerticalLayout wrapper = new VerticalLayout();
         SideNav mainSideNav = getMainSideNav();
         SideNav subSideNav = getSubSideNav();
-        wrapper.add(mainSideNav, createDrawerContent(), subSideNav);
+        wrapper.add(createDrawerContent(), mainSideNav, subSideNav);
         wrapper.setSizeFull();
         return wrapper;
     }
 
     private Component createDrawerContent() {
-        VerticalLayout iconContent = new VerticalLayout();
+        VerticalLayout logoLayout = new VerticalLayout();
         Image logo = new Image(
                 getLogoSrc(ThemeUtil.getCurrentThemeVariant()), "Dynamic Theme Demo logo");
         ThemeUtil.addThemeChangedListener(
                 UI.getCurrent(),
                 e -> logo.setSrc(getLogoSrc(e.getThemeVariant()))
         );
-        logo.setWidth(180, Unit.PIXELS);
-        iconContent.setSizeFull();
-        iconContent.add(logo);
-        return iconContent;
+        logo.setWidth(150, Unit.PIXELS);
+        logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        logoLayout.add(logo);
+        return logoLayout;
     }
 
     private String getLogoSrc(ThemeVariant themeVariant) {
@@ -182,6 +182,7 @@ public class MainView extends AppLayout {
                 createNavItem("Verbindungsprognose", "/verbindungsprognose", VaadinIcon.TIME_BACKWARD.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("CSV-Export", "/csv-export", LineAwesomeIcon.FILE_CSV_SOLID.create(), LumoUtility.FontSize.MEDIUM)
         );
+        mainSideNav.setSizeFull();
         return mainSideNav;
     }
 
