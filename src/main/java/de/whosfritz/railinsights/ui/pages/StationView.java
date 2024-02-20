@@ -8,10 +8,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
-import com.vaadin.flow.component.html.ListItem;
-import com.vaadin.flow.component.html.OrderedList;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.map.Map;
@@ -61,7 +58,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
     private final Map map = new Map();
 
     private final OrderedList cardList;
-    private final java.util.Map<StopDto, Button> stopToCard = new HashMap<>();
+    private final java.util.Map<StopDto, Span> stopToCard = new HashMap<>();
     private final java.util.Map<Feature, StopDto> stopToLocation = new HashMap<>();
     private List<StopDto> filteredStops;
 
@@ -207,6 +204,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
 
     /**
      * Scrolls to the card of a specific stop
+     *
      * @param stop the stop to scroll to
      */
     private void scrollToCard(StopDto stop) {
@@ -247,16 +245,18 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         cardList.removeAll();
         stopToCard.clear();
         for (StopDto stop : filteredStops) {
-            Button button = new Button();
-            button.setWidth(100f, Unit.PERCENTAGE);
-            button.setAriaLabel("Klick um auf Karte zu zentrieren, Rechtsklick oder langes Drücken für mehr Option");
-            button.addClassNames(LumoUtility.Height.AUTO, LumoUtility.Padding.MEDIUM);
-            button.addClickListener(e -> {
+            Button pinOnMapIconButton = new Button();
+            pinOnMapIconButton.setIcon(VaadinIcon.MAP_MARKER.create());
+            pinOnMapIconButton.setAriaLabel("Klick um auf Karte zu zentrieren, Rechtsklick oder langes Drücken für mehr Option");
+            pinOnMapIconButton.addClickListener(e -> {
                 centerMapOn(stop);
             });
 
             ContextMenu contextMenu = new ContextMenu();
-            contextMenu.setTarget(button);
+            Button threeDotButton = new Button();
+            contextMenu.setTarget(threeDotButton);
+            contextMenu.setOpenOnClick(true);
+            threeDotButton.setIcon(new Icon(VaadinIcon.ELLIPSIS_DOTS_V));
             if (stop.isProvidesFurtherInformation()) {
                 contextMenu.addItem("Weitere Informationen", e -> {
                     openFullStopInfo(stop);
@@ -279,17 +279,21 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
             city.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER, LumoUtility.Padding.Bottom.XSMALL);
             Span place = new Span("Haltepunkt ID: " + stop.getStopId());
             place.addClassNames(LumoUtility.TextColor.SECONDARY);
-
             card.add(city, place);
+            card.setSizeFull();
 
-            button.getElement().appendChild(card.getElement());
-            cardList.add(new ListItem(button));
-            stopToCard.put(stop, button);
+            Span buttons = new Span(pinOnMapIconButton, threeDotButton);
+            HorizontalLayout buttonSpanButtonLayout = new HorizontalLayout(card, buttons);
+            buttonSpanButtonLayout.setAlignItems(Alignment.CENTER);
+
+            cardList.add(new ListItem(buttonSpanButtonLayout));
+            stopToCard.put(stop, card);
         }
     }
 
     /**
      * Creates a dashboard layout for a specific stop
+     *
      * @param stop the stop to create the dashboard for
      * @return the dashboard layout
      */
