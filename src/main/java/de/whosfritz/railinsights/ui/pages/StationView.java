@@ -8,7 +8,10 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.ListItem;
+import com.vaadin.flow.component.html.OrderedList;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.map.Map;
@@ -102,11 +105,11 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         searchField.setSuffixComponent(new Icon("lumo", "search"));
 
         Scroller scroller = new Scroller();
-        scroller.addClassNames(LumoUtility.Padding.Horizontal.MEDIUM, LumoUtility.Width.FULL, LumoUtility.BoxSizing.BORDER);
+        scroller.addClassNames(LumoUtility.Width.FULL, LumoUtility.BoxSizing.BORDER);
 
         cardList = new OrderedList();
         cardList.setType(OrderedList.NumberingType.LOWERCASE_LETTER);
-        cardList.addClassNames("card-list", LumoUtility.Gap.XSMALL, LumoUtility.FlexDirection.COLUMN, LumoUtility.ListStyleType.NONE, LumoUtility.Padding.XSMALL);
+        cardList.addClassNames("card-list", LumoUtility.FlexDirection.COLUMN, LumoUtility.ListStyleType.NONE, LumoUtility.Padding.XSMALL);
         sidebar.setAlignItems(Alignment.BASELINE);
         sidebar.add(searchField, scroller);
         scroller.setContent(cardList);
@@ -273,21 +276,24 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
                 dialog.open();
             });
 
-            Span card = new Span();
-            card.addClassNames("card", LumoUtility.Width.FULL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.START, LumoUtility.Gap.XSMALL);
+            Span textSpan = new Span();
+            textSpan.addClassNames("card", LumoUtility.Width.FULL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.START);
             Span city = new Span(stop.getStopName());
             city.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER, LumoUtility.Padding.Bottom.XSMALL);
             Span place = new Span("Haltepunkt ID: " + stop.getStopId());
             place.addClassNames(LumoUtility.TextColor.SECONDARY);
-            card.add(city, place);
-            card.setSizeFull();
+            textSpan.add(city, place);
+            textSpan.setSizeFull();
 
             Span buttons = new Span(pinOnMapIconButton, threeDotButton);
-            HorizontalLayout buttonSpanButtonLayout = new HorizontalLayout(card, buttons);
+            buttons.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+            HorizontalLayout buttonSpanButtonLayout = new HorizontalLayout(textSpan, buttons);
             buttonSpanButtonLayout.setAlignItems(Alignment.CENTER);
-
-            cardList.add(new ListItem(buttonSpanButtonLayout));
-            stopToCard.put(stop, card);
+            buttonSpanButtonLayout.addClassNames(LumoUtility.Padding.SMALL, LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM);
+            cardList.add(new ListItem(new Span(buttonSpanButtonLayout)));
+            cardList.addClassNames(LumoUtility.Gap.SMALL);
+            buttonSpanButtonLayout.addClassNames(LumoUtility.Margin.SMALL);
+            stopToCard.put(stop, textSpan);
         }
     }
 
