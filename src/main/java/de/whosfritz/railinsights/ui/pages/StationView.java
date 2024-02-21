@@ -71,32 +71,19 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
     private UniversalCalculator universalCalculator = new UniversalCalculator();
 
     public StationView() {
-        addClassName("map-view");
-        map.getElement().setAttribute("theme", "borderless");
-        map.getElement().setAttribute("class", "map");
-        map.setHeight(90f, Unit.PERCENTAGE);
-        map.setMaxHeight(90f, Unit.PERCENTAGE);
-        map.setWidth(100f, Unit.PERCENTAGE);
-        map.setMaxWidth(100f, Unit.PERCENTAGE);
-        map.setMinHeight(90f, Unit.PERCENTAGE);
+
 
         VerticalLayout sidebar = new VerticalLayout();
         sidebar.setSpacing(false);
         sidebar.setPadding(false);
-
-        sidebar.setWidth(25f, Unit.PERCENTAGE);
-        sidebar.setHeight(90f, Unit.PERCENTAGE);
-        sidebar.setMaxHeight(90f, Unit.PERCENTAGE);
-        sidebar.setMinHeight(90f, Unit.PERCENTAGE);
-        sidebar.setMaxWidth(25f, Unit.PERCENTAGE);
-        sidebar.setMinWidth(25f, Unit.PERCENTAGE);
+        sidebar.setSizeUndefined();
 
         sidebar.addClassNames("sidebar");
 
         TextField searchField = new TextField();
         searchField.setPlaceholder("Suche nach Bahnhof...");
         searchField.setWidthFull();
-        searchField.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.BoxSizing.BORDER);
+        searchField.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.Padding.Top.NONE, LumoUtility.Padding.Bottom.NONE, LumoUtility.BoxSizing.BORDER);
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.addValueChangeListener(e -> {
             updateFilter(searchField.getValue().toLowerCase());
@@ -105,7 +92,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         searchField.setSuffixComponent(new Icon("lumo", "search"));
 
         Scroller scroller = new Scroller();
-        scroller.addClassNames(LumoUtility.Width.FULL, LumoUtility.BoxSizing.BORDER);
+        scroller.addClassNames(LumoUtility.BoxSizing.BORDER);
 
         cardList = new OrderedList();
         cardList.setType(OrderedList.NumberingType.LOWERCASE_LETTER);
@@ -156,42 +143,24 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
             this.whenBefore = whenBefore.getValue();
         });
 
-        HorizontalLayout mapLayout = new HorizontalLayout(map);
-        mapLayout.setHeight(100f, Unit.PERCENTAGE);
-        mapLayout.setWidth(100f, Unit.PERCENTAGE);
-        mapLayout.setMaxHeight(100f, Unit.PERCENTAGE);
-        mapLayout.setMaxWidth(100f, Unit.PERCENTAGE);
-        mapLayout.setMinHeight(100f, Unit.PERCENTAGE);
-        mapLayout.setMinWidth(100f, Unit.PERCENTAGE);
-        mapLayout.add(map, sidebar);
+        HorizontalLayout mapLayout = new HorizontalLayout(map, sidebar);
+        mapLayout.setWidthFull();
+        mapLayout.setFlexGrow(3, map);
+        mapLayout.setFlexGrow(2, sidebar);
+        mapLayout.setMaxHeight(90f, Unit.PERCENTAGE);
+        map.setSizeFull();
+
 
         HorizontalLayout infoLayout = new HorizontalLayout(infoButton, whenAfter, whenBefore);
         infoLayout.setAlignItems(Alignment.BASELINE);
         VerticalLayout content = new VerticalLayout(infoLayout, mapLayout);
         content.setSizeFull();
-        content.setMaxHeight(100f, Unit.PERCENTAGE);
-        content.setMaxWidth(100f, Unit.PERCENTAGE);
-
-        cardList.setWidth(100f, Unit.PERCENTAGE);
-        cardList.setMaxWidth(100f, Unit.PERCENTAGE);
-        cardList.setHeight(100f, Unit.PERCENTAGE);
-        cardList.setMaxHeight(100f, Unit.PERCENTAGE);
-        cardList.setMinHeight(100f, Unit.PERCENTAGE);
-        cardList.setMinWidth(100f, Unit.PERCENTAGE);
-
-        setFlexGrow(0);
-        setFlexShrink(0);
-
         add(content);
 
         configureMap();
         updateCardList();
 
         setSizeFull();
-        setMaxHeight(100f, Unit.PERCENTAGE);
-        setMaxWidth(100f, Unit.PERCENTAGE);
-        setMinHeight(100f, Unit.PERCENTAGE);
-        setMinWidth(100f, Unit.PERCENTAGE);
     }
 
     /**
