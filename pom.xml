@@ -49,6 +49,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.vaadin.addons.mygroup</groupId>
+            <artifactId>simpletimeline</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -133,7 +138,7 @@
         <dependency>
             <groupId>de.olech2412.adapter</groupId>
             <artifactId>db-adapter-v6</artifactId>
-            <version>2.1.0</version>
+            <version>2.2.1</version>
         </dependency>
         <!-- Other End -->
 

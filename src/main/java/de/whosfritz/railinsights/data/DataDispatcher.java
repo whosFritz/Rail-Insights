@@ -74,6 +74,7 @@ public class DataDispatcher {
                             .add(RequestParametersNames.SUBWAY, false)
                             .add(RequestParametersNames.TAXI, false)
                             .add(RequestParametersNames.RESULTS, 9999)
+                            .add(RequestParametersNames.LANGUAGE, "de")
                             .add(RequestParametersNames.DURATION, 60)
                             .build());
 
@@ -89,6 +90,7 @@ public class DataDispatcher {
                             .add(RequestParametersNames.SUBWAY, false)
                             .add(RequestParametersNames.TAXI, false)
                             .add(RequestParametersNames.RESULTS, 9999)
+                            .add(RequestParametersNames.LANGUAGE, "de")
                             .add(RequestParametersNames.DURATION, 60)
                             .build());
 

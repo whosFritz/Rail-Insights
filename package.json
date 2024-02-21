@@ -3,6 +3,7 @@
   "license": "UNLICENSED",
   "type": "module",
   "dependencies": {
+    "@parttio/simple-timeline": "2.0.5",
     "@polymer/polymer": "3.5.1",
     "@vaadin-component-factory/vcf-popup": "24.0.3",
     "@vaadin/a11y-base": "24.3.3",
@@ -100,6 +101,7 @@
   },
   "vaadin": {
     "dependencies": {
+      "@parttio/simple-timeline": "2.0.5",
       "@polymer/polymer": "3.5.1",
       "@vaadin-component-factory/vcf-popup": "24.0.3",
       "@vaadin/a11y-base": "24.3.3",
@@ -195,7 +197,7 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "b89a193ad48fbb5e47d22a4fed379f425a6def91b0cc1d066206d865a31c583a"
+    "hash": "30d3e9e95330c3e4c6b1ba1ffdd64962bf4a5982b291bedcce1c94fa5e1ba507"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -273,6 +275,7 @@
     "@vaadin/grid-pro": "$@vaadin/grid-pro",
     "@vaadin/map": "$@vaadin/map",
     "@vaadin/rich-text-editor": "$@vaadin/rich-text-editor",
-    "proj4": "$proj4"
+    "proj4": "$proj4",
+    "@parttio/simple-timeline": "$@parttio/simple-timeline"
   }
 }
