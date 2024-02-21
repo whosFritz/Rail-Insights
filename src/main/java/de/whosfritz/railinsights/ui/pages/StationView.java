@@ -62,7 +62,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
     private final Map map = new Map();
 
     private final OrderedList cardList;
-    private final java.util.Map<StopDto, Button> stopToCard = new HashMap<>();
+    private final java.util.Map<StopDto, Span> stopToCard = new HashMap<>();
     private final java.util.Map<Feature, StopDto> stopToLocation = new HashMap<>();
     private List<StopDto> filteredStops;
 
@@ -72,32 +72,17 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
     private UniversalCalculator universalCalculator = new UniversalCalculator();
 
     public StationView() {
-        addClassName("map-view");
-        map.getElement().setAttribute("theme", "borderless");
-        map.getElement().setAttribute("class", "map");
-        map.setHeight(90f, Unit.PERCENTAGE);
-        map.setMaxHeight(90f, Unit.PERCENTAGE);
-        map.setWidth(100f, Unit.PERCENTAGE);
-        map.setMaxWidth(100f, Unit.PERCENTAGE);
-        map.setMinHeight(90f, Unit.PERCENTAGE);
+
 
         VerticalLayout sidebar = new VerticalLayout();
         sidebar.setSpacing(false);
         sidebar.setPadding(false);
-
-        sidebar.setWidth(25f, Unit.PERCENTAGE);
-        sidebar.setHeight(90f, Unit.PERCENTAGE);
-        sidebar.setMaxHeight(90f, Unit.PERCENTAGE);
-        sidebar.setMinHeight(90f, Unit.PERCENTAGE);
-        sidebar.setMaxWidth(25f, Unit.PERCENTAGE);
-        sidebar.setMinWidth(25f, Unit.PERCENTAGE);
-
-        sidebar.addClassNames("sidebar");
+        sidebar.setSizeUndefined();
 
         TextField searchField = new TextField();
         searchField.setPlaceholder("Suche nach Bahnhof...");
         searchField.setWidthFull();
-        searchField.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.BoxSizing.BORDER);
+        searchField.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.Padding.Top.NONE, LumoUtility.Padding.Bottom.NONE, LumoUtility.BoxSizing.BORDER);
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.addValueChangeListener(e -> {
             updateFilter(searchField.getValue().toLowerCase());
@@ -106,11 +91,11 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         searchField.setSuffixComponent(new Icon("lumo", "search"));
 
         Scroller scroller = new Scroller();
-        scroller.addClassNames(LumoUtility.Padding.Horizontal.MEDIUM, LumoUtility.Width.FULL, LumoUtility.BoxSizing.BORDER);
+        scroller.addClassNames(LumoUtility.BoxSizing.BORDER);
 
         cardList = new OrderedList();
         cardList.setType(OrderedList.NumberingType.LOWERCASE_LETTER);
-        cardList.addClassNames("card-list", LumoUtility.Gap.XSMALL, LumoUtility.FlexDirection.COLUMN, LumoUtility.ListStyleType.NONE, LumoUtility.Padding.XSMALL);
+        cardList.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.ListStyleType.NONE, LumoUtility.Padding.XSMALL);
         sidebar.setAlignItems(Alignment.BASELINE);
         sidebar.add(searchField, scroller);
         scroller.setContent(cardList);
@@ -157,42 +142,24 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
             this.whenBefore = whenBefore.getValue();
         });
 
-        HorizontalLayout mapLayout = new HorizontalLayout(map);
-        mapLayout.setHeight(100f, Unit.PERCENTAGE);
-        mapLayout.setWidth(100f, Unit.PERCENTAGE);
-        mapLayout.setMaxHeight(100f, Unit.PERCENTAGE);
-        mapLayout.setMaxWidth(100f, Unit.PERCENTAGE);
-        mapLayout.setMinHeight(100f, Unit.PERCENTAGE);
-        mapLayout.setMinWidth(100f, Unit.PERCENTAGE);
-        mapLayout.add(map, sidebar);
+        HorizontalLayout mapLayout = new HorizontalLayout(map, sidebar);
+        mapLayout.setWidthFull();
+        mapLayout.setFlexGrow(3, map);
+        mapLayout.setFlexGrow(2, sidebar);
+        mapLayout.setMaxHeight(90f, Unit.PERCENTAGE);
+        map.setSizeFull();
+
 
         HorizontalLayout infoLayout = new HorizontalLayout(infoButton, whenAfter, whenBefore);
         infoLayout.setAlignItems(Alignment.BASELINE);
         VerticalLayout content = new VerticalLayout(infoLayout, mapLayout);
         content.setSizeFull();
-        content.setMaxHeight(100f, Unit.PERCENTAGE);
-        content.setMaxWidth(100f, Unit.PERCENTAGE);
-
-        cardList.setWidth(100f, Unit.PERCENTAGE);
-        cardList.setMaxWidth(100f, Unit.PERCENTAGE);
-        cardList.setHeight(100f, Unit.PERCENTAGE);
-        cardList.setMaxHeight(100f, Unit.PERCENTAGE);
-        cardList.setMinHeight(100f, Unit.PERCENTAGE);
-        cardList.setMinWidth(100f, Unit.PERCENTAGE);
-
-        setFlexGrow(0);
-        setFlexShrink(0);
-
         add(content);
 
         configureMap();
         updateCardList();
 
         setSizeFull();
-        setMaxHeight(100f, Unit.PERCENTAGE);
-        setMaxWidth(100f, Unit.PERCENTAGE);
-        setMinHeight(100f, Unit.PERCENTAGE);
-        setMinWidth(100f, Unit.PERCENTAGE);
     }
 
     /**
@@ -208,6 +175,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
 
     /**
      * Scrolls to the card of a specific stop
+     *
      * @param stop the stop to scroll to
      */
     private void scrollToCard(StopDto stop) {
@@ -248,16 +216,18 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         cardList.removeAll();
         stopToCard.clear();
         for (StopDto stop : filteredStops) {
-            Button button = new Button();
-            button.setWidth(100f, Unit.PERCENTAGE);
-            button.setAriaLabel("Klick um auf Karte zu zentrieren, Rechtsklick oder langes Drücken für mehr Option");
-            button.addClassNames(LumoUtility.Height.AUTO, LumoUtility.Padding.MEDIUM);
-            button.addClickListener(e -> {
+            Button pinOnMapIconButton = new Button();
+            pinOnMapIconButton.setIcon(VaadinIcon.MAP_MARKER.create());
+            pinOnMapIconButton.setAriaLabel("Klick um auf Karte zu zentrieren, Rechtsklick oder langes Drücken für mehr Option");
+            pinOnMapIconButton.addClickListener(e -> {
                 centerMapOn(stop);
             });
 
             ContextMenu contextMenu = new ContextMenu();
-            contextMenu.setTarget(button);
+            Button threeDotButton = new Button();
+            contextMenu.setTarget(threeDotButton);
+            contextMenu.setOpenOnClick(true);
+            threeDotButton.setIcon(new Icon(VaadinIcon.ELLIPSIS_DOTS_V));
             if (stop.isProvidesFurtherInformation()) {
                 contextMenu.addItem("Weitere Informationen", e -> {
                     openFullStopInfo(stop);
@@ -274,23 +244,29 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
                 dialog.open();
             });
 
-            Span card = new Span();
-            card.addClassNames("card", LumoUtility.Width.FULL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.START, LumoUtility.Gap.XSMALL);
+            Span textSpan = new Span();
+            textSpan.addClassNames(LumoUtility.Width.FULL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.START);
             Span city = new Span(stop.getStopName());
-            city.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER, LumoUtility.Padding.Bottom.XSMALL);
+            city.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER);
             Span place = new Span("Haltepunkt ID: " + stop.getStopId());
             place.addClassNames(LumoUtility.TextColor.SECONDARY);
+            textSpan.add(city, place);
+            textSpan.setSizeFull();
 
-            card.add(city, place);
-
-            button.getElement().appendChild(card.getElement());
-            cardList.add(new ListItem(button));
-            stopToCard.put(stop, button);
+            Span buttons = new Span(pinOnMapIconButton, threeDotButton);
+            buttons.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+            HorizontalLayout buttonSpanButtonLayout = new HorizontalLayout(textSpan, buttons);
+            buttonSpanButtonLayout.setAlignItems(Alignment.CENTER);
+            buttonSpanButtonLayout.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM);
+            buttonSpanButtonLayout.addClassNames(LumoUtility.Margin.SMALL, LumoUtility.Background.CONTRAST_5);
+            cardList.add(new ListItem(buttonSpanButtonLayout));
+            stopToCard.put(stop, textSpan);
         }
     }
 
     /**
      * Creates a dashboard layout for a specific stop
+     *
      * @param stop the stop to create the dashboard for
      * @return the dashboard layout
      */
