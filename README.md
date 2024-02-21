@@ -1,8 +1,8 @@
 # Rail Insights
 
 <p style="display:flex; gap: 4rem">
-<img src="src/main/resources/META-INF/resources/images/lightmode.png" width="200">
-<img src="src/main/resources/META-INF/resources/images/darkmode.png" width="200">
+<img src="src/main/resources/META-INF/resources/images/lightmode.png" width="200" alt="">
+<img src="src/main/resources/META-INF/resources/images/darkmode.png" width="200" alt="">
 </p>
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub language count](https://img.shields.io/github/languages/count/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub top language](https://img.shields.io/github/languages/top/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub issues](https://img.shields.io/github/issues-raw/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub contributors](https://img.shields.io/github/contributors/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub](https://img.shields.io/github/license/whosFritz/Rail-Insights?style=for-the-badge)
