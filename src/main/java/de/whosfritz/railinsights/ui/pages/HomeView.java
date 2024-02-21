@@ -41,7 +41,7 @@ public class HomeView extends VerticalLayout {
     private RailInsightsInfoBoard initRailInsightsBoard() {
         RailInsightsInfoBoard railInsightsInfoBoard = new RailInsightsInfoBoard();
         railInsightsInfoBoard.addRow(
-                new Highlight("Erfasste Stopps insgesamt: ", String.valueOf(dataProviderService.getTotalTrips()), (double) dataProviderService.getTotalTripsToday(), "Erfasste Stopps heute", true),
+                new Highlight("Erfasste Stopps insgesamt: ", String.valueOf(dataProviderService.getTotalTrips()), (double) dataProviderService.getTotalTripsToday(), "Erfasste Stopps heute", true, ""),
                 new Highlight("Erfasste Haltepunkte insgesamt (Regional- und Fernverkehrshaltepunkte): ", String.valueOf(dataProviderService.getTotalStops())),
                 new Highlight("Haltepunkte für die Stopps erfasst werden (Fernverkehrshaltepunkte): ", String.valueOf(dataProviderService.getNationalStops()))
         );

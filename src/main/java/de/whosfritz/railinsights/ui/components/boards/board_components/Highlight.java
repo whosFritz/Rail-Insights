@@ -17,7 +17,7 @@ public class Highlight extends VerticalLayout {
      * @param percentage  the percentage of the highlight
      * @param explanation the explanation of the percentage value for the highlight
      */
-    public Highlight(String title, String value, Double percentage, String explanation, boolean inverted) {
+    public Highlight(String title, String value, Double percentage, String explanation, boolean inverted, String unit) {
         VaadinIcon icon = VaadinIcon.ARROW_UP;
         String prefix = "";
         String theme = "badge";
@@ -54,7 +54,7 @@ public class Highlight extends VerticalLayout {
         Icon i = icon.create();
         i.addClassNames(LumoUtility.BoxSizing.BORDER, LumoUtility.Padding.XSMALL);
 
-        Span badge = new Span(i, new Span(prefix + percentage + "%" + " - " + explanation));
+        Span badge = new Span(i, new Span(prefix + percentage + " " + unit + " - " + explanation));
         badge.getElement().getThemeList().add(theme);
 
 
