@@ -1,5 +1,12 @@
 # Rail Insights
 
+<p style="display:flex; gap: 4rem">
+<img src="src/main/resources/META-INF/resources/images/lightmode.png" width="200">
+<img src="src/main/resources/META-INF/resources/images/darkmode.png" width="200">
+</p>
+
+![GitHub repo size](https://img.shields.io/github/repo-size/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub language count](https://img.shields.io/github/languages/count/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub top language](https://img.shields.io/github/languages/top/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub issues](https://img.shields.io/github/issues-raw/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub contributors](https://img.shields.io/github/contributors/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/whosFritz/Rail-Insights?style=for-the-badge) ![GitHub](https://img.shields.io/github/license/whosFritz/Rail-Insights?style=for-the-badge)
+
 ## Technologien
 
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white) ![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white) ![Apache](https://img.shields.io/badge/apache-%23D42029.svg?style=for-the-badge&logo=apache&logoColor=white) ![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
