@@ -147,7 +147,7 @@ public class StationViewDashboard extends VerticalLayout {
     }
 
     private Component createHighlight(String title, String value, Double percentage, String explanation, boolean inverted) {
-        return new Highlight(title, value, percentage, explanation, inverted);
+        return new Highlight(title, value, percentage, explanation, inverted, "%");
     }
 
     private Component createHighlight(String title, String value) {
