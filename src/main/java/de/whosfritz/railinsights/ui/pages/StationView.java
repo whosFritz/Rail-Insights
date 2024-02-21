@@ -78,8 +78,6 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         sidebar.setPadding(false);
         sidebar.setSizeUndefined();
 
-        sidebar.addClassNames("sidebar");
-
         TextField searchField = new TextField();
         searchField.setPlaceholder("Suche nach Bahnhof...");
         searchField.setWidthFull();
@@ -96,7 +94,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
 
         cardList = new OrderedList();
         cardList.setType(OrderedList.NumberingType.LOWERCASE_LETTER);
-        cardList.addClassNames("card-list", LumoUtility.FlexDirection.COLUMN, LumoUtility.ListStyleType.NONE, LumoUtility.Padding.XSMALL);
+        cardList.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.ListStyleType.NONE, LumoUtility.Padding.XSMALL);
         sidebar.setAlignItems(Alignment.BASELINE);
         sidebar.add(searchField, scroller);
         scroller.setContent(cardList);
@@ -246,7 +244,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
             });
 
             Span textSpan = new Span();
-            textSpan.addClassNames("card", LumoUtility.Width.FULL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.START);
+            textSpan.addClassNames(LumoUtility.Width.FULL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.START);
             Span city = new Span(stop.getStopName());
             city.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER);
             Span place = new Span("Haltepunkt ID: " + stop.getStopId());
@@ -260,7 +258,6 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
             buttonSpanButtonLayout.setAlignItems(Alignment.CENTER);
             buttonSpanButtonLayout.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM);
             buttonSpanButtonLayout.addClassNames(LumoUtility.Margin.SMALL, LumoUtility.Background.CONTRAST_5);
-            cardList.addClassNames(LumoUtility.Gap.SMALL);
             cardList.add(new ListItem(buttonSpanButtonLayout));
             stopToCard.put(stop, textSpan);
         }
