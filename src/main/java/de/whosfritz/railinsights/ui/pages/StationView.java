@@ -279,7 +279,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
             Span textSpan = new Span();
             textSpan.addClassNames("card", LumoUtility.Width.FULL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.START);
             Span city = new Span(stop.getStopName());
-            city.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER, LumoUtility.Padding.Bottom.XSMALL);
+            city.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER);
             Span place = new Span("Haltepunkt ID: " + stop.getStopId());
             place.addClassNames(LumoUtility.TextColor.SECONDARY);
             textSpan.add(city, place);
@@ -289,10 +289,10 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
             buttons.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
             HorizontalLayout buttonSpanButtonLayout = new HorizontalLayout(textSpan, buttons);
             buttonSpanButtonLayout.setAlignItems(Alignment.CENTER);
-            buttonSpanButtonLayout.addClassNames(LumoUtility.Padding.SMALL, LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM);
-            cardList.add(new ListItem(new Span(buttonSpanButtonLayout)));
+            buttonSpanButtonLayout.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM);
+            buttonSpanButtonLayout.addClassNames(LumoUtility.Margin.SMALL, LumoUtility.Background.CONTRAST_5);
             cardList.addClassNames(LumoUtility.Gap.SMALL);
-            buttonSpanButtonLayout.addClassNames(LumoUtility.Margin.SMALL);
+            cardList.add(new ListItem(buttonSpanButtonLayout));
             stopToCard.put(stop, textSpan);
         }
     }
