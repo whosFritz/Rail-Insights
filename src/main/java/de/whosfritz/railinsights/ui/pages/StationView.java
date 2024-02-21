@@ -97,9 +97,9 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         scroller.setContent(cardList);
 
         Paragraph infoParagraph = new Paragraph("In der interaktiven Karte findest du alle Fernverkehrsbahnhöfe in Deutschland." +
-                " Nutze die Suchfunktion auf der rechten Seite um nach einem bestimmten Bahnhof zu suchen.");
+                " Nutze die Suchfunktion auf der rechten Seite, um nach einem bestimmten Bahnhof zu suchen.");
 
-        Paragraph infoCalcParagraph = new Paragraph("Hinweis zur vollständigkeit: Es werden nur Bahnhöfe angezeigt, " +
+        Paragraph infoCalcParagraph = new Paragraph("Hinweis zur Vollständigkeit: Es werden nur Bahnhöfe angezeigt, " +
                 "an denen mindestens Nationaler Fernverkehr stattfindet. Es kann sein, dass einzelne Sub-Betriebsstellen " +
                 "wie Berlin Hbf (tief) nicht vorkommen, da Sie hier als Berlin Hbf indexiert sind. Es kann ebenfalls sein," +
                 " dass Bahnhöfe auftauchen, die nicht vom Fernverkehr bedient werden, jedoch zu einer Betriebsstelle gehören," +
