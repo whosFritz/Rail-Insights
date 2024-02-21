@@ -58,7 +58,7 @@ import java.util.Locale;
 
 
 @Route(value = "bahnhöfe", layout = MainView.class)
-public class StationView extends HorizontalLayout implements BeforeEnterListener {
+public class StationView extends VerticalLayout implements BeforeEnterListener {
     private final Map map = new Map();
 
     private final OrderedList cardList;
@@ -77,7 +77,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         VerticalLayout sidebar = new VerticalLayout();
         sidebar.setSpacing(false);
         sidebar.setPadding(false);
-        sidebar.setSizeUndefined();
+        sidebar.setHeightFull();
 
         TextField searchField = new TextField();
         searchField.setPlaceholder("Suche nach Bahnhof...");
@@ -144,17 +144,18 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
 
         HorizontalLayout mapLayout = new HorizontalLayout(map, sidebar);
         mapLayout.setWidthFull();
-        mapLayout.setFlexGrow(3, map);
-        mapLayout.setFlexGrow(2, sidebar);
         mapLayout.setMaxHeight(90f, Unit.PERCENTAGE);
-        map.setSizeFull();
+        mapLayout.setMinHeight(90f, Unit.PERCENTAGE);
+
+        map.setWidth(70f, Unit.PERCENTAGE);
+        map.setMaxWidth(70f, Unit.PERCENTAGE);
+        map.setMinWidth(70f, Unit.PERCENTAGE);
+        map.setHeightFull();
 
 
         HorizontalLayout infoLayout = new HorizontalLayout(infoButton, whenAfter, whenBefore);
         infoLayout.setAlignItems(Alignment.BASELINE);
-        VerticalLayout content = new VerticalLayout(infoLayout, mapLayout);
-        content.setSizeFull();
-        add(content);
+        add(infoLayout, mapLayout);
 
         configureMap();
         updateCardList();
