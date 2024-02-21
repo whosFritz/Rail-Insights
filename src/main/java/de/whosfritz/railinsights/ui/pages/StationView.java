@@ -123,12 +123,14 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         });
 
         DateTimePicker whenAfter = new DateTimePicker();
+        whenAfter.setLocale(new Locale("de", "DE"));
         whenAfter.setLabel("Ab wann");
         whenAfter.setTooltipText("Wähle den Zeitpunkt ab wann die Daten im Dashboard angezeigt werden sollen.");
         whenAfter.setValue(LocalDateTime.now().minusDays(1));
         whenAfter.addValueChangeListener(e -> this.whenAfter = whenAfter.getValue());
 
         DateTimePicker whenBefore = new DateTimePicker();
+        whenBefore.setLocale(new Locale("de", "DE"));
         whenBefore.setLabel("Bis wann");
         whenBefore.setTooltipText("Wähle den Zeitpunkt bis wann die Daten im Dashboard angezeigt werden sollen.");
         whenBefore.setValue(LocalDateTime.now());
