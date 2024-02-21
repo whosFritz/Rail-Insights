@@ -90,19 +90,14 @@
 
         <!-- Vaadin Addons -->
         <dependency>
-            <groupId>org.vaadin.addons.taefi</groupId>
-            <artifactId>toggle-button-group</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin.componentfactory</groupId>
-            <artifactId>popup</artifactId>
-            <version>24.0.4</version>
-        </dependency>
-        <dependency>
             <groupId>org.parttio</groupId>
             <artifactId>line-awesome</artifactId>
             <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin.componentfactory</groupId>
+            <artifactId>togglebutton</artifactId>
+            <version>3.0.0</version>
         </dependency>
         <!-- Vaadin Addons End -->
         <!-- Vaadin -->

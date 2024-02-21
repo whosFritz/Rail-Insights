@@ -2,13 +2,12 @@ package de.whosfritz.railinsights.ui.layout;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -19,7 +18,9 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import de.whosfritz.railinsights.ui.components.DarkModeToggle;
+import de.whosfritz.railinsights.ui.color_scheme.ThemeUtil;
+import de.whosfritz.railinsights.ui.color_scheme.ThemeVariant;
+import de.whosfritz.railinsights.ui.components.DarkModeToggle3;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
@@ -48,13 +49,25 @@ public class MainView extends AppLayout {
 
         HorizontalLayout wrapper2 = new HorizontalLayout();
         wrapper2.addClassName(LumoUtility.Margin.XSMALL);
-        DarkModeToggle myToggleButton = new DarkModeToggle();
+        DarkModeToggle3 darkModeToggle3 = new DarkModeToggle3();
         wrapper2.add(createUpdateBadge());
-        wrapper2.add(myToggleButton);
+        wrapper2.add(darkModeToggle3);
         addToDrawer(scroller);
         addToNavbar(wrapper, wrapper2);
         setPrimarySection(Section.DRAWER);
         getCookieConsentBanner();
+        getCookieAndSetPreferredTheme();
+    }
+
+    private void getCookieAndSetPreferredTheme() {
+        Cookie[] cookies = VaadinService.getCurrentRequest().getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("RlThemeCookie")) {
+                if (cookie.getValue().equals("dark")) {
+                    ThemeUtil.selectThemeVariant(ThemeVariant.DARK);
+                }
+            }
+        }
     }
 
     /**
@@ -89,9 +102,30 @@ public class MainView extends AppLayout {
         VerticalLayout wrapper = new VerticalLayout();
         SideNav mainSideNav = getMainSideNav();
         SideNav subSideNav = getSubSideNav();
-        wrapper.add(mainSideNav, subSideNav);
+        wrapper.add(createDrawerContent(), mainSideNav, subSideNav);
         wrapper.setSizeFull();
         return wrapper;
+    }
+
+    private Component createDrawerContent() {
+        VerticalLayout logoLayout = new VerticalLayout();
+        Image logo = new Image(
+                getLogoSrc(ThemeUtil.getCurrentThemeVariant()), "Dynamic Theme Demo logo");
+        ThemeUtil.addThemeChangedListener(
+                UI.getCurrent(),
+                e -> logo.setSrc(getLogoSrc(e.getThemeVariant()))
+        );
+        logo.setWidth(150, Unit.PIXELS);
+        logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        logoLayout.add(logo);
+        return logoLayout;
+    }
+
+    private String getLogoSrc(ThemeVariant themeVariant) {
+        if (themeVariant == ThemeVariant.DARK) {
+            return "images/darkmode.png";
+        }
+        return "images/lightmode.png";
     }
 
     /**

@@ -23,6 +23,7 @@ import de.whosfritz.railinsights.utils.PercentageUtil;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 public class StationViewDashboard extends VerticalLayout {
 
@@ -57,10 +58,12 @@ public class StationViewDashboard extends VerticalLayout {
         seriesTotal.setName("Gesamt");
 
         DateTimePicker when = new DateTimePicker();
+        when.setLocale(new Locale("de", "DE"));
         when.setLabel("Von");
         when.setValue(LocalDateTime.now().minusDays(1));
 
         DateTimePicker whenBefore = new DateTimePicker();
+        whenBefore.setLocale(new Locale("de", "DE"));
         whenBefore.setLabel("Bis");
         whenBefore.setValue(LocalDateTime.now());
 

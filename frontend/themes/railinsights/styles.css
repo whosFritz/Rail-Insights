@@ -1,4 +1,14 @@
 html {
+    --lumo-tint-5pct: rgba(252, 245, 255, 0.05);
+    --lumo-tint-10pct: rgba(252, 245, 255, 0.1);
+    --lumo-tint-20pct: rgba(252, 245, 255, 0.2);
+    --lumo-tint-30pct: rgba(252, 245, 255, 0.3);
+    --lumo-tint-40pct: rgba(252, 245, 255, 0.4);
+    --lumo-tint-50pct: rgba(252, 245, 255, 0.5);
+    --lumo-tint-60pct: rgba(252, 245, 255, 0.6);
+    --lumo-tint-70pct: rgba(252, 245, 255, 0.7);
+    --lumo-tint-80pct: rgba(252, 245, 255, 0.8);
+    --lumo-tint-90pct: rgba(252, 245, 255, 0.9);
     --lumo-base-color: #FFF;
     --lumo-border-radius: 0.75em;
     --lumo-primary-text-color: rgb(236, 0, 22);
