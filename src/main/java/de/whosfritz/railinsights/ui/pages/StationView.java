@@ -64,12 +64,10 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
     private final OrderedList cardList;
     private final java.util.Map<StopDto, Span> stopToCard = new HashMap<>();
     private final java.util.Map<Feature, StopDto> stopToLocation = new HashMap<>();
+    private final UniversalCalculator universalCalculator = new UniversalCalculator();
     private List<StopDto> filteredStops;
-
     private LocalDateTime whenAfter = LocalDateTime.now().minusDays(1);
     private LocalDateTime whenBefore = LocalDateTime.now();
-
-    private UniversalCalculator universalCalculator = new UniversalCalculator();
 
     public StationView() {
 
@@ -84,14 +82,12 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         searchField.setWidthFull();
         searchField.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.Padding.Top.NONE, LumoUtility.Padding.Bottom.NONE, LumoUtility.BoxSizing.BORDER);
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
-        searchField.addValueChangeListener(e -> {
-            updateFilter(searchField.getValue().toLowerCase());
-        });
+        searchField.addValueChangeListener(e -> updateFilter(searchField.getValue().toLowerCase()));
         searchField.setClearButtonVisible(true);
         searchField.setSuffixComponent(new Icon("lumo", "search"));
 
         Scroller scroller = new Scroller();
-        scroller.addClassNames(LumoUtility.BoxSizing.BORDER);
+        scroller.addClassNames(LumoUtility.BoxSizing.BORDER, LumoUtility.Width.FULL);
 
         cardList = new OrderedList();
         cardList.setType(OrderedList.NumberingType.LOWERCASE_LETTER);
@@ -130,17 +126,13 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         whenAfter.setLabel("Ab wann");
         whenAfter.setTooltipText("Wähle den Zeitpunkt ab wann die Daten im Dashboard angezeigt werden sollen.");
         whenAfter.setValue(LocalDateTime.now().minusDays(1));
-        whenAfter.addValueChangeListener(e -> {
-            this.whenAfter = whenAfter.getValue();
-        });
+        whenAfter.addValueChangeListener(e -> this.whenAfter = whenAfter.getValue());
 
         DateTimePicker whenBefore = new DateTimePicker();
         whenBefore.setLabel("Bis wann");
         whenBefore.setTooltipText("Wähle den Zeitpunkt bis wann die Daten im Dashboard angezeigt werden sollen.");
         whenBefore.setValue(LocalDateTime.now());
-        whenBefore.addValueChangeListener(e -> {
-            this.whenBefore = whenBefore.getValue();
-        });
+        whenBefore.addValueChangeListener(e -> this.whenBefore = whenBefore.getValue());
 
         HorizontalLayout mapLayout = new HorizontalLayout(map, sidebar);
         mapLayout.setWidthFull();
@@ -220,9 +212,7 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
             Button pinOnMapIconButton = new Button();
             pinOnMapIconButton.setIcon(VaadinIcon.MAP_MARKER.create());
             pinOnMapIconButton.setAriaLabel("Klick um auf Karte zu zentrieren, Rechtsklick oder langes Drücken für mehr Option");
-            pinOnMapIconButton.addClickListener(e -> {
-                centerMapOn(stop);
-            });
+            pinOnMapIconButton.addClickListener(e -> centerMapOn(stop));
 
             ContextMenu contextMenu = new ContextMenu();
             Button threeDotButton = new Button();
@@ -230,13 +220,9 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
             contextMenu.setOpenOnClick(true);
             threeDotButton.setIcon(new Icon(VaadinIcon.ELLIPSIS_DOTS_V));
             if (stop.isProvidesFurtherInformation()) {
-                contextMenu.addItem("Weitere Informationen", e -> {
-                    openFullStopInfo(stop);
-                });
+                contextMenu.addItem("Weitere Informationen", e -> openFullStopInfo(stop));
             }
-            contextMenu.addItem("Ankünfte und Abfahrten", e -> {
-                openArrivalDepartureDialog(stop);
-            });
+            contextMenu.addItem("Ankünfte und Abfahrten", e -> openArrivalDepartureDialog(stop));
 
             contextMenu.addItem("Dashboard", e -> {
                 GeneralRailInsightsDialog dialog = new GeneralRailInsightsDialog();
@@ -252,7 +238,7 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
             Span place = new Span("Haltepunkt ID: " + stop.getStopId());
             place.addClassNames(LumoUtility.TextColor.SECONDARY);
             textSpan.add(city, place);
-            textSpan.setSizeFull();
+            textSpan.setWidthFull();
 
             Span buttons = new Span(pinOnMapIconButton, threeDotButton);
             buttons.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
@@ -400,7 +386,7 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        // inform the user, that mobile devices are currently not supported if he is using one
+        // inform the user that mobile devices are currently not supported if he is using one
         if (UI.getCurrent().getSession().getBrowser().isAndroid() || UI.getCurrent().getSession().getBrowser().isIPhone()) {
             Notification mobileDeviceNotification = NotificationFactory.createwNotification(NotificationTypes.CRITICAL,
                     "Mobile Geräte werden aktuell nicht unterstützt. Es kommt zu Darstellungsproblemen. Bitte benutze einen Desktop-Browser.");
