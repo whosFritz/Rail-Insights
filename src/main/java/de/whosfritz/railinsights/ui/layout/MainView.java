@@ -174,11 +174,10 @@ public class MainView extends AppLayout {
      */
     private SideNav getMainSideNav() {
         SideNav mainSideNav = new SideNav();
-        mainSideNav.addClassNames(LumoUtility.Gap.XLARGE);
         mainSideNav.addItem(
                 createNavItem("Home", "/", VaadinIcon.HOME.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("Verspätungen", "/verspaetungen", VaadinIcon.TIMER.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("Zugstatistiken", "/trainmetrics", LineAwesomeIcon.TRAIN_SOLID.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("Zugstatistiken", "/trainmetrics", LineAwesomeIcon.SUBWAY_SOLID.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("Bahnhöfe", "/bahnhöfe", LineAwesomeIcon.BUILDING.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("Verbindungsprognose", "/verbindungsprognose", VaadinIcon.SEARCH.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("CSV-Export", "/csv-export", LineAwesomeIcon.FILE_CSV_SOLID.create(), LumoUtility.FontSize.MEDIUM)
@@ -250,6 +249,7 @@ public class MainView extends AppLayout {
      * @return SideNavItem representing the navigation item.
      */
     private SideNavItem createNavItem(String title, String route, Component icon, String className) {
+        icon.addClassNames(LumoUtility.Padding.NONE, LumoUtility.IconSize.SMALL);
         SideNavItem item = new SideNavItem(title, route, icon);
         item.addClassNames(className, LumoUtility.Margin.Vertical.XSMALL);
         return item;
