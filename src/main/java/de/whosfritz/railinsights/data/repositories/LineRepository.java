@@ -20,6 +20,8 @@ public interface LineRepository extends ListCrudRepository<Line, Long> {
 
     Optional<List<Line>> findLinesByProductName(String productName);
 
+    Optional<List<Line>> findLinesByName(String name);
+
     Optional<Line> findByLineIdAndFahrtNr(String lineId, String fahrtNr);
 
 }

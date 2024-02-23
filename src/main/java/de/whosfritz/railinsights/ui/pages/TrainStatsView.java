@@ -1,109 +1,102 @@
 package de.whosfritz.railinsights.ui.pages;
 
-import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.ListItem;
+import com.vaadin.flow.component.html.OrderedList;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import de.olech2412.adapter.dbadapter.model.stop.sub.Line;
 import de.whosfritz.railinsights.data.services.train_services.TrainStatsService;
+import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
+import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
 
 import java.util.List;
 
 @Route(value = "trainmetrics", layout = MainView.class)
-public class TrainStatsView extends VerticalLayout {
+public class TrainStatsView extends HorizontalLayout {
 
-    private final TrainStatsService trainStatsService;
+    private final TextField lineSearchField;
 
-    private ComboBox<String> cb1;
-    private ComboBox<String> cb2;
-    private ComboBox<String> cb3;
-    private ComboBox<Line> cb4;
+    private final OrderedList cardList;
+
+
+    private Button searchButton;
 
     public TrainStatsView(TrainStatsService trainStatsService) {
-        this.trainStatsService = trainStatsService;
+        VerticalLayout searchLayout = new VerticalLayout();
+
+        Scroller scroller = new Scroller();
+        scroller.addClassNames(LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM);
+        scroller.setWidthFull();
+        scroller.setVisible(false);
 
 
-        setupLayout();
-    }
+        cardList = new OrderedList();
+        cardList.setType(OrderedList.NumberingType.LOWERCASE_LETTER);
+        cardList.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.ListStyleType.NONE, LumoUtility.Padding.XSMALL);
 
-    private void setupLayout() {
-        cb1 = new ComboBox<>("Kategorie auswählen");
-        cb1.setItems("Ausfälle", "Verspätung", "Auslastung", "Aktuelle Nachrichten");
-        cb1.addValueChangeListener(event -> {
-            handleCb1Selection(event.getValue());
+
+        lineSearchField = new TextField();
+        lineSearchField.setPlaceholder("Zugnummer");
+        lineSearchField.setClearButtonVisible(true);
+        lineSearchField.addValueChangeListener(event -> {
+            searchButton.setEnabled(!event.getValue().isEmpty());
         });
+        lineSearchField.setWidthFull();
 
-        cb2 = new ComboBox<>("n");
-        cb2.setVisible(false); // Initially hidden, will be made visible based on cb1's selection
-        cb2.addValueChangeListener(event -> {
-            handleCb2Selection(event.getValue());
+        searchButton = new Button("Suchen");
+        searchButton.setEnabled(false);
+        searchButton.setWidthFull();
+        searchButton.setWidthFull();
+
+        searchButton.addClickListener(event -> {
+            List<Line> lines = trainStatsService.getLinesByLineName(lineSearchField.getValue()).get();
+            lines.forEach(line -> {
+                HorizontalLayout layout = new HorizontalLayout();
+                Div div = new Div();
+                div.add(new H4(line.getName()), new Text("Fahrt Nr.: " + line.getFahrtNr()));
+                layout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+                div.setWidthFull();
+                layout.setAlignItems(Alignment.CENTER);
+
+                layout.addClassNames(LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Padding.MEDIUM);
+                layout.addClassNames(LumoUtility.Background.CONTRAST_5);
+                layout.addClassNames(LumoUtility.Margin.MEDIUM);
+                Button infoButton = new Button(VaadinIcon.INFO_CIRCLE.create());
+
+                layout.add(div, infoButton);
+
+                /*
+                 */
+                cardList.add(new ListItem(layout));
+            });
+            if (lines.size() > 0) {
+                scroller.setVisible(true);
+                scroller.setContent(cardList);
+            } else {
+                Notification notification = NotificationFactory.createwNotification(NotificationTypes.ERROR, "Keine Züge gefunden");
+                notification.open();
+            }
+
         });
+        searchLayout.add(lineSearchField, searchButton, scroller);
 
-        cb3 = new ComboBox<>("");
-        cb3.setVisible(false); // Initially hidden, will be made visible based on cb2's selection
-        cb3.addValueChangeListener(event -> {
-            handleCb3Selection(event.getValue());
-        });
-
-        cb4 = new ComboBox<>("");
-        cb4.setItemLabelGenerator(Line::getProductName);
-        cb4.setVisible(false); // Initially hidden, will be made visible based on cb3's selection
+        searchLayout.setMinWidth(30f, Unit.PERCENTAGE);
+        searchLayout.setMaxWidth(30f, Unit.PERCENTAGE);
 
 
-        add(cb1, cb2, cb3, cb4);
-    }
-
-
-    private void handleCb1Selection(String value) {
-        if (value.equals("Ausfälle")) {
-            cb2.setLabel("Öffentlicher Verkehrstype auswählen");
-            cb2.setItems("Nahverkehr", "Fernverkehr", "Alle");
-            cb2.setVisible(true);
-        }
-        if (value.equals("Verspätung")) {
-            cb2.setLabel("Öffentlicher Verkehrstype auswählen");
-            cb2.setItems("Nahverkehr", "Fernverkehr", "Alle");
-            cb2.setVisible(true);
-        }
-        if (value.equals("Auslastung")) {
-            cb2.setLabel("Öffentlicher Verkehrstype auswählen");
-            cb2.setItems("Nahverkehr", "Fernverkehr", "Alle");
-            cb2.setVisible(true);
-        }
-        if (value.equals("Aktuelle Nachrichten")) {
-            cb2.setLabel("Öffentlicher Verkehrstype auswählen");
-            cb2.setItems("Nahverkehr", "Fernverkehr", "Alle");
-            cb2.setVisible(true);
-        }
-    }
-
-    private void handleCb2Selection(String value) {
-
-        /*
-        regional
-        suburban
-        nationalExpress
-        national
-        regionalExpress
-         */
-        cb3.setLabel("Zug auswählen");
-        if (value.equals("Nahverkehr")) {
-            cb3.setItems("suburban", "regional", "regionalExpress");
-            cb3.setVisible(true);
-        }
-        if (value.equals("Fernverkehr")) {
-            cb3.setItems("national", "nationalExpress");
-            cb3.setVisible(true);
-        }
-        if (value.equals("Alle")) {
-            cb3.setItems("Suche Starten");
-            cb3.setVisible(true);
-        }
-    }
-
-    private void handleCb3Selection(String product) {
-        List<Line> lineListe = trainStatsService.getListOfTrainsByProductName(product).get();
-        cb4.setItems(lineListe);
-        cb4.setVisible(true);
+        setSizeFull();
+        add(searchLayout);
     }
 }
