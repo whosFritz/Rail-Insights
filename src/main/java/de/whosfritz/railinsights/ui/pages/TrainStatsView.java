@@ -50,9 +50,7 @@ public class TrainStatsView extends HorizontalLayout {
         lineSearchField = new TextField();
         lineSearchField.setPlaceholder("Zugnummer");
         lineSearchField.setClearButtonVisible(true);
-        lineSearchField.addValueChangeListener(event -> {
-            searchButton.setEnabled(!event.getValue().isEmpty());
-        });
+        lineSearchField.addValueChangeListener(event -> searchButton.setEnabled(!event.getValue().isEmpty()));
         lineSearchField.setWidthFull();
 
         searchButton = new Button("Suchen");
@@ -81,7 +79,7 @@ public class TrainStatsView extends HorizontalLayout {
                  */
                 cardList.add(new ListItem(layout));
             });
-            if (lines.size() > 0) {
+            if (!lines.isEmpty()) {
                 scroller.setVisible(true);
                 scroller.setContent(cardList);
             } else {

@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 public class TrainStatsService {
 
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
     public TrainStatsService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
@@ -38,9 +38,8 @@ public class TrainStatsService {
      * @param lineID the lineID of the train
      * @return the train with the given lineID
      */
-    public Line getTrainByLineID(String lineID) {
-
-        return lineRepository.findByLineId(lineID).get();
+    public Optional<Line> getTrainByLineID(String lineID) {
+        return lineRepository.findByLineId(lineID);
     }
 
 }
