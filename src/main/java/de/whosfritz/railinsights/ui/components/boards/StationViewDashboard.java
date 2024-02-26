@@ -68,7 +68,8 @@ public class StationViewDashboard extends VerticalLayout {
         whenBefore.setValue(LocalDateTime.now());
 
         Board board = new Board();
-        board.addRow(createHighlight("Abfahrten/Ankünfte", String.valueOf(stopCount)),
+        board.addRow(
+                createHighlight("Abfahrten/Ankünfte", String.valueOf(stopCount)),
                 createHighlight("Pünktliche Stopps", stopsPercentageOnTime + " %", percentage, "Pünktlichkeit im globalen Vergleich", false),
                 createHighlight("Verspätete Stopps", stopsPercentageDelayed + " %", percentageDelayed, "Verspätungen im globalen Vergleich", true),
                 createHighlight("Ausgefallene Stopps", stopsPercentageCancelled + " %", percentageCancelled, "Ausfälle im globalen Vergleich", true)
