@@ -1,100 +1,109 @@
 package de.whosfritz.railinsights.ui.pages;
 
-import com.vaadin.flow.component.Text;
+
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H4;
-import com.vaadin.flow.component.html.ListItem;
-import com.vaadin.flow.component.html.OrderedList;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import de.olech2412.adapter.dbadapter.model.stop.sub.Line;
-import de.whosfritz.railinsights.data.services.train_services.TrainStatsService;
+import de.olech2412.adapter.dbadapter.model.trip.Trip;
+import de.whosfritz.railinsights.data.services.LineService;
+import de.whosfritz.railinsights.data.services.trip_services.TripService;
+import de.whosfritz.railinsights.ui.components.dialogs.GeneralRailInsightsDialog;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
+import jakarta.transaction.Transactional;
+import org.vaadin.lineawesome.LineAwesomeIcon;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
 @Route(value = "trainmetrics", layout = MainView.class)
-public class TrainStatsView extends HorizontalLayout {
+@Transactional
+public class TrainStatsView extends VerticalLayout {
 
-    private final TextField lineSearchField;
+    private final TripService tripService;
 
-    private final OrderedList cardList;
-
-
-    private Button searchButton;
-
-    public TrainStatsView(TrainStatsService trainStatsService) {
-        VerticalLayout searchLayout = new VerticalLayout();
-
-        Scroller scroller = new Scroller();
-        scroller.addClassNames(LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM);
-        scroller.setWidthFull();
-        scroller.setVisible(false);
+    private final LineService lineService;
 
 
-        cardList = new OrderedList();
-        cardList.setType(OrderedList.NumberingType.LOWERCASE_LETTER);
-        cardList.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.ListStyleType.NONE, LumoUtility.Padding.XSMALL);
+    public TrainStatsView(TripService tripService, LineService lineService) {
+        this.tripService = tripService;
+        this.lineService = lineService;
 
 
-        lineSearchField = new TextField();
-        lineSearchField.setPlaceholder("Zugnummer");
-        lineSearchField.setClearButtonVisible(true);
-        lineSearchField.addValueChangeListener(event -> searchButton.setEnabled(!event.getValue().isEmpty()));
-        lineSearchField.setWidthFull();
+        HorizontalLayout searchLayout = new HorizontalLayout();
+        searchLayout.addClassNames(LumoUtility.Margin.MEDIUM);
+        searchLayout.setAlignItems(Alignment.BASELINE);
 
-        searchButton = new Button("Suchen");
-        searchButton.setEnabled(false);
-        searchButton.setWidthFull();
-        searchButton.setWidthFull();
+        Paragraph infoParagraph = new Paragraph("Hier kannst du dir die Statistiken zu Zügen anzeigen lassen.");
+        Paragraph infoCalcParagraph = new Paragraph("Wähle aus der Liste einen Fernverkehrszug aus und gib den Zeitraum an, für den du die Statistiken sehen möchtest.");
 
-        searchButton.addClickListener(event -> {
-            List<Line> lines = trainStatsService.getLinesByLineName(lineSearchField.getValue()).get();
-            lines.forEach(line -> {
-                HorizontalLayout layout = new HorizontalLayout();
-                Div div = new Div();
-                div.add(new H4(line.getName()), new Text("Fahrt Nr.: " + line.getFahrtNr()));
-                layout.setJustifyContentMode(JustifyContentMode.BETWEEN);
-                div.setWidthFull();
-                layout.setAlignItems(Alignment.CENTER);
 
-                layout.addClassNames(LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Padding.MEDIUM);
-                layout.addClassNames(LumoUtility.Background.CONTRAST_5);
-                layout.addClassNames(LumoUtility.Margin.MEDIUM);
-                Button infoButton = new Button(VaadinIcon.INFO_CIRCLE.create());
+        Button infoButton = new Button("Informationen");
+        infoButton.setIcon(new Icon(VaadinIcon.INFO_CIRCLE));
+        infoButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SMALL);
+        infoButton.setAriaLabel("Informationen");
+        infoButton.addClickListener(e -> {
+            HorizontalLayout infoLayout = new HorizontalLayout(new VerticalLayout(infoParagraph, infoCalcParagraph));
+            infoLayout.setWidth(100f, Unit.PERCENTAGE);
+            infoLayout.setMaxWidth(100f, Unit.PERCENTAGE);
 
-                layout.add(div, infoButton);
-
-                /*
-                 */
-                cardList.add(new ListItem(layout));
-            });
-            if (!lines.isEmpty()) {
-                scroller.setVisible(true);
-                scroller.setContent(cardList);
-            } else {
-                Notification notification = NotificationFactory.createwNotification(NotificationTypes.ERROR, "Keine Züge gefunden");
-                notification.open();
-            }
-
+            GeneralRailInsightsDialog dialog = new GeneralRailInsightsDialog();
+            dialog.setHeaderTitle("Informationen zur Seite");
+            dialog.add(infoLayout);
+            dialog.open();
         });
-        searchLayout.add(lineSearchField, searchButton, scroller);
 
-        searchLayout.setMinWidth(30f, Unit.PERCENTAGE);
-        searchLayout.setMaxWidth(30f, Unit.PERCENTAGE);
+        ComboBox<Line> fernVerkehrLinesCombobox = new ComboBox<>();
+        fernVerkehrLinesCombobox.setItems(lineService.getLinesNationalOrNationalExpress().getData());
+        fernVerkehrLinesCombobox.setItemLabelGenerator(Line::getName);
+        fernVerkehrLinesCombobox.setLabel("Fernverkehrszug");
+        fernVerkehrLinesCombobox.addClassNames(LumoUtility.Margin.Top.MEDIUM);
+        fernVerkehrLinesCombobox.setPrefixComponent(LineAwesomeIcon.SUBWAY_SOLID.create());
 
+
+        DatePicker startDatePicker = new DatePicker();
+        startDatePicker.setLabel("Startdatum");
+        startDatePicker.setValue(LocalDate.now());
+        startDatePicker.addClassNames(LumoUtility.Margin.Top.MEDIUM);
+        startDatePicker.setPrefixComponent(LineAwesomeIcon.CALENDAR_ALT_SOLID.create());
+        startDatePicker.setLocale(new Locale("de", "DE"));
+
+        DatePicker endDatePicker = new DatePicker();
+        endDatePicker.setLabel("Enddatum");
+        endDatePicker.setValue(startDatePicker.getValue().plusDays(1));
+        endDatePicker.addClassNames(LumoUtility.Margin.Top.MEDIUM);
+        endDatePicker.setPrefixComponent(LineAwesomeIcon.CALENDAR_ALT_SOLID.create());
+        endDatePicker.setLocale(new Locale("de", "DE"));
+
+        fernVerkehrLinesCombobox.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                Notification notification = NotificationFactory.createwNotification(NotificationTypes.SUCCESS, "Du hast den Zug " + e.getValue().getName() + " ausgewählt.");
+                notification.open();
+                System.out.println("Start: " + startDatePicker.getValue().atStartOfDay());
+                System.out.println("End: " + endDatePicker.getValue().atStartOfDay());
+                System.out.println("FahrtNr: " + e.getValue().getFahrtNr());
+                List<Trip> tripsCorrespondingToLine = tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(startDatePicker.getValue().atStartOfDay(), endDatePicker.getValue().atStartOfDay().plusDays(1), e.getValue().getFahrtNr()).getData();
+                System.out.println("Trips: " + tripsCorrespondingToLine);
+            }
+        });
+
+        searchLayout.add(infoButton, fernVerkehrLinesCombobox, startDatePicker, endDatePicker);
+
+        add(searchLayout);
 
         setSizeFull();
-        add(searchLayout);
     }
 }
