@@ -304,15 +304,15 @@ public class TripService {
     public Result<List<Trip>, JPAError> findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(Stop stop, LocalDateTime start, LocalDateTime end) {
         try {
             // Ensure that also the lazy loaded objects are loaded
-            Optional<List<Trip>> trip = tripsRepository.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(stop, start, end);
-            for (Trip t : trip.get()) {
+            Optional<List<Trip>> trips = tripsRepository.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(stop, start, end);
+            for (Trip t : trips.get()) {
                 Hibernate.initialize(t.getRemarks());
             }
 
-            List<Trip> cleanedTrips = TripUtil.removeDuplicates(trip.get());
-            trip = Optional.of(cleanedTrips);
+            List<Trip> cleanedTrips = TripUtil.removeDuplicates(trips.get());
+            trips = Optional.of(cleanedTrips);
 
-            return trip.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
+            return trips.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
         } catch (Exception e) {
             log.error("Error while finding trip by stop and when after and when before: " + e.getMessage() + " " + e.getCause());
             log.error("Stop: " + stop.toString());
@@ -325,7 +325,7 @@ public class TripService {
     @Transactional
     public Result<List<Trip>, JPAError> findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(LocalDateTime plannedWhenAfter, LocalDateTime plannedWhenBefore, String fahrtNr) {
         try {
-            Optional<List<Trip>> trip = tripsRepository.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(plannedWhenAfter, plannedWhenBefore, "2178");
+            Optional<List<Trip>> trip = tripsRepository.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(plannedWhenAfter, plannedWhenBefore, fahrtNr);
             return trip.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
         } catch (Exception e) {
             log.error("Error while finding trip by planned when is after and planned when is before and line fahrt nr: " + e.getMessage() + " " + e.getCause());
