@@ -269,13 +269,13 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
 
         Stop fullStop = stopService.findStopByStopId(Long.valueOf(stop.getStopId())).getData();
 
-        List<Trip> tripToEvaluate = tripService.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(fullStop, from, to).getData();
+        List<Trip> tripsToEvaluate = tripService.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(fullStop, from, to).getData();
 
-        TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripToEvaluate);
+        TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripsToEvaluate);
 
-        int tripCount = tripToEvaluate.size();
+        int tripCount = tripsToEvaluate.size();
 
-        TripCounts tripCounts = universalCalculator.countTrips(tripToEvaluate, from, to);
+        TripCounts tripCounts = universalCalculator.countTrips(tripsToEvaluate, from, to);
 
         DataSeries dailyTripCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripCounts());
         DataSeries dailyTripLongDistanceCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripLongDistanceCounts());
@@ -284,9 +284,9 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         DataSeries hourlyTripLongDistanceCountSeries = universalCalculator.buildHourlyTripCountSeries(tripCounts.getHourlyTripLongDistanceCounts());
         DataSeries hourlyTripRegionalCountSeries = universalCalculator.buildHourlyTripCountSeries(tripCounts.getHourlyTripRegionalCounts());
 
-        DataSeries nationalRegionalSeries = universalCalculator.calculatePercentageTripRegioVsFernverkehr(tripToEvaluate);
+        DataSeries nationalRegionalSeries = universalCalculator.calculatePercentageTripRegioVsFernverkehr(tripsToEvaluate);
 
-        List<Trip> topDelayedTrips = universalCalculator.calculateTopDelayedTripsOrderedByDelay(tripToEvaluate, 10);
+        List<Trip> topDelayedTrips = universalCalculator.calculateTopDelayedTripsOrderedByDelay(tripsToEvaluate, 10);
 
         StationViewDashboard stationViewDashboard;
 
