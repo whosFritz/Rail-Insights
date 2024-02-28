@@ -42,8 +42,8 @@ public class JourneyDataProvider {
 
                 // remove all trips where stop is not in stopovers and is not des
                 List<Trip> trips = result.getData();
-                List<Stop> stops = leg.getStopovers().parallelStream().map(Stopover::getStop).collect(Collectors.toList());
-                List<Long> stopIds = stops.parallelStream().map(Stop::getStopId).collect(Collectors.toList());
+                List<Stop> stops = leg.getStopovers().parallelStream().map(Stopover::getStop).toList();
+                List<Long> stopIds = stops.parallelStream().map(Stop::getStopId).toList();
                 trips.removeIf(trip -> !stopIds.contains(trip.getStop().getStopId()) && !Objects.equals(leg.getDestination().getStopId(), trip.getStop().getStopId()) && !Objects.equals(leg.getOrigin().getStopId(), trip.getStop().getStopId()));
 
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
