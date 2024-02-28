@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class StationViewDashboard extends VerticalLayout {
 
@@ -77,6 +78,18 @@ public class StationViewDashboard extends VerticalLayout {
         board.addRow(createRegionalLongDistanceChart());
         board.addRow(createDelayedTripsGrid(topDelayedTrips));
         add(board);
+    }
+
+    public static Component createHighlight(String title, String value, Double percentage, String explanation, boolean inverted) {
+        return new Highlight(title, value, percentage, explanation, inverted, "%");
+    }
+
+    public static Component createHighlight(String title, String value) {
+        return new Highlight(title, value);
+    }
+
+    public static Component createHighlight(String title, Set<String> values) {
+        return new Highlight(title, values);
     }
 
     private Component createDelayedTripsGrid(List<Trip> topDelayedTrips) {
@@ -144,14 +157,6 @@ public class StationViewDashboard extends VerticalLayout {
         viewEvents.setSpacing(false);
         viewEvents.getElement().getThemeList().add("spacing-l");
         return viewEvents;
-    }
-
-    private Component createHighlight(String title, String value, Double percentage, String explanation, boolean inverted) {
-        return new Highlight(title, value, percentage, explanation, inverted, "%");
-    }
-
-    private Component createHighlight(String title, String value) {
-        return new Highlight(title, value);
     }
 
     private Component createStopsOverTimeChart() {
