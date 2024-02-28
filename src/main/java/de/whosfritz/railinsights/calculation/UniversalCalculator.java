@@ -3,6 +3,7 @@ package de.whosfritz.railinsights.calculation;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
+import de.whosfritz.railinsights.data.LoadFactor;
 import de.whosfritz.railinsights.data.dto.TripCounts;
 import de.whosfritz.railinsights.data.dto.TripStatistics;
 import de.whosfritz.railinsights.utils.PercentageUtil;
@@ -10,9 +11,7 @@ import de.whosfritz.railinsights.utils.PercentageUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -35,6 +34,105 @@ public class UniversalCalculator {
         double percentage = (count / total) * 100;
         percentage = PercentageUtil.convertToTwoDecimalPlaces(percentage);
         return percentage;
+    }
+
+    public static String minutesToHoursAndMinutesAndSeconds(double totalMinutes) {
+        int hours = (int) (totalMinutes / 60);
+        double remainingMinutes = totalMinutes % 60;
+
+        int minutes = (int) remainingMinutes;
+        int seconds = (int) Math.round((remainingMinutes - minutes) * 60);
+
+        StringBuilder time = new StringBuilder();
+        if (hours > 0) {
+            time.append(hours).append("h ");
+        }
+        if (minutes > 0) {
+            time.append(minutes).append("m ");
+        }
+        if (seconds > 0) {
+            time.append(seconds).append("s");
+        }
+
+        return time.toString().trim();
+    }
+
+    public static LoadFactor getLoadFactorAsEnum(String loadFactor) {
+        if (loadFactor == null) {
+            return LoadFactor.KEINE;
+        }
+        String lowerCaseLoadFactor = loadFactor.toLowerCase();
+        if (lowerCaseLoadFactor.equals("low-to-medium")) {
+            return LoadFactor.WENIG_BIS_NORMAL;
+        } else if (lowerCaseLoadFactor.equals("high")) {
+            return LoadFactor.HOCH;
+        } else if (lowerCaseLoadFactor.equals("very-high")) {
+            return LoadFactor.SEHR_HOCH;
+        }
+        return LoadFactor.valueOf(lowerCaseLoadFactor);
+    }
+
+    public static DataSeries buildDailyLoadFactorSeries(List<Trip> tripsCorrespondingToLine) {
+        Map<LocalDate, List<LoadFactor>> loadFactorByDay = new HashMap<>();
+
+        for (Trip trip : tripsCorrespondingToLine) {
+            LocalDate date = trip.getPlannedWhen().toLocalDate();
+            LoadFactor currentLoadFactor = getLoadFactorAsEnum(trip.getLoadFactor());
+
+            loadFactorByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(currentLoadFactor);
+        }
+
+        Map<LocalDate, LoadFactor> medianLoadFactorByDay = new HashMap<>();
+        for (Map.Entry<LocalDate, List<LoadFactor>> entry : loadFactorByDay.entrySet()) {
+            List<LoadFactor> sortedLoadFactors = entry.getValue().stream()
+                    .sorted(Comparator.comparingInt(LoadFactor::ordinal))
+                    .toList();
+
+            LoadFactor medianLoadFactor;
+            int size = sortedLoadFactors.size();
+            if (size % 2 == 0) {
+                medianLoadFactor = sortedLoadFactors.get(size / 2 - 1);
+            } else {
+                medianLoadFactor = sortedLoadFactors.get(size / 2);
+            }
+
+            medianLoadFactorByDay.put(entry.getKey(), medianLoadFactor);
+        }
+
+        DataSeries dailyLoadFactorSeries = new DataSeries();
+        for (Map.Entry<LocalDate, LoadFactor> entry : medianLoadFactorByDay.entrySet()) {
+            dailyLoadFactorSeries.add(new DataSeriesItem(
+                    entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                    entry.getValue().ordinal()));
+        }
+
+        return dailyLoadFactorSeries;
+    }
+
+    public static DataSeries buildDailyDelaySeries(List<Trip> tripsCorrespondingToLine) {
+        Map<LocalDate, List<Double>> delayByDay = new HashMap<>();
+
+        for (Trip trip : tripsCorrespondingToLine) {
+            LocalDate date = trip.getPlannedWhen().toLocalDate();
+            if (trip.getDelay() != null) {
+                delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(trip.getDelay().doubleValue());
+            }
+        }
+
+        Map<LocalDate, Double> averageDelayByDay = new HashMap<>();
+        for (Map.Entry<LocalDate, List<Double>> entry : delayByDay.entrySet()) {
+            double averageDelay = entry.getValue().stream().mapToDouble(val -> val).average().orElse(0.0);
+            averageDelayByDay.put(entry.getKey(), averageDelay);
+        }
+
+        DataSeries dailyDelaySeries = new DataSeries();
+        for (Map.Entry<LocalDate, Double> entry : averageDelayByDay.entrySet()) {
+            dailyDelaySeries.add(new DataSeriesItem(
+                    entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                    entry.getValue()));
+        }
+
+        return dailyDelaySeries;
     }
 
     /**

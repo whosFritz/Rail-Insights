@@ -1,11 +1,14 @@
 package de.whosfritz.railinsights.ui.components.boards.board_components;
 
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
+import java.util.Set;
 
 public class Highlight extends VerticalLayout {
 
@@ -83,4 +86,19 @@ public class Highlight extends VerticalLayout {
         setSpacing(false);
     }
 
+    public Highlight(String title, Set<String> values) {
+        H2 h2 = new H2(title);
+        h2.addClassNames(LumoUtility.Margin.Bottom.SMALL);
+        add(h2);
+
+        for (String value : values) {
+            Paragraph p = new Paragraph(value);
+            p.addClassNames(LumoUtility.FontWeight.NORMAL, LumoUtility.TextColor.SECONDARY, LumoUtility.Margin.XSMALL);
+            add(p);
+        }
+
+        addClassName(LumoUtility.Padding.LARGE);
+        setPadding(false);
+        setSpacing(false);
+    }
 }

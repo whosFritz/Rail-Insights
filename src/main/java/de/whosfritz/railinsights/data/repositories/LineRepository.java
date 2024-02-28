@@ -18,9 +18,10 @@ public interface LineRepository extends ListCrudRepository<Line, Long> {
     // find Lines By Product and Group by productname
     Optional<List<Line>> findLinesByProduct(String product);
 
-    Optional<List<Line>> findLinesByProductName(String productName);
+    // find Lines By Product and Group by product where productname contains "national"
+    Optional<List<Line>> findLinesByProductContains(String product);
 
-    Optional<List<Line>> findLinesByName(String name);
+    Optional<List<Line>> findLinesByProductName(String productName);
 
     Optional<Line> findByLineIdAndFahrtNr(String lineId, String fahrtNr);
 
