@@ -37,6 +37,10 @@ public class UniversalCalculator {
     }
 
     public static String minutesToHoursAndMinutesAndSeconds(double totalMinutes) {
+        if (totalMinutes == 0.0) {
+            return "0 Minuten";
+        }
+
         int hours = (int) (totalMinutes / 60);
         double remainingMinutes = totalMinutes % 60;
 

@@ -118,21 +118,22 @@ public class TrainStatsView extends VerticalLayout {
                 notification.open();
                 List<Trip> tripsCorrespondingToLine = tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(from, to, e.getValue().getFahrtNr()).getData();
                 // first sort the trips by delay, delay could be null
-                tripsCorrespondingToLine.sort(Comparator.comparing(Trip::getDelay, Comparator.nullsLast(Comparator.naturalOrder())));
+                tripsCorrespondingToLine.sort(Comparator.comparing(Trip::getDelay, Comparator.nullsFirst(Comparator.naturalOrder())));
                 // get the middle element
                 int size = tripsCorrespondingToLine.size();
                 double medianDelay;
-                if (size % 2 == 0) {
+                if (size % 2 != 0) {
                     medianDelay = tripsCorrespondingToLine.get(size / 2 - 1).getDelay();
                 } else {
                     medianDelay = tripsCorrespondingToLine.get(size / 2).getDelay();
                 }
 
 
-                // put trips into a list where delay bigger than 6 and not null
+                /* put trips into a list where delay bigger than 6 and not null
                 List<Trip> tripsWithDelay = tripsCorrespondingToLine.stream()
                         .filter(trip -> Optional.ofNullable(trip.getDelay()).orElse(0) >= 6)
                         .toList();
+                 */
 
                 TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripsCorrespondingToLine);
 
