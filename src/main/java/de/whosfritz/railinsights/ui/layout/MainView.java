@@ -224,7 +224,7 @@ public class MainView extends AppLayout {
                 iconLayout.add(VaadinIcon.CLOCK.create());
                 span.getElement().getThemeList().add("badge pill");
                 span.setTitle("Es werden gerade Daten aktualisiert");
-                notification = NotificationFactory.createwNotification(NotificationTypes.INFO, "Wir aktualisieren " +
+                notification = NotificationFactory.createNotification(NotificationTypes.INFO, "Wir aktualisieren " +
                         "gerade die Daten, aktualisiere die Seite in ein paar Sekunden");
                 notification.open();
             }

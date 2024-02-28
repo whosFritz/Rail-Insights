@@ -10,7 +10,6 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
-
 import de.olech2412.adapter.dbadapter.APIConfiguration;
 import de.olech2412.adapter.dbadapter.DB_Adapter_v6;
 import de.olech2412.adapter.dbadapter.exception.Error;
@@ -83,7 +82,7 @@ public class ConnectionPrognoseView extends VerticalLayout {
     }
 
     public void updateTicketComponent(String stopIdFrom, String stopIdTo, LocalDateTime when) throws IOException {
-        if(stopIdFrom == null || stopIdTo == null) return;
+        if (stopIdFrom == null || stopIdTo == null) return;
 
         DB_Adapter_v6 db_adapter_v6 = createDBAdapter();
 
@@ -110,9 +109,9 @@ public class ConnectionPrognoseView extends VerticalLayout {
                         .add(RequestParametersNames.NATIONAL_EXPRESS, true)
                         .build());
 
-        if(journeys.isSuccess()) {
-            if(journeys.getData() == null){
-                Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Keine Verbindungen für die angegebenen Daten gefunden");
+        if (journeys.isSuccess()) {
+            if (journeys.getData() == null) {
+                Notification error = NotificationFactory.createNotification(NotificationTypes.CRITICAL, "Keine Verbindungen für die angegebenen Daten gefunden");
                 error.open();
 
                 return;
@@ -120,17 +119,17 @@ public class ConnectionPrognoseView extends VerticalLayout {
             List<Ticket> tickets = TicketUtil.convertJourneysToTickets(Arrays.stream(journeys.getData()).toList());
             ticketComponent.updateTickets(tickets);
         } else {
-            if(journeys.getError().getCode() == 404){
-                Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Keine Verbindungen für die angegebenen Daten gefunden");
+            if (journeys.getError().getCode() == 404) {
+                Notification error = NotificationFactory.createNotification(NotificationTypes.CRITICAL, "Keine Verbindungen für die angegebenen Daten gefunden");
                 error.open();
             } else {
-                Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Ein Fehler bei der Kommunikation zum HAFAS-Server ist aufgetreten. Bitte versuche es später erneut.");
+                Notification error = NotificationFactory.createNotification(NotificationTypes.CRITICAL, "Ein Fehler bei der Kommunikation zum HAFAS-Server ist aufgetreten. Bitte versuche es später erneut.");
                 error.open();
             }
         }
     }
 
-    private DB_Adapter_v6 createDBAdapter(){
+    private DB_Adapter_v6 createDBAdapter() {
         APIConfiguration apiConfiguration = new APIConfiguration();
         apiConfiguration.setBaseUrl("http://localhost:3000");
 

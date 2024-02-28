@@ -1,21 +1,15 @@
 package de.whosfritz.railinsights.ui.components;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.theme.lumo.LumoIcon;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import org.vaadin.lineawesome.LineAwesomeIcon;
@@ -56,7 +50,7 @@ public class TicketComponent extends VerticalLayout {
             Button button = new Button("Zur Prognose");
             button.setIcon(LineAwesomeIcon.FLASK_SOLID.create());
             button.addClickListener(event -> {
-                Notification nte = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Prognose für die Verbindung " + ticket.getDeparture() + " - " + ticket.getArrival() + " anzeigen");
+                Notification nte = NotificationFactory.createNotification(NotificationTypes.CRITICAL, "Prognose für die Verbindung " + ticket.getDeparture() + " - " + ticket.getArrival() + " anzeigen");
                 nte.open();
             });
             return button;
@@ -101,6 +95,7 @@ public class TicketComponent extends VerticalLayout {
 
     /**
      * Update the tickets displayed in the grid
+     *
      * @param newTickets The new list of tickets
      */
     public void updateTickets(List<Ticket> newTickets) {
