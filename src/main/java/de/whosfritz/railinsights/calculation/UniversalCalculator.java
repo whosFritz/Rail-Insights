@@ -62,14 +62,12 @@ public class UniversalCalculator {
             return LoadFactor.KEINE;
         }
         String lowerCaseLoadFactor = loadFactor.toLowerCase();
-        if (lowerCaseLoadFactor.equals("low-to-medium")) {
-            return LoadFactor.WENIG_BIS_NORMAL;
-        } else if (lowerCaseLoadFactor.equals("high")) {
-            return LoadFactor.HOCH;
-        } else if (lowerCaseLoadFactor.equals("very-high")) {
-            return LoadFactor.SEHR_HOCH;
-        }
-        return LoadFactor.valueOf(lowerCaseLoadFactor);
+        return switch (lowerCaseLoadFactor) {
+            case "low-to-medium" -> LoadFactor.WENIG_BIS_NORMAL;
+            case "high" -> LoadFactor.HOCH;
+            case "very-high" -> LoadFactor.SEHR_HOCH;
+            default -> LoadFactor.valueOf(lowerCaseLoadFactor);
+        };
     }
 
     public static DataSeries buildDailyLoadFactorSeries(List<Trip> tripsCorrespondingToLine) {

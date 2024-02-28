@@ -121,7 +121,7 @@ public class TrainStatsView extends VerticalLayout {
                 tripsCorrespondingToLine.sort(Comparator.comparing(Trip::getDelay, Comparator.nullsLast(Comparator.naturalOrder())));
                 // get the middle element
                 int size = tripsCorrespondingToLine.size();
-                double medianDelay = 0;
+                double medianDelay;
                 if (size % 2 == 0) {
                     medianDelay = tripsCorrespondingToLine.get(size / 2 - 1).getDelay();
                 } else {
