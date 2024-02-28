@@ -4,6 +4,7 @@ import de.olech2412.adapter.dbadapter.APIConfiguration;
 import de.olech2412.adapter.dbadapter.DB_Adapter_v6;
 import de.olech2412.adapter.dbadapter.exception.Error;
 import de.olech2412.adapter.dbadapter.exception.Result;
+import de.olech2412.adapter.dbadapter.model.journey.sub.Leg;
 import de.olech2412.adapter.dbadapter.model.station.Station;
 import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.stop.sub.Line;
@@ -344,6 +345,18 @@ public class TripService {
         } catch (Exception e) {
             log.error("Error while finding trip by stop: " + e.getMessage() + " " + e.getCause());
             log.error("Stop: " + stop.toString());
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
+    }
+
+    @Transactional
+    public Result<List<Trip>, JPAError> findAllTripsByLeg(Leg leg) {
+        try {
+            Optional<List<Trip>> trips = tripsRepository.findAllByLineLineId(leg.getLine().getLineId());
+            return trips.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
+        } catch (Exception e) {
+            log.error("Error while finding trip by leg: " + e.getMessage() + " " + e.getCause());
+            log.error("Stop: " + leg.toString());
             return Result.error(new JPAError(JPAErrors.UNKNOWN));
         }
     }
