@@ -145,7 +145,7 @@ public class TripService {
             boolean tripHasValidStop = false;
             if (!stopFromDB.isSuccess()) {
                 Stop stopToSave = trip.getStop();
-                // check if stop is really not in database
+                // check if stop is really not in a database
                 if (stopService.findByName(stopToSave.getName()).isEmpty()) {
                     // check if stop_id starts with 80
                     if (stopToSave.getStopId() > 8000000 && stopToSave.getStopId() < 8100000) {
