@@ -14,7 +14,6 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -40,8 +39,10 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 
 import static de.whosfritz.railinsights.ui.components.boards.StationViewDashboard.createHighlight;
 
@@ -51,17 +52,17 @@ public class TrainStatsView extends VerticalLayout {
     private final UniversalCalculator universalCalculator = new UniversalCalculator();
 
     private final TripService tripService;
+    private final ComboBox<Line> fernVerkehrLinesCombobox = new ComboBox<>();
+    private final DataProviderService dataProviderService = VaadinService.getCurrent().getInstantiator().getOrCreate(DataProviderService.class);
 
-    private final LineService lineService;
+    private final VerticalLayout tripStatsLayout = new VerticalLayout();
+    private final DatePicker startDatePicker = new DatePicker();
+    private final DatePicker endDatePicker = new DatePicker();
 
 
     public TrainStatsView(TripService tripService, LineService lineService) {
         this.tripService = tripService;
-        this.lineService = lineService;
 
-        DataProviderService dataProviderService = VaadinService.getCurrent().getInstantiator().getOrCreate(DataProviderService.class);
-
-        VerticalLayout tripStatsLayout = new VerticalLayout();
 
         HorizontalLayout searchLayout = new HorizontalLayout();
         searchLayout.addClassNames(LumoUtility.Margin.MEDIUM);
@@ -86,7 +87,6 @@ public class TrainStatsView extends VerticalLayout {
             dialog.open();
         });
 
-        ComboBox<Line> fernVerkehrLinesCombobox = new ComboBox<>();
         fernVerkehrLinesCombobox.setItems(lineService.getLinesNationalOrNationalExpress().getData());
         fernVerkehrLinesCombobox.setItemLabelGenerator(Line::getName);
         fernVerkehrLinesCombobox.setLabel("Fernverkehrszug");
@@ -94,131 +94,136 @@ public class TrainStatsView extends VerticalLayout {
         fernVerkehrLinesCombobox.setPrefixComponent(LineAwesomeIcon.SUBWAY_SOLID.create());
 
 
-        DatePicker startDatePicker = new DatePicker();
         startDatePicker.setLabel("Startdatum");
         startDatePicker.setValue(LocalDate.now());
         startDatePicker.addClassNames(LumoUtility.Margin.Top.MEDIUM);
         startDatePicker.setPrefixComponent(LineAwesomeIcon.CALENDAR_ALT_SOLID.create());
         startDatePicker.setLocale(new Locale("de", "DE"));
 
-        DatePicker endDatePicker = new DatePicker();
         endDatePicker.setLabel("Enddatum");
         endDatePicker.setValue(startDatePicker.getValue().plusDays(1));
         endDatePicker.addClassNames(LumoUtility.Margin.Top.MEDIUM);
         endDatePicker.setPrefixComponent(LineAwesomeIcon.CALENDAR_ALT_SOLID.create());
         endDatePicker.setLocale(new Locale("de", "DE"));
 
-        fernVerkehrLinesCombobox.addValueChangeListener(e -> {
-            if (e.getValue() != null) {
-                tripStatsLayout.getElement().removeAllChildren();
-
-                LocalDateTime from = startDatePicker.getValue().atStartOfDay();
-                LocalDateTime to = endDatePicker.getValue().atStartOfDay().plusDays(1);
-                Notification notification = NotificationFactory.createwNotification(NotificationTypes.SUCCESS, "Du hast den Zug " + e.getValue().getName() + " ausgewählt.");
-                notification.open();
-                List<Trip> tripsCorrespondingToLine = tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(from, to, e.getValue().getFahrtNr()).getData();
-                // first sort the trips by delay, delay could be null
-                tripsCorrespondingToLine.sort(Comparator.comparing(Trip::getDelay, Comparator.nullsFirst(Comparator.naturalOrder())));
-                // get the middle element
-                int size = tripsCorrespondingToLine.size();
-                double medianDelay;
-                if (size % 2 != 0) {
-                    medianDelay = tripsCorrespondingToLine.get(size / 2 - 1).getDelay();
-                } else {
-                    medianDelay = tripsCorrespondingToLine.get(size / 2).getDelay();
-                }
+        Button calculateStatsButton = new Button("Statistiken berechnen");
+        calculateStatsButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        calculateStatsButton.addClickListener(e -> createStats());
 
 
-                /* put trips into a list where delay bigger than 6 and not null
-                List<Trip> tripsWithDelay = tripsCorrespondingToLine.stream()
-                        .filter(trip -> Optional.ofNullable(trip.getDelay()).orElse(0) >= 6)
-                        .toList();
-                 */
-
-                TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripsCorrespondingToLine);
-
-                int tripCount = tripsCorrespondingToLine.size();
-
-                TripCounts tripCounts = universalCalculator.countTrips(tripsCorrespondingToLine, from, to);
-
-                DataSeries dailyTripCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripCounts());
-
-
-                DataSeries dailyTripLongDistanceCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripLongDistanceCounts());
-                DataSeries dailyTripRegionalCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripRegionalCounts());
-                DataSeries hourlyTripCountSeries = universalCalculator.buildHourlyTripCountSeries(tripCounts.getHourlyTripCounts());
-                DataSeries hourlyTripLongDistanceCountSeries = universalCalculator.buildHourlyTripCountSeries(tripCounts.getHourlyTripLongDistanceCounts());
-                DataSeries hourlyTripRegionalCountSeries = universalCalculator.buildHourlyTripCountSeries(tripCounts.getHourlyTripRegionalCounts());
-
-
-                DataSeries nationalRegionalSeries = universalCalculator.calculatePercentageTripRegioVsFernverkehr(tripsCorrespondingToLine);
-
-                List<Trip> topDelayedTrips = universalCalculator.calculateTopDelayedTripsOrderedByDelay(tripsCorrespondingToLine, 10);
-
-
-                double globalOnTimePercentage = (dataProviderService.getStopsPercentageOnTime() != null) ? dataProviderService.getStopsPercentageOnTime() : 0.0;
-                double globalDelayedPercentage = (dataProviderService.getStopsPercentageDelayed() != null) ? dataProviderService.getStopsPercentageDelayed() : 0.0;
-                double globalCancelledPercentage = (dataProviderService.getStopsPercentageCancelled() != null) ? dataProviderService.getStopsPercentageCancelled() : 0.0;
-
-
-                double percentageOnTime = tripStatistics.getPercentageOnTime();
-                double percentageDelayed = tripStatistics.getPercentageDelayed();
-                double percentageCancelled = tripStatistics.getPercentageCancelled();
-
-                double onTimeGlobalComparison = percentageOnTime - globalOnTimePercentage;
-                double delayedGlobalComparison = percentageDelayed - globalDelayedPercentage;
-                double cancelledGlobalComparison = percentageCancelled - globalCancelledPercentage;
-
-
-                onTimeGlobalComparison = PercentageUtil.convertToTwoDecimalPlaces(onTimeGlobalComparison);
-                delayedGlobalComparison = PercentageUtil.convertToTwoDecimalPlaces(delayedGlobalComparison);
-                cancelledGlobalComparison = PercentageUtil.convertToTwoDecimalPlaces(cancelledGlobalComparison);
-
-                // get each abfahrtsdirections could be null then use the province
-                Set<String> abfahrtsDirections = tripsCorrespondingToLine.stream()
-                        .map(trip -> Optional.ofNullable(trip.getDirection()).orElse(trip.getProvenance()))
-                        .collect(Collectors.toSet());
-
-
-                // Todo: Durchschnittliche Verspätung des Zuges im Zeitraum als Badge in minuten
-                Board board = new Board();
-                // name des zuges
-                board.addRow(createHighlight("Zug: ", e.getValue().getName()));
-                // wohin fährt dieser zug überhaupt?
-                board.addRow(
-                        createHighlight("Abfahrtsrichtungen", abfahrtsDirections),
-                        createHighlight("Anzahl Fahrten", String.valueOf(tripCount)),
-                        createHighlight("Median der Verspätung", UniversalCalculator.minutesToHoursAndMinutesAndSeconds(medianDelay))
-                );
-                Row abfahrtenStats = new Row();
-                abfahrtenStats.add(createHighlight("Pünktliche Stopps", percentageOnTime + " %", onTimeGlobalComparison, "Pünktlichkeit im globalen Vergleich", true));
-                abfahrtenStats.add(createHighlight("Verspätete Stopps", percentageDelayed + " %", delayedGlobalComparison, "Verspätungen im globalen Vergleich", false));
-                abfahrtenStats.add(createHighlight("Ausgefallene Stopps", percentageCancelled + " %", cancelledGlobalComparison, "Ausfälle im globalen Vergleich", false));
-                abfahrtenStats.addClassNames(LumoUtility.Margin.Bottom.XLARGE);
-                board.addRow(abfahrtenStats);
-                // Todo: Durchschnittliche Verspätung des Zuges pro Tag als Grafik
-                DataSeries dailyDelaySeries = UniversalCalculator.buildDailyDelaySeries(tripsCorrespondingToLine);
-                board.addRow(createDailyDelayChart(dailyDelaySeries));
-                // add line chart for daily LoadFactor, use the enum, whatever is the most on that day is the days LoadFactor
-                DataSeries dailyLoadFactorSeries = UniversalCalculator.buildDailyLoadFactorSeries(tripsCorrespondingToLine);
-                board.addRow(createDailyLoadFactorChart(dailyLoadFactorSeries));
-
-                tripStatsLayout.add(board);
-                tripStatsLayout.setVisible(true);
-            }
-        });
-
-
-        // Todo: Anzahl der Fahrten im Zeitraum
         // Todo: Remarks / Bemerkungen zu den Fahrten (idk yet)
-        // Todo: Wohin fährt dieser zug überhaupt?
 
-        searchLayout.add(infoButton, fernVerkehrLinesCombobox, startDatePicker, endDatePicker);
+        searchLayout.add(infoButton, startDatePicker, endDatePicker, fernVerkehrLinesCombobox, calculateStatsButton);
 
         add(searchLayout, tripStatsLayout);
         tripStatsLayout.setVisible(false);
 
         setSizeFull();
+    }
+
+
+    private void createStats() {
+        Line comboboxValue = fernVerkehrLinesCombobox.getValue();
+        if (fernVerkehrLinesCombobox.getValue() == null) return;
+        tripStatsLayout.getElement().removeAllChildren();
+
+        LocalDateTime from = startDatePicker.getValue().atStartOfDay();
+        LocalDateTime to = endDatePicker.getValue().atStartOfDay().plusDays(1);
+
+        List<Trip> tripsCorrespondingToLine = tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(from, to, comboboxValue.getName()).getData();
+        // sort by plannedwhen ascending
+        tripsCorrespondingToLine.sort(Comparator.comparing(Trip::getPlannedWhen));
+        // when null notifcation
+        if (tripsCorrespondingToLine.isEmpty()) {
+            NotificationFactory.createNotification(NotificationTypes.WARNING, "Der Zeitraum ist zu kurz gewählt. Es wurden keine Daten gefunden").open();
+            return;
+        }
+        int fahrtenCount = tripsCorrespondingToLine.stream().filter(trip -> trip.getDirection() == null && trip.getCancelled() == null).mapToInt(trip -> 1).sum();
+
+
+        long tripsDelayedMoreThanSixHours = tripsCorrespondingToLine.stream().filter(trip -> trip.getDelay() != null && trip.getDelay() >= 360).count();
+
+        int sumOfTripsDelayedMoreThanSixHours = tripsCorrespondingToLine.stream().filter(trip -> trip.getDelay() != null && trip.getDelay() >= 360).mapToInt(Trip::getDelay).sum();
+
+        double avgDelayInSeconds = (double) sumOfTripsDelayedMoreThanSixHours / tripsDelayedMoreThanSixHours;
+
+        TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripsCorrespondingToLine);
+
+
+        TripCounts tripCounts = universalCalculator.countTrips(tripsCorrespondingToLine);
+
+
+        double globalOnTimePercentage = (dataProviderService.getStopsPercentageOnTime() != null) ? dataProviderService.getStopsPercentageOnTime() : 0.0;
+        double globalDelayedPercentage = (dataProviderService.getStopsPercentageDelayed() != null) ? dataProviderService.getStopsPercentageDelayed() : 0.0;
+        double globalCancelledPercentage = (dataProviderService.getStopsPercentageCancelled() != null) ? dataProviderService.getStopsPercentageCancelled() : 0.0;
+        double globalDelayedMoreThan6min = (dataProviderService.getStopsPercentageDelayedMoreThan6min() != null) ? dataProviderService.getStopsPercentageDelayedMoreThan6min() : 0.0;
+        double globalDelayedMoreThan15min = (dataProviderService.getStopsPercentageDelayedMoreThan15min() != null) ? dataProviderService.getStopsPercentageDelayedMoreThan15min() : 0.0;
+        double globalDelayedMoreThan60min = (dataProviderService.getStopsPercentageDelayedMoreThan60min() != null) ? dataProviderService.getStopsPercentageDelayedMoreThan60min() : 0.0;
+
+
+        double percentageOnTime = tripStatistics.getPercentageOnTime();
+        double percentageDelayed = tripStatistics.getPercentageDelayed();
+        double percentageCancelled = tripStatistics.getPercentageCancelled();
+        double delayMoreThan6min = tripStatistics.getDelayMoreThan6min();
+        double delayMoreThan15min = tripStatistics.getDelayMoreThan15min();
+        double delayMoreThan60min = tripStatistics.getDelayMoreThan60min();
+
+
+        double onTimeGlobalComparison = percentageOnTime - globalOnTimePercentage;
+        double delayedGlobalComparison = percentageDelayed - globalDelayedPercentage;
+        double cancelledGlobalComparison = percentageCancelled - globalCancelledPercentage;
+        double delayedMoreThan6minGlobalComparison = delayMoreThan6min - globalDelayedMoreThan6min;
+        double delayedMoreThan15minGlobalComparison = delayMoreThan15min - globalDelayedMoreThan15min;
+        double delayedMoreThan60minGlobalComparison = delayMoreThan60min - globalDelayedMoreThan60min;
+
+
+        onTimeGlobalComparison = PercentageUtil.convertToTwoDecimalPlaces(onTimeGlobalComparison);
+        delayedGlobalComparison = PercentageUtil.convertToTwoDecimalPlaces(delayedGlobalComparison);
+        cancelledGlobalComparison = PercentageUtil.convertToTwoDecimalPlaces(cancelledGlobalComparison);
+        delayedMoreThan6minGlobalComparison = PercentageUtil.convertToTwoDecimalPlaces(delayedMoreThan6minGlobalComparison);
+        delayedMoreThan15minGlobalComparison = PercentageUtil.convertToTwoDecimalPlaces(delayedMoreThan15minGlobalComparison);
+        delayedMoreThan60minGlobalComparison = PercentageUtil.convertToTwoDecimalPlaces(delayedMoreThan60minGlobalComparison);
+
+        String zielBahnhof = tripsCorrespondingToLine.stream().filter(trip -> trip.getDirection() != null).findFirst().map(Trip::getDirection).orElse("Unbekannt");
+        String abfahrtsBahnhof = tripsCorrespondingToLine.stream().filter(trip -> trip.getDirection() == null).findFirst().map(Trip::getProvenance).orElse("Unbekannt");
+
+
+        Board board = new Board();
+        board.addRow(
+                createHighlight("Zug: ", comboboxValue.getName()),
+                createHighlight("Anzahl der Fahrten", String.valueOf(fahrtenCount))
+        );
+        board.addRow(
+                createHighlight("Richtung", zielBahnhof),
+                createHighlight("Durchschnittliche Verspätung", UniversalCalculator.minutesToHoursAndMinutesAndSeconds(avgDelayInSeconds / 60.0))
+        );
+        Row abfahrtenStats1 = new Row();
+        abfahrtenStats1.add(createHighlight("Pünktliche Stopps", percentageOnTime + " %", onTimeGlobalComparison, "Pünktlichkeit im globalen Vergleich", true));
+        abfahrtenStats1.add(createHighlight("Verspätete Stopps", percentageDelayed + " %", delayedGlobalComparison, "Verspätungen im globalen Vergleich", false));
+        abfahrtenStats1.add(createHighlight("Ausgefallene Stopps", percentageCancelled + " %", cancelledGlobalComparison, "Ausfälle im globalen Vergleich", false));
+
+        Row abfahrtenStats2 = new Row();
+        abfahrtenStats2.add(createHighlight("Verspätung über 6 min", delayMoreThan6min + " %", delayedMoreThan6minGlobalComparison, "Verspätungen im globalen Vergleich", false));
+        abfahrtenStats2.add(createHighlight("Verspätung über 15 min", delayMoreThan15min + " %", delayedMoreThan15minGlobalComparison, "Verspätungen im globalen Vergleich", false));
+        abfahrtenStats2.add(createHighlight("Verspätung über 60 min", delayMoreThan60min + " %", delayedMoreThan60minGlobalComparison, "Verspätungen im globalen Vergleich", false));
+
+        abfahrtenStats2.addClassNames(LumoUtility.Margin.Bottom.XLARGE);
+        board.addRow(abfahrtenStats1);
+        board.addRow(abfahrtenStats2);
+        DataSeries dailyDelaySeries = UniversalCalculator.buildDailyDelaySeries(tripsCorrespondingToLine);
+        board.addRow(createDailyDelayChart(dailyDelaySeries));
+        // nicht median sondern höchste und geringste auslastung
+        DataSeries dailyLowestLoadFactorSeries = UniversalCalculator.buildDailyLowestLoadFactorSeries(tripsCorrespondingToLine);
+        DataSeries dailyHighestLoadFactorSeries = UniversalCalculator.buildDailyHighestLoadFactorSeries(tripsCorrespondingToLine);
+        board.addRow(createDailyLoadFactorChart(List.of(dailyLowestLoadFactorSeries, dailyHighestLoadFactorSeries)));
+
+        DataSeries dailyTripCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripCounts());
+        // Todo: add daily trip count chart
+        // board.addRow(createDailyTripCountChart(dailyTripCountSeries));
+
+        tripStatsLayout.add(board);
+        tripStatsLayout.setVisible(true);
+
     }
 
     private Component createDailyDelayChart(DataSeries dailyDelaySeries) {
@@ -228,7 +233,7 @@ public class TrainStatsView extends VerticalLayout {
 
         Configuration conf = chart.getConfiguration();
         conf.setTitle("Verspätung");
-        conf.setSubTitle("Durchschnittliche Verspätung pro Tag");
+        conf.setSubTitle("Durchschnittliche Verspätung pro Tag in Minuten");
 
         conf.addSeries(dailyDelaySeries);
         conf.getChart().setStyledMode(true);
@@ -246,31 +251,30 @@ public class TrainStatsView extends VerticalLayout {
         xAxis.setType(AxisType.DATETIME);
         xAxis.setTitle(new AxisTitle());
 
+        PlotOptionsLine plotOptions = new PlotOptionsLine();
+        plotOptions.setEnableMouseTracking(true);
+        plotOptions.setDataLabels(new DataLabels(true));
+        conf.setPlotOptions(plotOptions);
+
         return chart;
 
     }
 
-    public Component createDailyLoadFactorChart(DataSeries dailyLoadFactorSeries) {
+    public Component createDailyLoadFactorChart(List<DataSeries> dailyLoadFactorSeries) {
         Chart chart = new Chart(ChartType.LINE);
 
         chart.addClassNames(LumoUtility.Margin.Top.XLARGE, LumoUtility.Margin.Bottom.XLARGE);
 
         Configuration conf = chart.getConfiguration();
         conf.setTitle("Auslastung");
-        conf.setSubTitle("Median der Auslastung pro Tag");
+        conf.setSubTitle("Höchste und niedrigste Auslastung pro Tag");
 
-        conf.addSeries(dailyLoadFactorSeries);
+        dailyLoadFactorSeries.forEach(conf::addSeries);
         conf.getChart().setStyledMode(true);
-
-
-        Tooltip tooltip = chart.getConfiguration().getTooltip();
-        tooltip.setShared(true);
-        tooltip.setDateTimeLabelFormats(DateTimeLabelFormatsUtil.getCleanedDateTimeLabelFormat());
 
         YAxis yAxis = chart.getConfiguration().getyAxis();
         yAxis.setTitle(new AxisTitle());
 
-        conf.setLegend(new Legend(false));
 
         // show corresponding enum alias on yaxis
         yAxis.setCategories(Arrays.stream(LoadFactor.values()).map(LoadFactor::getAlias).toArray(String[]::new));
@@ -279,6 +283,45 @@ public class TrainStatsView extends VerticalLayout {
         xAxis.setType(AxisType.DATETIME);
         xAxis.setTitle(new AxisTitle());
 
+        PlotOptionsLine plotOptions = new PlotOptionsLine();
+        plotOptions.setEnableMouseTracking(true);
+        conf.setPlotOptions(plotOptions);
+
+        conf.setLegend(new Legend(true));
+
+
+        return chart;
+    }
+
+    private Component createDailyTripCountChart(DataSeries dailyTripCountSeries) {
+        Chart chart = new Chart(ChartType.LINE);
+
+        chart.addClassNames(LumoUtility.Margin.Top.XLARGE, LumoUtility.Margin.Bottom.XLARGE);
+
+        Configuration conf = chart.getConfiguration();
+        conf.setTitle("Anzahl der Stopps");
+        conf.setSubTitle("Anzahl Stopps pro Tag");
+
+        conf.addSeries(dailyTripCountSeries);
+        conf.getChart().setStyledMode(true);
+
+        conf.setLegend(new Legend(false));
+
+        Tooltip tooltip = chart.getConfiguration().getTooltip();
+        tooltip.setShared(true);
+        tooltip.setDateTimeLabelFormats(DateTimeLabelFormatsUtil.getCleanedDateTimeLabelFormat());
+
+        YAxis yAxis = chart.getConfiguration().getyAxis();
+        yAxis.setTitle(new AxisTitle());
+
+        XAxis xAxis = chart.getConfiguration().getxAxis();
+        xAxis.setType(AxisType.DATETIME);
+        xAxis.setTitle(new AxisTitle());
+
+        PlotOptionsLine plotOptions = new PlotOptionsLine();
+        plotOptions.setEnableMouseTracking(true);
+        plotOptions.setDataLabels(new DataLabels(true));
+        conf.setPlotOptions(plotOptions);
 
         return chart;
     }
