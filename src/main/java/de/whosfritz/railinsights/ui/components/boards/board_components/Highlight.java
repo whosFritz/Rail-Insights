@@ -66,8 +66,6 @@ public class Highlight extends VerticalLayout {
 
     public Highlight(String title, String value) {
         VaadinIcon icon = VaadinIcon.ARROW_UP;
-        String prefix = "";
-        String theme = "badge";
         H2 h2 = new H2(title);
         h2.addClassNames(LumoUtility.FontWeight.NORMAL, LumoUtility.Margin.NONE, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.XSMALL);
 

@@ -185,7 +185,6 @@ public class TrainStatsView extends VerticalLayout {
         delayedMoreThan60minGlobalComparison = PercentageUtil.convertToTwoDecimalPlaces(delayedMoreThan60minGlobalComparison);
 
         String zielBahnhof = tripsCorrespondingToLine.stream().filter(trip -> trip.getDirection() != null).findFirst().map(Trip::getDirection).orElse("Unbekannt");
-        String abfahrtsBahnhof = tripsCorrespondingToLine.stream().filter(trip -> trip.getDirection() == null).findFirst().map(Trip::getProvenance).orElse("Unbekannt");
 
 
         Board board = new Board();
@@ -217,9 +216,7 @@ public class TrainStatsView extends VerticalLayout {
         DataSeries dailyHighestLoadFactorSeries = UniversalCalculator.buildDailyHighestLoadFactorSeries(tripsCorrespondingToLine);
         board.addRow(createDailyLoadFactorChart(List.of(dailyLowestLoadFactorSeries, dailyHighestLoadFactorSeries)));
 
-        DataSeries dailyTripCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripCounts());
-        // Todo: add daily trip count chart
-        // board.addRow(createDailyTripCountChart(dailyTripCountSeries));
+        // Todo: Remarks Feed or something
 
         tripStatsLayout.add(board);
         tripStatsLayout.setVisible(true);
@@ -292,38 +289,4 @@ public class TrainStatsView extends VerticalLayout {
 
         return chart;
     }
-
-    private Component createDailyTripCountChart(DataSeries dailyTripCountSeries) {
-        Chart chart = new Chart(ChartType.LINE);
-
-        chart.addClassNames(LumoUtility.Margin.Top.XLARGE, LumoUtility.Margin.Bottom.XLARGE);
-
-        Configuration conf = chart.getConfiguration();
-        conf.setTitle("Anzahl der Stopps");
-        conf.setSubTitle("Anzahl Stopps pro Tag");
-
-        conf.addSeries(dailyTripCountSeries);
-        conf.getChart().setStyledMode(true);
-
-        conf.setLegend(new Legend(false));
-
-        Tooltip tooltip = chart.getConfiguration().getTooltip();
-        tooltip.setShared(true);
-        tooltip.setDateTimeLabelFormats(DateTimeLabelFormatsUtil.getCleanedDateTimeLabelFormat());
-
-        YAxis yAxis = chart.getConfiguration().getyAxis();
-        yAxis.setTitle(new AxisTitle());
-
-        XAxis xAxis = chart.getConfiguration().getxAxis();
-        xAxis.setType(AxisType.DATETIME);
-        xAxis.setTitle(new AxisTitle());
-
-        PlotOptionsLine plotOptions = new PlotOptionsLine();
-        plotOptions.setEnableMouseTracking(true);
-        plotOptions.setDataLabels(new DataLabels(true));
-        conf.setPlotOptions(plotOptions);
-
-        return chart;
-    }
-
 }
