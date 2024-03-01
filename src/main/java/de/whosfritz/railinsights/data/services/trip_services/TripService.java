@@ -323,15 +323,15 @@ public class TripService {
     }
 
     @Transactional
-    public Result<List<Trip>, JPAError> findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(LocalDateTime plannedWhenAfter, LocalDateTime plannedWhenBefore, String fahrtNr) {
+    public Result<List<Trip>, JPAError> findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(LocalDateTime plannedWhenAfter, LocalDateTime plannedWhenBefore, String name) {
         try {
-            Optional<List<Trip>> trip = tripsRepository.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(plannedWhenAfter, plannedWhenBefore, fahrtNr);
+            Optional<List<Trip>> trip = tripsRepository.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLineName(plannedWhenAfter, plannedWhenBefore, name);
             return trip.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
         } catch (Exception e) {
             log.error("Error while finding trip by planned when is after and planned when is before and line fahrt nr: " + e.getMessage() + " " + e.getCause());
             log.error("Planned when after: " + plannedWhenAfter.toString());
             log.error("Planned when before: " + plannedWhenBefore.toString());
-            log.error("FahrtNr: " + fahrtNr);
+            log.error("FahrtNr: " + name);
             return Result.error(new JPAError(JPAErrors.UNKNOWN));
         }
     }
