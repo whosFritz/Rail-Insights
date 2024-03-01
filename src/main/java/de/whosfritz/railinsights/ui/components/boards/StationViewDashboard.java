@@ -69,9 +69,9 @@ public class StationViewDashboard extends VerticalLayout {
 
         Board board = new Board();
         board.addRow(createHighlight("Abfahrten/Ankünfte", String.valueOf(stopCount)),
-                createHighlight("Pünktliche Stopps", stopsPercentageOnTime + " %", percentage, "Pünktlichkeit im globalen Vergleich", true),
-                createHighlight("Verspätete Stopps", stopsPercentageDelayed + " %", percentageDelayed, "Verspätungen im globalen Vergleich", false),
-                createHighlight("Ausgefallene Stopps", stopsPercentageCancelled + " %", percentageCancelled, "Ausfälle im globalen Vergleich", false)
+                createHighlight("Pünktliche Stopps", stopsPercentageOnTime + " %", percentage, "Pünktlichkeit im deutschlandweiten Vergleich", true),
+                createHighlight("Verspätete Stopps", stopsPercentageDelayed + " %", percentageDelayed, "Verspätungen im deutschlandweiten Vergleich", false),
+                createHighlight("Ausgefallene Stopps", stopsPercentageCancelled + " %", percentageCancelled, "Ausfälle im deutschlandweiten Vergleich", false)
         );
         board.addRow(createStopsOverTimeChart());
         board.addRow(createRegionalLongDistanceChart());
