@@ -286,7 +286,6 @@ public class TrainStatsView extends VerticalLayout {
 
         conf.setLegend(new Legend(true));
 
-
         return chart;
     }
 }
