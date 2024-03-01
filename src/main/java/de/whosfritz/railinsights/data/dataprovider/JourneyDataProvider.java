@@ -10,13 +10,11 @@ import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
 import de.whosfritz.railinsights.exception.JPAError;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class JourneyDataProvider {
 
@@ -42,9 +40,16 @@ public class JourneyDataProvider {
 
                 // remove all trips where stop is not in stopovers and is not des
                 List<Trip> trips = result.getData();
+                // if the stopovers are null its not possible to filter the trips probably this is a part of the journey by foot
+                if (leg.getStopovers() == null) {
+                    continue;
+                }
                 List<Stop> stops = leg.getStopovers().parallelStream().map(Stopover::getStop).toList();
-                List<Long> stopIds = stops.parallelStream().map(Stop::getStopId).toList();
-                trips.removeIf(trip -> !stopIds.contains(trip.getStop().getStopId()) && !Objects.equals(leg.getDestination().getStopId(), trip.getStop().getStopId()) && !Objects.equals(leg.getOrigin().getStopId(), trip.getStop().getStopId()));
+                List<String> stopNames = stops.parallelStream().map(Stop::getName).toList();
+                // filter out all trips where the stop is null
+                trips.removeIf(trip -> trip.getStop() == null);
+                trips.removeIf(trip -> !stopNames.contains(trip.getStop().getName()) && !Objects.equals(leg.getDestination().getName(), trip.getStop().getName()) && !Objects.equals(leg.getOrigin().getName(), trip.getStop().getName()));
+                // remove all trips where the
 
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
                 LocalDateTime legPlannedDeparture = LocalDateTime.parse(leg.getPlannedDeparture(), formatter);

@@ -72,6 +72,10 @@ public class TicketComponent extends VerticalLayout {
                 // Create a div for the train
                 Div trainDiv = new Div();
                 trainDiv.addClassName("train");
+                trainDiv.getStyle().set("padding", "5px 0");
+                trainDiv.getStyle().set("display", "flex");
+                trainDiv.getStyle().set("margin", "5px 0");
+                trainDiv.getStyle().set("border-radius", "5px");
 
                 // Set the background color according to the train type
                 if (train.contains("ICE")) {
@@ -80,8 +84,6 @@ public class TicketComponent extends VerticalLayout {
                     trainDiv.getStyle().set("background-color", "gray");
                 }
 
-                // Set the text color to white
-                trainDiv.getStyle().set("color", "white");
 
                 // Set the text content to the train number
                 trainDiv.setText(train);

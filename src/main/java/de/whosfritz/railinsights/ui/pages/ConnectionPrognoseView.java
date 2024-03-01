@@ -72,6 +72,8 @@ public class ConnectionPrognoseView extends VerticalLayout {
                     try {
                         updateTicketComponent(stopComboBox.getValue().getStopId(), stopComboBox2.getValue().getStopId(), dateTimePicker.getValue());
                     } catch (IOException e) {
+                        Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Ein Fehler bei der Kommunikation zum HAFAS-Server ist aufgetreten. Bitte versuche es später erneut.");
+                        error.open();
                         throw new RuntimeException(e);
                     }
                 }
@@ -92,6 +94,7 @@ public class ConnectionPrognoseView extends VerticalLayout {
 
         DB_Adapter_v6 db_adapter_v6 = createDBAdapter();
 
+        when = when.minusHours(1);
         //parse when to ISO8601
         String formattedDateTime = when.format(DateTimeFormatter.ISO_DATE_TIME);
 
