@@ -37,20 +37,20 @@ public class CsvExportView extends VerticalLayout {
         tableSelection.setItems(
                 "Adressen",
                 "Geographische Koordinaten",
-                "Linie",
+                "Linien",
                 "Betreiber",
-                "Produktlinie",
-                "Regionalbereich",
-                "Bemerkung",
-                "Ril100Kennzeichnung",
-                "Standort Station",
-                "Station Management",
-                "Station",
-                "Standort Haltestelle",
-                "Haltestelle",
+                "Produktlinien",
+                "Regionalbereiche",
+                "Bemerkungen zu Fahrten",
+                "Ril100Kennzeichnungen",
+                "Standort Stationen",
+                "Station Managements",
+                "Stationen",
+                "Standort Haltestellen",
+                "Haltestellen",
                 "Zentrale",
-                "Fahrplanbüro",
-                "Fahrten"
+                "Fahrplan Büros",
+                "Fahrten (Stops)"
         );
 
         DateTimePicker startDateTimePicker = new DateTimePicker("Start Date");

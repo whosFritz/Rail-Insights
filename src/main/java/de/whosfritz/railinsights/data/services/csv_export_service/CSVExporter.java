@@ -53,56 +53,42 @@ public class CSVExporter {
     }
 
     public Iterable<?> getItems(String selectedTable, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        if (selectedTable.equals("Adressen")) {
-            return addressService.getAllAddresses();
-        } else if (selectedTable.equals("Geographische Koordinaten")) {
-            return geographicCoordinatesService.getAllGeographicCoordinates();
-        } else if (selectedTable.equals("Linie")) {
-            return lineService.getAllLines();
-        } else if (selectedTable.equals("Betreiber")) {
-            return operatorService.getAllOperators();
-        } else if (selectedTable.equals("Produktlinie")) {
-            return productLineService.getAllProductLines();
-        } else if (selectedTable.equals("Regionalbereich")) {
-            return regionalbereichService.getAllRegionalbereiches();
-        } else if (selectedTable.equals("Bemerkung")) {
-            return remarkService.getAllRemarks();
-        } else if (selectedTable.equals("Ril100Kennzeichnung")) {
-            return ril100IdentifierService.getAllRil100Identifiers();
-        } else if (selectedTable.equals("Standort Station")) {
-            return stationLocationService.getAllStationLocations();
-        } else if (selectedTable.equals("Station Management")) {
-            return stationManagementService.getAllStationManagements();
-        } else if (selectedTable.equals("Station")) {
-            return stationService.getAllStations();
-        } else if (selectedTable.equals("Standort Haltestelle")) {
-            return stopLocationService.getAllStopLocations();
-        } else if (selectedTable.equals("Haltestelle")) {
-            return stopService.getAllStops();
-        } else if (selectedTable.equals("Zentrale")) {
-            return szentraleService.getAllSzentrales();
-        } else if (selectedTable.equals("Fahrplanbüro")) {
-            return timeTableOfficeService.getAllTimeTableOffices();
-        } else if (selectedTable.equals("Fahrten")) {
-            return tripService.findAllByPlannedWhenAfterAndPlannedWhenBefore(startDateTime, endDateTime).getData();
-        }
-        return null;
+        return switch (selectedTable) {
+            case "Adressen" -> addressService.getAllAddresses();
+            case "Geographische Koordinaten" -> geographicCoordinatesService.getAllGeographicCoordinates();
+            case "Linien" -> lineService.getAllLines();
+            case "Betreiber" -> operatorService.getAllOperators();
+            case "Produktlinien" -> productLineService.getAllProductLines();
+            case "Regionalbereiche" -> regionalbereichService.getAllRegionalbereiches();
+            case "Bemerkungen zu Fahrten" -> remarkService.getAllRemarks();
+            case "Ril100Kennzeichnungen" -> ril100IdentifierService.getAllRil100Identifiers();
+            case "Standort Stationen" -> stationLocationService.getAllStationLocations();
+            case "Station Managements" -> stationManagementService.getAllStationManagements();
+            case "Stationen" -> stationService.getAllStations();
+            case "Standort Haltestellen" -> stopLocationService.getAllStopLocations();
+            case "Haltestellen" -> stopService.getAllStops();
+            case "Zentrale" -> szentraleService.getAllSzentrales();
+            case "Fahrplan Büros" -> timeTableOfficeService.getAllTimeTableOffices();
+            case "Fahrten (Stops)" ->
+                    tripService.findAllByPlannedWhenAfterAndPlannedWhenBefore(startDateTime, endDateTime).getData();
+            default -> null;
+        };
     }
 
     public Set<String> getExcludedFields(String tableName) {
         Map<String, Set<String>> tableExclusions = new HashMap<>();
         tableExclusions.put("Betreiber", new HashSet<>(Arrays.asList("lines", "stations")));
         tableExclusions.put("Adressen", new HashSet<>(Arrays.asList("stations")));
-        tableExclusions.put("Linie", new HashSet<>(Arrays.asList("trips")));
-        tableExclusions.put("Produktlinie", new HashSet<>(Arrays.asList("stations")));
-        tableExclusions.put("Standort Haltestelle", new HashSet<>(Arrays.asList("stopList")));
-        tableExclusions.put("Regionalbereich", new HashSet<>(Arrays.asList("stations")));
-        tableExclusions.put("Bemerkung", new HashSet<>(Arrays.asList("trips")));
-        tableExclusions.put("Ril100Kennzeichnung", new HashSet<>(Arrays.asList("geographicCoordinates")));
-        tableExclusions.put("Station Management", new HashSet<>(Arrays.asList("stations")));
-        tableExclusions.put("Station", new HashSet<>(Arrays.asList("ril100Identifiers", "stop")));
+        tableExclusions.put("Linien", new HashSet<>(Arrays.asList("trips")));
+        tableExclusions.put("Produktlinien", new HashSet<>(Arrays.asList("stations")));
+        tableExclusions.put("Standort Haltestellen", new HashSet<>(Arrays.asList("stopList")));
+        tableExclusions.put("Regionalbereiche", new HashSet<>(Arrays.asList("stations")));
+        tableExclusions.put("Bemerkungen zu Fahrten", new HashSet<>(Arrays.asList("trips")));
+        tableExclusions.put("Ril100Kennzeichnungen", new HashSet<>(Arrays.asList("geographicCoordinates")));
+        tableExclusions.put("Station Managements", new HashSet<>(Arrays.asList("stations")));
+        tableExclusions.put("Stationen", new HashSet<>(Arrays.asList("ril100Identifiers", "stop")));
         tableExclusions.put("Zentrale", new HashSet<>(Arrays.asList("stations")));
-        tableExclusions.put("Fahrplanbüro", new HashSet<>(Arrays.asList("stations")));
+        tableExclusions.put("Fahrplan Büros", new HashSet<>(Arrays.asList("stations")));
         return tableExclusions.getOrDefault(tableName, new HashSet<>());
     }
 
