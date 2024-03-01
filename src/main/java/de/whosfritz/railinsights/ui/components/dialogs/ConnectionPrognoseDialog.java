@@ -2,8 +2,10 @@ package de.whosfritz.railinsights.ui.components.dialogs;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import de.olech2412.adapter.dbadapter.model.journey.Journey;
 import de.olech2412.adapter.dbadapter.model.journey.sub.Leg;
 import de.olech2412.adapter.dbadapter.model.journey.sub.Stopover;
@@ -111,7 +113,23 @@ public class ConnectionPrognoseDialog extends GeneralRailInsightsDialog {
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_ROW_STRIPES);
         grid.setSizeFull();
 
-        add(grid);
+        VerticalLayout infoLayout = new VerticalLayout();
+
+        Paragraph infoParagraph = new Paragraph("Wie funktionierts? Die Prognose zeigt dir auf Grundlage von " +
+                "vergangen Fahrten am selben Wochentag und zur selben Uhrzeit, wie wahrscheinlich es ist, dass deine " +
+                "Verbindung pünktlich ist und ob du deine Anschlüsse erreichst.");
+        Paragraph infoParagraph2 = new Paragraph("Für die dauer eines Umstiegs werden 5 Minuten eingeplant. " +
+                "Wenn die Umsteigezeit kürzer als 5 Minuten ist, wird dies als kurze Umsteigezeit angezeigt. " +
+                "Wenn die Umstiegszeit länger ist, wird dies als ausreichende Umsteigezeit angezeigt." +
+                "Liegt die Zeit des gepanten Umstiegs unter der prognostizierten Abfahrtszeit des nächsten Zuges, " +
+                "wird dies als wahrscheinlich nicht erreichbar angezeigt.");
+        Paragraph infoParagraph3 = new Paragraph("Diese Prognose ist eine grobe Orientierungshilfe und kann nicht " +
+                "garantieren, dass deine Verbindung pünktlich ist. Die tatsächliche Verspätung kann von der Prognose abweichen." +
+                " Bei deiner Reiseplanung solltest du dich auf die offiziellen Fahrpläne und Echtzeitdaten verlassen.");
+
+        infoLayout.add(infoParagraph, infoParagraph2, infoParagraph3);
+
+        add(infoLayout, grid);
         open();
 
     }
