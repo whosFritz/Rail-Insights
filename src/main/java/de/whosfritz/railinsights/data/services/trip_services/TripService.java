@@ -350,6 +350,21 @@ public class TripService {
     }
 
     @Transactional
+    public Result<List<Trip>, JPAError> findAllByTripId(String tripId) {
+        try {
+            Optional<List<Trip>> trip = tripsRepository.findAllByTripId(tripId);
+            for (Trip t : trip.get()) {
+                Hibernate.initialize(t.getRemarks());
+            }
+            return trip.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
+        } catch (Exception e) {
+            log.error("Error while finding trip by trip id: " + e.getMessage() + " " + e.getCause());
+            log.error("Trip id: " + tripId);
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
+    }
+
+    @Transactional
     public Result<List<Trip>, JPAError> findAllTripsByLeg(Leg leg) {
         try {
             Optional<List<Trip>> trips = tripsRepository.findAllByLineLineId(leg.getLine().getLineId());

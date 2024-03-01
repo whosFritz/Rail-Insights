@@ -1,6 +1,5 @@
 package de.whosfritz.railinsights.rest.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import de.olech2412.adapter.dbadapter.model.station.Station;
 import de.whosfritz.railinsights.data.repositories.station_repositories.StationRepository;
 import org.springframework.beans.factory.annotation.Autowired;

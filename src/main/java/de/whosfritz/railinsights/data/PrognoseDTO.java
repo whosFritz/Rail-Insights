@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -30,11 +31,11 @@ public class PrognoseDTO {
         PrognoseDTO that = (PrognoseDTO) o;
 
         if (calculatedDelayInMinutes != that.calculatedDelayInMinutes) return false;
-        if (plannedTime != null ? !plannedTime.equals(that.plannedTime) : that.plannedTime != null) return false;
-        if (predictedTime != null ? !predictedTime.equals(that.predictedTime) : that.predictedTime != null)
+        if (!Objects.equals(plannedTime, that.plannedTime)) return false;
+        if (!Objects.equals(predictedTime, that.predictedTime))
             return false;
-        if (line != null ? !line.equals(that.line) : that.line != null) return false;
-        return stop != null ? stop.equals(that.stop) : that.stop == null;
+        if (!Objects.equals(line, that.line)) return false;
+        return Objects.equals(stop, that.stop);
     }
 
     @Override
