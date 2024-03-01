@@ -74,41 +74,62 @@ public class UniversalCalculator {
         };
     }
 
-    public static DataSeries buildDailyLoadFactorSeries(List<Trip> tripsCorrespondingToLine) {
+    public static DataSeries buildDailyHighestLoadFactorSeries(List<Trip> tripsCorrespondingToLine) {
         Map<LocalDate, List<LoadFactor>> loadFactorByDay = new HashMap<>();
 
         for (Trip trip : tripsCorrespondingToLine) {
-            LocalDate date = trip.getPlannedWhen().toLocalDate();
-            LoadFactor currentLoadFactor = getLoadFactorAsEnum(trip.getLoadFactor());
-
-            loadFactorByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(currentLoadFactor);
-        }
-
-        Map<LocalDate, LoadFactor> medianLoadFactorByDay = new HashMap<>();
-        for (Map.Entry<LocalDate, List<LoadFactor>> entry : loadFactorByDay.entrySet()) {
-            List<LoadFactor> sortedLoadFactors = entry.getValue().stream()
-                    .sorted(Comparator.comparingInt(LoadFactor::ordinal))
-                    .toList();
-
-            LoadFactor medianLoadFactor;
-            int size = sortedLoadFactors.size();
-            if (size % 2 == 0) {
-                medianLoadFactor = sortedLoadFactors.get(size / 2 - 1);
-            } else {
-                medianLoadFactor = sortedLoadFactors.get(size / 2);
+            if (trip.getCancelled() == null) {
+                LocalDate date = trip.getPlannedWhen().toLocalDate();
+                LoadFactor currentLoadFactor = getLoadFactorAsEnum(trip.getLoadFactor());
+                loadFactorByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(currentLoadFactor);
             }
-
-            medianLoadFactorByDay.put(entry.getKey(), medianLoadFactor);
         }
 
-        DataSeries dailyLoadFactorSeries = new DataSeries();
-        for (Map.Entry<LocalDate, LoadFactor> entry : medianLoadFactorByDay.entrySet()) {
-            dailyLoadFactorSeries.add(new DataSeriesItem(
+        Map<LocalDate, LoadFactor> highestLoadFactorByDay = new HashMap<>();
+        for (Map.Entry<LocalDate, List<LoadFactor>> entry : loadFactorByDay.entrySet()) {
+            LoadFactor highestLoadFactor = Collections.max(entry.getValue(), Comparator.comparingInt(LoadFactor::ordinal));
+            highestLoadFactorByDay.put(entry.getKey(), highestLoadFactor);
+        }
+
+        DataSeries dailyHighestLoadFactorSeries = new DataSeries();
+        for (Map.Entry<LocalDate, LoadFactor> entry : highestLoadFactorByDay.entrySet()) {
+            dailyHighestLoadFactorSeries.add(new DataSeriesItem(
                     entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(),
                     entry.getValue().ordinal()));
         }
 
-        return dailyLoadFactorSeries;
+        dailyHighestLoadFactorSeries.setName("Höchste Auslastung");
+
+        return dailyHighestLoadFactorSeries;
+    }
+
+    public static DataSeries buildDailyLowestLoadFactorSeries(List<Trip> tripsCorrespondingToLine) {
+        Map<LocalDate, List<LoadFactor>> loadFactorByDay = new HashMap<>();
+
+        for (Trip trip : tripsCorrespondingToLine) {
+            if (trip.getCancelled() == null) {
+                LocalDate date = trip.getPlannedWhen().toLocalDate();
+                LoadFactor currentLoadFactor = getLoadFactorAsEnum(trip.getLoadFactor());
+                loadFactorByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(currentLoadFactor);
+            }
+        }
+
+        Map<LocalDate, LoadFactor> lowestLoadFactorByDay = new HashMap<>();
+        for (Map.Entry<LocalDate, List<LoadFactor>> entry : loadFactorByDay.entrySet()) {
+            LoadFactor lowestLoadFactor = Collections.min(entry.getValue(), Comparator.comparingInt(LoadFactor::ordinal));
+            lowestLoadFactorByDay.put(entry.getKey(), lowestLoadFactor);
+        }
+
+        DataSeries dailyLowestLoadFactorSeries = new DataSeries();
+        for (Map.Entry<LocalDate, LoadFactor> entry : lowestLoadFactorByDay.entrySet()) {
+            dailyLowestLoadFactorSeries.add(new DataSeriesItem(
+                    entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                    entry.getValue().ordinal()));
+        }
+
+        dailyLowestLoadFactorSeries.setName("Geringste Auslastung");
+
+        return dailyLowestLoadFactorSeries;
     }
 
     public static DataSeries buildDailyDelaySeries(List<Trip> tripsCorrespondingToLine) {
@@ -116,23 +137,31 @@ public class UniversalCalculator {
 
         for (Trip trip : tripsCorrespondingToLine) {
             LocalDate date = trip.getPlannedWhen().toLocalDate();
-            if (trip.getDelay() != null) {
+            if (trip.getCancelled() == null && trip.getDelay() >= 360) {
                 delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(trip.getDelay().doubleValue());
+            } else {
+                delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(0.0);
             }
         }
 
         Map<LocalDate, Double> averageDelayByDay = new HashMap<>();
         for (Map.Entry<LocalDate, List<Double>> entry : delayByDay.entrySet()) {
-            double averageDelay = entry.getValue().stream().mapToDouble(val -> val).average().orElse(0.0);
-            averageDelayByDay.put(entry.getKey(), averageDelay);
+            double averageDelay = entry.getValue().stream()
+                    .filter(val -> val >= 360)
+                    .mapToDouble(val -> val)
+                    .average()
+                    .orElse(0.0);
+            averageDelayByDay.put(entry.getKey(), PercentageUtil.convertToTwoDecimalPlaces(averageDelay));
         }
 
         DataSeries dailyDelaySeries = new DataSeries();
         for (Map.Entry<LocalDate, Double> entry : averageDelayByDay.entrySet()) {
             dailyDelaySeries.add(new DataSeriesItem(
                     entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(),
-                    entry.getValue()));
+                    PercentageUtil.convertToTwoDecimalPlaces(entry.getValue() / 60))); // Convert delay from seconds to minutes
         }
+
+        dailyDelaySeries.setName("Durchschnittliche Verspätung");
 
         return dailyDelaySeries;
     }
@@ -213,8 +242,11 @@ public class UniversalCalculator {
         DataSeries dailyTripCountSeries = new DataSeries();
         // Parallel stream for processing entries concurrently
         dailyTripCounts.forEach((key, value) -> dailyTripCountSeries.add(new DataSeriesItem(
-                key.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                key.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant(),
                 value)));
+
+        dailyTripCountSeries.setName("Tägliche Anzahl an Fahrten");
+
         return dailyTripCountSeries;
     }
 
@@ -310,6 +342,22 @@ public class UniversalCalculator {
         return tripCounts;
     }
 
+    public TripCounts countTrips(List<Trip> trips) {
+        // for everyday count the trips
+        HashMap<LocalDate, Integer> dailyTripCounts = new HashMap<>();
+        trips.forEach(trip -> {
+            // If the trip is cancelled, skip this iteration
+            if (trip.getCancelled() != null && trip.getCancelled()) {
+                return;
+            }
+            LocalDate date = trip.getPlannedWhen().toLocalDate();
+            dailyTripCounts.put(date, dailyTripCounts.getOrDefault(date, 0) + 1);
+        });
+        TripCounts tripCounts = new TripCounts();
+        tripCounts.setDailyTripCounts(dailyTripCounts);
+        return tripCounts;
+    }
+
     /**
      * Calculate the trip statistics for a specific time period.
      *
@@ -323,11 +371,25 @@ public class UniversalCalculator {
         AtomicInteger cancelledTrips = new AtomicInteger();
         AtomicInteger delayedTrips = new AtomicInteger();
 
+        AtomicInteger delayMoreThan6min = new AtomicInteger();
+        AtomicInteger delayMoreThan15min = new AtomicInteger();
+        AtomicInteger delayMoreThan60min = new AtomicInteger();
+
+
         trips.parallelStream().forEach(trip -> {
             if (trip.getCancelled() != null && trip.getCancelled()) {
                 cancelledTrips.incrementAndGet();
-            } else if (trip.getDelay() != null && trip.getDelay() >= 300) {
+            } else if (trip.getDelay() != null && trip.getDelay() >= 360) {
                 delayedTrips.incrementAndGet();
+            }
+            if (trip.getDelay() != null && trip.getDelay() >= 360) {
+                delayMoreThan6min.incrementAndGet();
+            }
+            if (trip.getDelay() != null && trip.getDelay() >= 900) {
+                delayMoreThan15min.incrementAndGet();
+            }
+            if (trip.getDelay() != null && trip.getDelay() >= 3600) {
+                delayMoreThan60min.incrementAndGet();
             }
         });
 
@@ -335,7 +397,20 @@ public class UniversalCalculator {
         double percentageDelayed = calculatePercentage(delayedTrips.get(), totalTrips);
         double percentageOnTime = PercentageUtil.convertToTwoDecimalPlaces(100 - percentageCancelled - percentageDelayed);
 
-        return new TripStatistics(percentageCancelled, percentageDelayed, percentageOnTime);
+        double delayMoreThan6minPercentage = calculatePercentage(delayMoreThan6min.get(), totalTrips);
+        double delayMoreThan15minPercentage = calculatePercentage(delayMoreThan15min.get(), totalTrips);
+        double delayMoreThan60minPercentage = calculatePercentage(delayMoreThan60min.get(), totalTrips);
+
+        TripStatistics tripStatistics = new TripStatistics();
+        tripStatistics.setPercentageOnTime(percentageOnTime);
+        tripStatistics.setPercentageDelayed(percentageDelayed);
+        tripStatistics.setPercentageCancelled(percentageCancelled);
+        tripStatistics.setDelayMoreThan6min(delayMoreThan6minPercentage);
+        tripStatistics.setDelayMoreThan15min(delayMoreThan15minPercentage);
+        tripStatistics.setDelayMoreThan60min(delayMoreThan60minPercentage);
+
+        return tripStatistics;
     }
+
 
 }
