@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 public class StationViewDashboard extends VerticalLayout {
 
@@ -88,9 +87,10 @@ public class StationViewDashboard extends VerticalLayout {
         return new Highlight(title, value);
     }
 
-    public static Component createHighlight(String title, Set<String> values) {
-        return new Highlight(title, values);
+    public static Component createHighlight(String title, String from, String to) {
+        return new Highlight(title, from, to);
     }
+
 
     private Component createDelayedTripsGrid(List<Trip> topDelayedTrips) {
         Grid<Trip> grid = new Grid<>();
