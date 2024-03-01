@@ -20,7 +20,7 @@ public class StationController {
 
     // GET-Endpunkt zum Finden einer Station anhand ihrer stationId
     @GetMapping("/stations/{stationId}")
-    public ResponseEntity<Station> getStationById(@PathVariable("stationId") Long stationId) throws JsonProcessingException {
+    public ResponseEntity<Station> getStationById(@PathVariable("stationId") Long stationId) {
         Optional<Station> station = stationRepository.findByStationId(stationId);
 
         return station.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));

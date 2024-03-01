@@ -9,6 +9,7 @@ import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
 import de.whosfritz.railinsights.exception.JPAError;
+import de.whosfritz.railinsights.utils.TripUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -60,8 +61,10 @@ public class JourneyDataProvider {
                     return tripDeparture.getDayOfWeek() != legPlannedDeparture.getDayOfWeek();
                 });
 
+                trips = TripUtil.removeDuplicates(trips);
 
-                oldTrips.put(count, result.getData());
+
+                oldTrips.put(count, trips);
             }
         }
 
