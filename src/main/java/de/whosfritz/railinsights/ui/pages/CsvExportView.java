@@ -5,36 +5,36 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.datetimepicker.DateTimePicker;
-import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
-import de.whosfritz.railinsights.data.services.csv_export_service.CSVExporter;
+import de.whosfritz.railinsights.data.services.csv_export_service.CSVExporterService;
 import de.whosfritz.railinsights.ui.components.dialogs.GeneralRailInsightsDialog;
+import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
+import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
 import org.vaadin.firitin.components.DynamicFileDownloader;
+import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.io.PrintWriter;
-import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Route(value = "csv-export", layout = MainView.class)
 
 public class CsvExportView extends VerticalLayout {
 
-    public CsvExportView(CSVExporter csvExporter) {
+    public CsvExportView(CSVExporterService csvExporterService) {
 
-        FormLayout comboboxLayout = new FormLayout();
+        HorizontalLayout wrapper = new HorizontalLayout();
 
-        ComboBox<String> tableSelection = new ComboBox<>("Tabellen");
-        tableSelection.setItems(
+        ComboBox<String> tableToDownloadComboBox = new ComboBox<>("Tabellen");
+        tableToDownloadComboBox.setItems(
                 "Adressen",
                 "Geographische Koordinaten",
                 "Linien",
@@ -43,83 +43,70 @@ public class CsvExportView extends VerticalLayout {
                 "Regionalbereiche",
                 "Bemerkungen zu Fahrten",
                 "Ril100Kennzeichnungen",
-                "Standort Stationen",
+                "Standorte von Stationen",
                 "Station Managements",
                 "Stationen",
-                "Standort Haltestellen",
+                "Standorte von Haltestellen",
                 "Haltestellen",
                 "Zentrale",
                 "Fahrplan Büros",
                 "Fahrten (Stops)"
         );
 
-        DateTimePicker startDateTimePicker = new DateTimePicker("Start Date");
+        DatePicker startDateTimePicker = new DatePicker("Start Date");
+        startDateTimePicker.setValue(LocalDate.now());
+        startDateTimePicker.setVisible(false);
 
-        DateTimePicker endDateTimePicker = new DateTimePicker("End Date");
+        Dialog test = new Dialog("CSV-Export");
+        add(test);
 
         DynamicFileDownloader dynamicFileDownloader = new DynamicFileDownloader(out -> {
-            if (tableSelection.getValue() == null || tableSelection.getValue().isEmpty()) {
+            LocalDate startValue = startDateTimePicker.getValue();
+            String comboBoxSelectedValue = tableToDownloadComboBox.getValue();
+            if (comboBoxSelectedValue == null || comboBoxSelectedValue.isEmpty() || comboBoxSelectedValue.isBlank() || startValue == null) {
                 return;
             }
             PrintWriter writer = new PrintWriter(out);
-            Class<?> clazz = null;
-            Set<String> excludedFields = csvExporter.getExcludedFields(tableSelection.getValue());
-            for (Object x : csvExporter.getItems(tableSelection.getValue(), startDateTimePicker.getValue(), endDateTimePicker.getValue())) {
-                if (clazz == null) {
-                    clazz = x.getClass();
-                    Field[] fields = clazz.getDeclaredFields();
-                    String fieldNames = Arrays.stream(fields)
-                            .map(Field::getName)
-                            .filter(name -> !excludedFields.contains(name)) // Exclude fields
-                            .collect(Collectors.joining(";"));
-                    writer.println(fieldNames);
-                }
-                String fieldValues = Arrays.stream(clazz.getDeclaredFields())
-                        .filter(field -> !excludedFields.contains(field.getName())) // Exclude fields
-                        .map(field -> {
-                            try {
-                                field.setAccessible(true);
-                                return String.valueOf(field.get(x));
-                            } catch (IllegalAccessException e) {
-                                return ""; // Handle exception appropriately
-                            }
-                        })
-                        .collect(Collectors.joining(";"));
-                writer.println(fieldValues);
-            }
-            writer.close();
+            createCsv(csvExporterService, comboBoxSelectedValue, startValue, writer);
         });
         dynamicFileDownloader.setDisableOnClick(true);
-        dynamicFileDownloader.addDownloadFinishedListener(e -> new Thread(() -> {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-            dynamicFileDownloader.getUI().ifPresent(ui -> ui.access(() -> dynamicFileDownloader.setEnabled(true)));
-        }).start());
+        dynamicFileDownloader.addDownloadFinishedListener(e -> {
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                        dynamicFileDownloader.getUI().ifPresent(ui -> ui.access(() -> dynamicFileDownloader.setEnabled(true)));
+                    }
+                    ).start();
+                    UI.getCurrent().access(() -> {
+                        NotificationFactory.createNotification(NotificationTypes.SUCCESS, "Download finished").open();
+                    });
+                }
+        );
+        dynamicFileDownloader.addDownloadFailedListener(e -> {
+            NotificationFactory.createNotification(NotificationTypes.ERROR, "Download failed").open();
+        });
 
         UI.getCurrent().setPollInterval(500);
 
         dynamicFileDownloader.setEnabled(false);
         dynamicFileDownloader.asButton();
         dynamicFileDownloader.getButton().setIcon(new Icon(VaadinIcon.DOWNLOAD));
+        dynamicFileDownloader.getButton().addClickListener(e -> {
+            NotificationFactory.createNotification(NotificationTypes.INFO, "Download started").open();
+        });
 
-        FormLayout datumFormLayout = new FormLayout();
-        datumFormLayout.setVisible(false);
-
-        tableSelection.addValueChangeListener(event -> {
+        tableToDownloadComboBox.addValueChangeListener(event -> {
             String selectedTable = event.getValue();
 
             dynamicFileDownloader.setFileName(LocalDateTime.now() + "_" + selectedTable + ".csv");
             dynamicFileDownloader.setEnabled(event.getValue() != null);
 
-            datumFormLayout.setVisible(event.getValue() != null && event.getValue().equals("Fahrten"));
+            startDateTimePicker.setVisible(selectedTable != null && !selectedTable.isBlank() && !selectedTable.isEmpty() && event.getValue().equals("Fahrten (Stops)"));
         });
 
-        comboboxLayout.add(tableSelection);
-
-        datumFormLayout.add(startDateTimePicker, endDateTimePicker);
 
         Paragraph infoParagraph = new Paragraph("Diese Seite ermöglicht es, Daten aus der Datenbank als CSV-Datei herunterzuladen." +
                 " Wähle dazu eine Tabelle aus und klicke auf den Download-Button. ");
@@ -141,9 +128,15 @@ public class CsvExportView extends VerticalLayout {
             dialog.open();
         });
 
-        add(infoButton);
-        add(comboboxLayout);
-        add(datumFormLayout);
-        add(new FormLayout(dynamicFileDownloader));
+        Button previewButton = new Button(LineAwesomeIcon.WHEELCHAIR_SOLID.create());
+        wrapper.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
+        tableToDownloadComboBox.setWidth(30f, Unit.PERCENTAGE);
+        wrapper.setWidthFull();
+        wrapper.add(infoButton, tableToDownloadComboBox, startDateTimePicker, previewButton, dynamicFileDownloader);
+        add(wrapper);
+    }
+
+    private void createCsv(CSVExporterService csvExporterService, String comboBoxSelection, LocalDate startDateTimePickerValue, PrintWriter writer) {
+        csvExporterService.writeCsv(comboBoxSelection, startDateTimePickerValue, writer);
     }
 }

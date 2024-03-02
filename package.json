@@ -4,7 +4,6 @@
   "type": "module",
   "dependencies": {
     "@polymer/polymer": "3.5.1",
-    "@vaadin-component-factory/vcf-popup": "24.0.3",
     "@vaadin/a11y-base": "24.3.3",
     "@vaadin/accordion": "24.3.3",
     "@vaadin/app-layout": "24.3.3",
@@ -101,7 +100,6 @@
   "vaadin": {
     "dependencies": {
       "@polymer/polymer": "3.5.1",
-      "@vaadin-component-factory/vcf-popup": "24.0.3",
       "@vaadin/a11y-base": "24.3.3",
       "@vaadin/accordion": "24.3.3",
       "@vaadin/app-layout": "24.3.3",
@@ -195,7 +193,7 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "b89a193ad48fbb5e47d22a4fed379f425a6def91b0cc1d066206d865a31c583a"
+    "hash": "aa07176bb324d6a387237e3369d9e5dc6ff75048fd481c0f481acac472ac9abb"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -266,7 +264,6 @@
     "@vaadin/charts": "$@vaadin/charts",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "date-fns": "$date-fns",
-    "@vaadin-component-factory/vcf-popup": "$@vaadin-component-factory/vcf-popup",
     "@vaadin/board": "$@vaadin/board",
     "@vaadin/cookie-consent": "$@vaadin/cookie-consent",
     "@vaadin/crud": "$@vaadin/crud",
