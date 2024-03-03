@@ -23,7 +23,6 @@ import de.olech2412.adapter.dbadapter.model.stop.sub.Line;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.whosfritz.railinsights.calculation.UniversalCalculator;
 import de.whosfritz.railinsights.data.LoadFactor;
-import de.whosfritz.railinsights.data.dto.TripCounts;
 import de.whosfritz.railinsights.data.dto.TripStatistics;
 import de.whosfritz.railinsights.data.services.LineService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
@@ -34,6 +33,7 @@ import de.whosfritz.railinsights.ui.layout.MainView;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
 import de.whosfritz.railinsights.utils.DateTimeLabelFormatsUtil;
 import de.whosfritz.railinsights.utils.PercentageUtil;
+import de.whosfritz.railinsights.utils.TripUtil;
 import jakarta.transaction.Transactional;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
@@ -69,7 +69,7 @@ public class TrainStatsView extends VerticalLayout {
         searchLayout.setAlignItems(Alignment.BASELINE);
 
         Paragraph infoParagraph = new Paragraph("Hier kannst du dir die Statistiken zu Zügen anzeigen lassen.");
-        Paragraph infoCalcParagraph = new Paragraph("Wähle aus der Liste einen Fernverkehrszug aus und gib den Zeitraum an, für den du die Statistiken sehen möchtest.");
+        Paragraph infoCalcParagraph = new Paragraph("Wähle aus der Liste einen Fernverkehrszug aus und gib den Zeitraum an, für den du die Statistiken sehen möchtest. z.B. 2.3.2024 - 4.3.2024 wird dir die Daten von 2.3.2024 0 Uhr bis zum 5.3.2024 0 Uhr anzeigen, ergo den vollen ausgewählten Endtag.");
 
 
         Button infoButton = new Button("Informationen");
@@ -93,22 +93,22 @@ public class TrainStatsView extends VerticalLayout {
         fernVerkehrLinesCombobox.addClassNames(LumoUtility.Margin.Top.MEDIUM);
         fernVerkehrLinesCombobox.setPrefixComponent(LineAwesomeIcon.SUBWAY_SOLID.create());
 
-
         startDatePicker.setLabel("Startdatum");
-        startDatePicker.setValue(LocalDate.now());
+        startDatePicker.setValue(LocalDate.now().minusMonths(1));
         startDatePicker.addClassNames(LumoUtility.Margin.Top.MEDIUM);
-        startDatePicker.setPrefixComponent(LineAwesomeIcon.CALENDAR_ALT_SOLID.create());
         startDatePicker.setLocale(new Locale("de", "DE"));
 
         endDatePicker.setLabel("Enddatum");
-        endDatePicker.setValue(startDatePicker.getValue().plusDays(1));
+        endDatePicker.setValue(LocalDate.now());
         endDatePicker.addClassNames(LumoUtility.Margin.Top.MEDIUM);
-        endDatePicker.setPrefixComponent(LineAwesomeIcon.CALENDAR_ALT_SOLID.create());
         endDatePicker.setLocale(new Locale("de", "DE"));
 
         Button calculateStatsButton = new Button("Statistiken berechnen");
         calculateStatsButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        calculateStatsButton.addClickListener(e -> createStats());
+        calculateStatsButton.addClickListener(e -> {
+            createStats();
+            fernVerkehrLinesCombobox.clear();
+        });
 
 
         // Todo: Remarks / Bemerkungen zu den Fahrten (idk yet)
@@ -129,6 +129,10 @@ public class TrainStatsView extends VerticalLayout {
 
         LocalDateTime from = startDatePicker.getValue().atStartOfDay();
         LocalDateTime to = endDatePicker.getValue().atStartOfDay().plusDays(1);
+        if (from.isAfter(to)) {
+            NotificationFactory.createNotification(NotificationTypes.ERROR, "Bitte einen validen Zeitraum wählen").open();
+            return;
+        }
 
         List<Trip> tripsCorrespondingToLine = tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(from, to, comboboxValue.getName()).getData();
         // sort by plannedwhen ascending
@@ -138,19 +142,15 @@ public class TrainStatsView extends VerticalLayout {
             NotificationFactory.createNotification(NotificationTypes.WARNING, "Der Zeitraum ist zu kurz gewählt. Es wurden keine Daten gefunden").open();
             return;
         }
+        tripsCorrespondingToLine = TripUtil.removeDuplicates(tripsCorrespondingToLine);
+        tripsCorrespondingToLine.sort(Comparator.comparing(Trip::getPlannedWhen));
+
         int fahrtenCount = tripsCorrespondingToLine.stream().filter(trip -> trip.getDirection() == null && trip.getCancelled() == null).mapToInt(trip -> 1).sum();
-
-
-        long tripsDelayedMoreThanSixHours = tripsCorrespondingToLine.stream().filter(trip -> trip.getDelay() != null && trip.getDelay() >= 360).count();
-
-        int sumOfTripsDelayedMoreThanSixHours = tripsCorrespondingToLine.stream().filter(trip -> trip.getDelay() != null && trip.getDelay() >= 360).mapToInt(Trip::getDelay).sum();
-
-        double avgDelayInSeconds = (double) sumOfTripsDelayedMoreThanSixHours / tripsDelayedMoreThanSixHours;
+        long tripsDelaysMoreThan0 = tripsCorrespondingToLine.stream().filter(trip -> trip.getDelay() != null && trip.getDelay() >= 0).count();
+        int sumOfTripsDelayedMoreThanSixMinutes = tripsCorrespondingToLine.stream().filter(trip -> trip.getDelay() != null && trip.getDelay() >= 360).mapToInt(Trip::getDelay).sum();
+        double avgDelayInSeconds = (double) sumOfTripsDelayedMoreThanSixMinutes / tripsDelaysMoreThan0;
 
         TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripsCorrespondingToLine);
-
-
-        TripCounts tripCounts = universalCalculator.countTrips(tripsCorrespondingToLine);
 
 
         double globalOnTimePercentage = (dataProviderService.getStopsPercentageOnTime() != null) ? dataProviderService.getStopsPercentageOnTime() : 0.0;
@@ -186,7 +186,6 @@ public class TrainStatsView extends VerticalLayout {
 
         String zielBahnhof = tripsCorrespondingToLine.stream().filter(trip -> trip.getDirection() != null).findFirst().map(Trip::getDirection).orElse("Unbekannt");
 
-
         Board board = new Board();
         board.addRow(
                 createHighlight("Zug: ", comboboxValue.getName()),
@@ -211,7 +210,7 @@ public class TrainStatsView extends VerticalLayout {
         board.addRow(abfahrtenStats2);
         DataSeries dailyDelaySeries = UniversalCalculator.buildDailyDelaySeries(tripsCorrespondingToLine);
         board.addRow(createDailyDelayChart(dailyDelaySeries));
-        // nicht median sondern höchste und geringste auslastung
+        // nicht median, sondern höchste und geringste auslastung
         DataSeries dailyLowestLoadFactorSeries = UniversalCalculator.buildDailyLowestLoadFactorSeries(tripsCorrespondingToLine);
         DataSeries dailyHighestLoadFactorSeries = UniversalCalculator.buildDailyHighestLoadFactorSeries(tripsCorrespondingToLine);
         board.addRow(createDailyLoadFactorChart(List.of(dailyLowestLoadFactorSeries, dailyHighestLoadFactorSeries)));
@@ -244,6 +243,7 @@ public class TrainStatsView extends VerticalLayout {
         YAxis yAxis = chart.getConfiguration().getyAxis();
         yAxis.setTitle(new AxisTitle());
 
+
         XAxis xAxis = chart.getConfiguration().getxAxis();
         xAxis.setType(AxisType.DATETIME);
         xAxis.setTitle(new AxisTitle());
@@ -254,7 +254,6 @@ public class TrainStatsView extends VerticalLayout {
         conf.setPlotOptions(plotOptions);
 
         return chart;
-
     }
 
     public Component createDailyLoadFactorChart(List<DataSeries> dailyLoadFactorSeries) {
