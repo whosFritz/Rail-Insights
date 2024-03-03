@@ -123,9 +123,9 @@ public class MainView extends AppLayout {
 
     private String getLogoSrc(ThemeVariant themeVariant) {
         if (themeVariant == ThemeVariant.DARK) {
-            return "images/darkmode.png";
+            return "images/lightmode.png";
         }
-        return "images/lightmode.png";
+        return "images/darkmode.png";
     }
 
     /**
