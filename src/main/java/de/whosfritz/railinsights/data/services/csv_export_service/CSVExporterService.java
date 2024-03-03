@@ -41,9 +41,24 @@ public class CSVExporterService {
     private final StopService stopService;
     private final SzentraleService szentraleService;
     private final TimeTableOfficeService timeTableOfficeService;
-    private final TripsRepository triprepository;
+    private final TripsRepository tripRepository;
 
-    public CSVExporterService(OperatorService operatorService, AddressService addressService, GeographicCoordinatesService geographicCoordinatesService, LineService lineService, ProductLineService productLineService, RegionalbereichService regionalbereichService, RemarkService remarkService, Ril100IdentifierService ril100IdentifierService, StationLocationService stationLocationService, StationManagementService stationManagementService, StationService stationService, StopLocationService stopLocationService, StopService stopService, SzentraleService szentraleService, TimeTableOfficeService timeTableOfficeService, TripsRepository triprepository) {
+    public CSVExporterService(OperatorService operatorService,
+                              AddressService addressService,
+                              GeographicCoordinatesService geographicCoordinatesService,
+                              LineService lineService,
+                              ProductLineService productLineService,
+                              RegionalbereichService regionalbereichService,
+                              RemarkService remarkService,
+                              Ril100IdentifierService ril100IdentifierService,
+                              StationLocationService stationLocationService,
+                              StationManagementService stationManagementService,
+                              StationService stationService,
+                              StopLocationService stopLocationService,
+                              StopService stopService,
+                              SzentraleService szentraleService,
+                              TimeTableOfficeService timeTableOfficeService,
+                              TripsRepository tripRepository) {
         this.operatorService = operatorService;
         this.addressService = addressService;
         this.geographicCoordinatesService = geographicCoordinatesService;
@@ -59,7 +74,7 @@ public class CSVExporterService {
         this.stopService = stopService;
         this.szentraleService = szentraleService;
         this.timeTableOfficeService = timeTableOfficeService;
-        this.triprepository = triprepository;
+        this.tripRepository = tripRepository;
     }
 
 
@@ -105,7 +120,7 @@ public class CSVExporterService {
                 writeStopCsv(writer);
                 break;
             case "Zentrale":
-                writeSzentraleCsv(writer);
+                writeZentraleCsv(writer);
                 break;
             case "Fahrplan Büros":
                 writeTimeTableOfficeCsv(writer);
@@ -161,7 +176,7 @@ public class CSVExporterService {
         writer.println(Arrays.stream(fields).map(Field::getName).filter(s -> !s.equals("trips")).reduce((s, s2) -> s + ";" + s2).get());
         for (Line line : items) {
             writer.println(
-                    line.getOperator() + ";" +
+                    (line.getOperator() == null ? "null" : line.getOperator().getId()) + ";" +
                             line.getType() + ";" +
                             line.getLineId() + ";" +
                             line.getFahrtNr() + ";" +
@@ -380,7 +395,7 @@ public class CSVExporterService {
         }
     }
 
-    private void writeSzentraleCsv(PrintWriter writer) {
+    private void writeZentraleCsv(PrintWriter writer) {
         Iterable<Szentrale> items = szentraleService.getAllSzentrales();
         if (items == null) {
             return;
@@ -417,9 +432,8 @@ public class CSVExporterService {
 
     public void writeTripCsv(PrintWriter writer, LocalDate startDatePickerValue) {
         LocalDateTime startLocalDateTime = startDatePickerValue.atStartOfDay();
-        LocalDateTime endLocalDateTime = startLocalDateTime.plusDays(2);
-        Iterable<Trip> items = triprepository.findAllByPlannedWhenAfterAndPlannedWhenBefore(startLocalDateTime, endLocalDateTime).get();
-
+        LocalDateTime endLocalDateTime = startLocalDateTime.plusDays(3);
+        Iterable<Trip> items = tripRepository.findAllByPlannedWhenAfterAndPlannedWhenBefore(startLocalDateTime, endLocalDateTime).get();
         // get the trip class
         Field[] fields = Trip.class.getDeclaredFields();
         writer.println(Arrays.stream(fields).map(Field::getName).filter(s -> !s.equals("remarks")).reduce((s, s2) -> s + ";" + s2).get());
@@ -448,4 +462,5 @@ public class CSVExporterService {
 
         }
     }
+
 }

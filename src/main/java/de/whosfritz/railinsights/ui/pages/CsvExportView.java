@@ -19,7 +19,6 @@ import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
 import org.vaadin.firitin.components.DynamicFileDownloader;
-import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -74,8 +73,7 @@ public class CsvExportView extends VerticalLayout {
                     new Thread(() -> {
                         try {
                             Thread.sleep(5000);
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
+                        } catch (InterruptedException ignored) {
                         }
                         dynamicFileDownloader.getUI().ifPresent(ui -> ui.access(() -> dynamicFileDownloader.setEnabled(true)));
                     }
@@ -95,7 +93,7 @@ public class CsvExportView extends VerticalLayout {
         dynamicFileDownloader.asButton();
         dynamicFileDownloader.getButton().setIcon(new Icon(VaadinIcon.DOWNLOAD));
         dynamicFileDownloader.getButton().addClickListener(e -> {
-            NotificationFactory.createNotification(NotificationTypes.INFO, "Download started").open();
+            NotificationFactory.createNotification(NotificationTypes.WARNING, "Download started").open();
         });
 
         tableToDownloadComboBox.addValueChangeListener(event -> {
@@ -111,13 +109,16 @@ public class CsvExportView extends VerticalLayout {
         Paragraph infoParagraph = new Paragraph("Diese Seite ermöglicht es, Daten aus der Datenbank als CSV-Datei herunterzuladen." +
                 " Wähle dazu eine Tabelle aus und klicke auf den Download-Button. ");
 
+        Paragraph infoParagraph2 = new Paragraph("Die Tabelle 'Fahrten (Stops)' benötigt zusätzlich ein Startdatum, um die Daten zu filtern. " +
+                "Wähle dazu ein Datum aus und klicke auf den Download-Button. Daten werden dann ab diesem Datum bis 3 Tage in die Zukunft exportiert. z.B. 02.02.2024 00:00:00 bis 06.02.2024 00:00:00.");
+
         Button infoButton = new Button("Informationen");
         infoButton.setIcon(new Icon(VaadinIcon.INFO_CIRCLE));
         infoButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SMALL);
         infoButton.setTooltipText("Klicke hier für mehr Informationen zu dieser Seite.");
         infoButton.setAriaLabel("Informationen");
         infoButton.addClickListener(e -> {
-            HorizontalLayout infoLayout = new HorizontalLayout(new VerticalLayout(infoParagraph));
+            HorizontalLayout infoLayout = new HorizontalLayout(new VerticalLayout(infoParagraph, infoParagraph2));
             infoLayout.setWidth(100f, Unit.PERCENTAGE);
             infoLayout.setMaxWidth(100f, Unit.PERCENTAGE);
 
@@ -128,13 +129,13 @@ public class CsvExportView extends VerticalLayout {
             dialog.open();
         });
 
-        Button previewButton = new Button(LineAwesomeIcon.WHEELCHAIR_SOLID.create());
         wrapper.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
         tableToDownloadComboBox.setWidth(30f, Unit.PERCENTAGE);
         wrapper.setWidthFull();
-        wrapper.add(infoButton, tableToDownloadComboBox, startDateTimePicker, previewButton, dynamicFileDownloader);
+        wrapper.add(infoButton, tableToDownloadComboBox, startDateTimePicker, dynamicFileDownloader);
         add(wrapper);
     }
+
 
     private void createCsv(CSVExporterService csvExporterService, String comboBoxSelection, LocalDate startDateTimePickerValue, PrintWriter writer) {
         csvExporterService.writeCsv(comboBoxSelection, startDateTimePickerValue, writer);
