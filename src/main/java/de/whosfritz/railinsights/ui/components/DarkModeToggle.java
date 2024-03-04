@@ -12,9 +12,9 @@ import de.whosfritz.railinsights.ui.color_scheme.ThemeVariant;
 import jakarta.servlet.http.Cookie;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-public class DarkModeToggle3 extends VerticalLayout {
+public class DarkModeToggle extends VerticalLayout {
 
-    public DarkModeToggle3() {
+    public DarkModeToggle() {
         ToggleButton themeToggleButton = new ToggleButton();
         themeToggleButton.addClickListener(event -> toggleTheme());
         themeToggleButton.setValue(ThemeUtil.getCurrentThemeVariant() == ThemeVariant.DARK);

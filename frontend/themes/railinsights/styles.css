@@ -53,6 +53,23 @@ html {
         background-color: var(--lumo-error-color-10pct);
     }
 
+    .highcharts-contextmenu {
+        background-color: #0B1323;
+    }
+
+    .highcharts-menu {
+        background: #0B1323;
+    }
+
+    .highcharts-button-normal {
+        fill: #0B1323;
+    }
+
+    .highcharts-button-normal:hover {
+        fill: #0B1323;
+        stroke: #0B1323;
+    }
+
     vaadin-grid.styling::part(lowTransfer) {
         background-color: var(--lumo-warning-color);
     }
@@ -64,6 +81,7 @@ html {
     vaadin-grid.styling::part(font-weight-bold) {
         font-weight: bold;
     }
+}
 
     [theme~="dark"] {
 

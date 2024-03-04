@@ -51,7 +51,9 @@ import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -340,11 +342,35 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         whenAfter.setVisible(true);
 
         whenAfter.addValueChangeListener(e -> {
+            LocalDate afterDate = LocalDate.from(whenAfter.getValue());
+            LocalDate beforeDate = LocalDate.from(whenBefore.getValue());
+
+            if (afterDate != null && beforeDate != null) {
+                long daysBetween = ChronoUnit.DAYS.between(afterDate, beforeDate);
+                if (daysBetween > 7) {
+                    Notification errorNotification = NotificationFactory.createwNotification(NotificationTypes.CRITICAL,
+                            "Die ausgewählte Zeitspanne darf maximal 7 Tage betragen");
+                    errorNotification.open();
+                    return;
+                }
+            }
             dataProvider.updateWhenAfterAndWhenBefore(whenAfter.getValue(), whenBefore.getValue());
             filterDataProvider.refreshAll();
         });
 
         whenBefore.addValueChangeListener(e -> {
+            LocalDate afterDate = LocalDate.from(whenAfter.getValue());
+            LocalDate beforeDate = LocalDate.from(whenBefore.getValue());
+
+            if (afterDate != null && beforeDate != null) {
+                long daysBetween = ChronoUnit.DAYS.between(afterDate, beforeDate);
+                if (daysBetween > 7) {
+                    Notification errorNotification = NotificationFactory.createwNotification(NotificationTypes.CRITICAL,
+                            "Die ausgewählte Zeitspanne darf maximal 7 Tage betragen");
+                    errorNotification.open();
+                    return;
+                }
+            }
             dataProvider.updateWhenAfterAndWhenBefore(whenAfter.getValue(), whenBefore.getValue());
             filterDataProvider.refreshAll();
         });

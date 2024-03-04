@@ -4,6 +4,7 @@ import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,13 @@ import java.util.Optional;
  */
 @Repository
 public interface TripsRepository extends ListCrudRepository<Trip, Long> {
+
+    @Query(value = "SELECT DATE(trip_planned_when) AS trip_date, COUNT(*) AS trip_count FROM trips GROUP BY DATE(trip_planned_when) ORDER BY trip_date", nativeQuery = true)
+    List<Object[]> countTripsByDate();
+
+    int countAllByCancelled(boolean cancelled);
+
+    int countAllByDelayIsGreaterThanEqual(int delay);
 
     Optional<List<Trip>> findAllByTripIdAndStopAndCreatedAtAfter(
             @Param("tripId") String tripId,

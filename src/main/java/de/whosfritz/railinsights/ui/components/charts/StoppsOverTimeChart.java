@@ -24,7 +24,12 @@ public class StoppsOverTimeChart extends Div {
 
         XAxis xAxis = configuration.getxAxis();
         xAxis.setType(AxisType.DATETIME);
+        xAxis.setStartOfWeek(1);
         xAxis.setTitle("Zeit");
+
+        PlotOptionsArea plotOptions = new PlotOptionsArea();
+        plotOptions.setStacking(Stacking.NORMAL);
+        configuration.setPlotOptions(plotOptions);
 
         configuration.getTooltip().setValueSuffix(" Stopps");
 
