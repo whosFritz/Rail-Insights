@@ -68,6 +68,7 @@ public class CsvExportView extends VerticalLayout {
             PrintWriter writer = new PrintWriter(out);
             createCsv(csvExporterService, comboBoxSelectedValue, startValue, writer);
         });
+
         dynamicFileDownloader.setDisableOnClick(true);
         dynamicFileDownloader.addDownloadFinishedListener(e -> {
                     new Thread(() -> {
@@ -80,6 +81,7 @@ public class CsvExportView extends VerticalLayout {
                     ).start();
                     UI.getCurrent().access(() -> {
                         NotificationFactory.createNotification(NotificationTypes.SUCCESS, "Download finished").open();
+                        tableToDownloadComboBox.setEnabled(true);
                     });
                 }
         );
@@ -94,6 +96,7 @@ public class CsvExportView extends VerticalLayout {
         dynamicFileDownloader.getButton().setIcon(new Icon(VaadinIcon.DOWNLOAD));
         dynamicFileDownloader.getButton().addClickListener(e -> {
             NotificationFactory.createNotification(NotificationTypes.WARNING, "Download started").open();
+            tableToDownloadComboBox.setEnabled(false);
         });
 
         tableToDownloadComboBox.addValueChangeListener(event -> {
