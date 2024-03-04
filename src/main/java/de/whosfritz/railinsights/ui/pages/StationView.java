@@ -146,6 +146,9 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         map.setMinWidth(70f, Unit.PERCENTAGE);
         map.setHeightFull();
 
+        map.addFeatureClickListener(mapFeatureClickEvent -> {
+            openArrivalDepartureDialog(stopToLocation.get(mapFeatureClickEvent.getFeature()));
+        });
 
         HorizontalLayout infoLayout = new HorizontalLayout(infoButton, whenAfter, whenBefore);
         infoLayout.setAlignItems(Alignment.BASELINE);

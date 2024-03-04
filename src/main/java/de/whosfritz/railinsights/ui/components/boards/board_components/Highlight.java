@@ -34,15 +34,17 @@ public class Highlight extends VerticalLayout {
                 theme += " success";
             } else {
                 theme += " error";
-            }
-        } else if (percentage < 0) {
-            if (inverted) {
-                icon = VaadinIcon.ARROW_DOWN;
-                theme += " error";
             } else {
-                icon = VaadinIcon.ARROW_DOWN;
                 theme += " success";
             }
+            icon = VaadinIcon.ARROW_UP;
+        } else if (percentage < 0) {
+            if (inverted) {
+                theme += " success";
+            } else {
+                theme += " error";
+            }
+            icon = VaadinIcon.ARROW_DOWN;
         }
 
         H2 h2 = new H2(title);
@@ -56,7 +58,6 @@ public class Highlight extends VerticalLayout {
 
         Span badge = new Span(i, new Span(prefix + percentage + " " + unit + " - " + explanation));
         badge.getElement().getThemeList().add(theme);
-
 
         add(h2, span, badge);
         addClassNames(LumoUtility.Padding.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10);

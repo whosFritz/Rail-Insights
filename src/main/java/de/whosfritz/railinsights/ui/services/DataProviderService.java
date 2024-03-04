@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Getter
@@ -188,10 +189,15 @@ public class DataProviderService {
      * @return the converted stopDTOs list
      */
     public List<StopDto> getAllNationalStopsConvertedToDto() {
-        List<StopDto> stopDtos = new ArrayList<>();
-        allStops.stream().filter(stop -> stop.getProducts().isNational()).toList().forEach(stop ->
-                stopDtos.add(new StopDto(stop.getStopId().toString(), stop.getName(), stop.getLocation().getLatitude(), stop.getLocation().getLongitude(), stop.getStation())));
-        return stopDtos;
+        return allStops.parallelStream()
+                .filter(stop -> stop.getProducts().isNational())
+                .map(stop -> new StopDto(
+                        stop.getStopId().toString(),
+                        stop.getName(),
+                        stop.getLocation().getLatitude(),
+                        stop.getLocation().getLongitude(),
+                        stop.getStation()))
+                .collect(Collectors.toList());
     }
 
 }
