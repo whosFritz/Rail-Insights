@@ -120,9 +120,8 @@ public class ConnectionPrognoseView extends VerticalLayout {
 
         if (journeys.isSuccess()) {
             if (journeys.getData() == null) {
-                Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Keine Verbindungen für die angegebenen Daten gefunden");
+                Notification error = NotificationFactory.createNotification(NotificationTypes.CRITICAL, "Keine Verbindungen für die angegebenen Daten gefunden");
                 error.open();
-
                 return;
             }
             List<Journey> journeyList = Arrays.stream(journeys.getData()).toList();
@@ -131,10 +130,10 @@ public class ConnectionPrognoseView extends VerticalLayout {
             ticketComponent.setJourneys(journeyList);
         } else {
             if (journeys.getError().getCode() == 404) {
-                Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Keine Verbindungen für die angegebenen Daten gefunden");
+                Notification error = NotificationFactory.createNotification(NotificationTypes.CRITICAL, "Keine Verbindungen für die angegebenen Daten gefunden");
                 error.open();
             } else {
-                Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Ein Fehler bei der Kommunikation zum HAFAS-Server ist aufgetreten. Bitte versuche es später erneut.");
+                Notification error = NotificationFactory.createNotification(NotificationTypes.CRITICAL, "Ein Fehler bei der Kommunikation zum HAFAS-Server ist aufgetreten. Bitte versuche es später erneut.");
                 error.open();
             }
         }

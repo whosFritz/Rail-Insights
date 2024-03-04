@@ -47,6 +47,12 @@ public class DataProviderService {
 
     Double stopsPercentageCancelled;
 
+    Double stopsPercentageDelayedMoreThan6min;
+
+    Double stopsPercentageDelayedMoreThan15min;
+
+    Double stopsPercentageDelayedMoreThan60min;
+
     DataSeries stoppsOverTimeDataSeries;
 
     int totalTrips;
@@ -109,6 +115,32 @@ public class DataProviderService {
         stopsPercentageOnTime = (Math.round(percentageOnTime * 100.0) / 100.0) * 100;
         formatted = df.format(stopsPercentageOnTime);
         stopsPercentageOnTime = Double.parseDouble(formatted);
+
+        stopsPercentageDelayedMoreThan6min = stopsPercentageDelayed;
+
+        double percentageDelayedMoreThan15min = ((double) allTrips.stream().filter(trip -> {
+            if (trip.getCancelled() == null || !trip.getCancelled()) {
+                if (trip.getDelay() != null) {
+                    return trip.getDelay() >= 900;
+                }
+            }
+            return false;
+        }).count() / allTrips.size());
+
+        stopsPercentageDelayedMoreThan15min = (Math.round(percentageDelayedMoreThan15min * 100.0) / 100.0) * 100;
+        formatted = df.format(stopsPercentageDelayedMoreThan15min);
+        stopsPercentageDelayedMoreThan15min = Double.parseDouble(formatted);
+
+        double percentageDelayedMoreThan60min = ((double) allTrips.stream().filter(trip -> {
+            if (trip.getCancelled() == null || !trip.getCancelled()) {
+                if (trip.getDelay() != null) {
+                    return trip.getDelay() >= 3600;
+                }
+            }
+            return false;
+        }).count());
+        double stopsPercentageDelayedMoreThan60mi = percentageDelayedMoreThan60min / allTrips.size();
+        stopsPercentageDelayedMoreThan60min = Math.round(stopsPercentageDelayedMoreThan60mi * 1000.0) / 1000.0 * 100;
 
         generateHomeViewStatistics(allTrips);
 

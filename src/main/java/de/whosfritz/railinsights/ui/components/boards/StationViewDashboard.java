@@ -79,6 +79,19 @@ public class StationViewDashboard extends VerticalLayout {
         add(board);
     }
 
+    public static Component createHighlight(String title, String value, Double percentage, String explanation, boolean inverted) {
+        return new Highlight(title, value, percentage, explanation, inverted, "%");
+    }
+
+    public static Component createHighlight(String title, String value) {
+        return new Highlight(title, value);
+    }
+
+    public static Component createHighlight(String title, String from, String to) {
+        return new Highlight(title, from, to);
+    }
+
+
     private Component createDelayedTripsGrid(List<Trip> topDelayedTrips) {
         Grid<Trip> grid = new Grid<>();
         grid.setItems(topDelayedTrips);
@@ -144,14 +157,6 @@ public class StationViewDashboard extends VerticalLayout {
         viewEvents.setSpacing(false);
         viewEvents.getElement().getThemeList().add("spacing-l");
         return viewEvents;
-    }
-
-    private Component createHighlight(String title, String value, Double percentage, String explanation, boolean inverted) {
-        return new Highlight(title, value, percentage, explanation, inverted, "%");
-    }
-
-    private Component createHighlight(String title, String value) {
-        return new Highlight(title, value);
     }
 
     private Component createStopsOverTimeChart() {

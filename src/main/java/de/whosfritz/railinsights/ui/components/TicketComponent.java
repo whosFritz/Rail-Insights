@@ -6,6 +6,12 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
+import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
+import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -56,6 +62,8 @@ public class TicketComponent extends VerticalLayout {
             Button button = new Button("Zur Prognose");
             button.setIcon(LineAwesomeIcon.FLASK_SOLID.create());
             button.addClickListener(event -> {
+                Notification nte = NotificationFactory.createNotification(NotificationTypes.CRITICAL, "Prognose für die Verbindung " + ticket.getDeparture() + " - " + ticket.getArrival() + " anzeigen");
+                nte.open();
                 ConnectionPrognoseDialog dialog = new ConnectionPrognoseDialog(ticket.getJourney());
             });
             return button;

@@ -47,7 +47,7 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
     Optional<List<Trip>> findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(
             LocalDateTime plannedWhenAfter,
             LocalDateTime plannedWhenBefore,
-            String fahrtNr);
+            String name);
 
     int countAllByStopAndPlannedWhenAfterAndWhenBefore(Stop stop, LocalDateTime whenAfter, LocalDateTime whenBefore);
 

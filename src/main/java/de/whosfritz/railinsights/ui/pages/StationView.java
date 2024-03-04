@@ -97,9 +97,9 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         scroller.setContent(cardList);
 
         Paragraph infoParagraph = new Paragraph("In der interaktiven Karte findest du alle Fernverkehrsbahnhöfe in Deutschland." +
-                " Nutze die Suchfunktion auf der rechten Seite um nach einem bestimmten Bahnhof zu suchen.");
+                " Nutze die Suchfunktion auf der rechten Seite, um nach einem bestimmten Bahnhof zu suchen.");
 
-        Paragraph infoCalcParagraph = new Paragraph("Hinweis zur vollständigkeit: Es werden nur Bahnhöfe angezeigt, " +
+        Paragraph infoCalcParagraph = new Paragraph("Hinweis zur Vollständigkeit: Es werden nur Bahnhöfe angezeigt, " +
                 "an denen mindestens Nationaler Fernverkehr stattfindet. Es kann sein, dass einzelne Sub-Betriebsstellen " +
                 "wie Berlin Hbf (tief) nicht vorkommen, da Sie hier als Berlin Hbf indexiert sind. Es kann ebenfalls sein," +
                 " dass Bahnhöfe auftauchen, die nicht vom Fernverkehr bedient werden, jedoch zu einer Betriebsstelle gehören," +
@@ -272,13 +272,13 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
 
         Stop fullStop = stopService.findStopByStopId(Long.valueOf(stop.getStopId())).getData();
 
-        List<Trip> tripToEvaluate = tripService.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(fullStop, from, to).getData();
+        List<Trip> tripsToEvaluate = tripService.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(fullStop, from, to).getData();
 
-        TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripToEvaluate);
+        TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripsToEvaluate);
 
-        int tripCount = tripToEvaluate.size();
+        int tripCount = tripsToEvaluate.size();
 
-        TripCounts tripCounts = universalCalculator.countTrips(tripToEvaluate, from, to);
+        TripCounts tripCounts = universalCalculator.countTrips(tripsToEvaluate, from, to);
 
         DataSeries dailyTripCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripCounts());
         DataSeries dailyTripLongDistanceCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripLongDistanceCounts());
@@ -287,9 +287,9 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         DataSeries hourlyTripLongDistanceCountSeries = universalCalculator.buildHourlyTripCountSeries(tripCounts.getHourlyTripLongDistanceCounts());
         DataSeries hourlyTripRegionalCountSeries = universalCalculator.buildHourlyTripCountSeries(tripCounts.getHourlyTripRegionalCounts());
 
-        DataSeries nationalRegionalSeries = universalCalculator.calculatePercentageTripRegioVsFernverkehr(tripToEvaluate);
+        DataSeries nationalRegionalSeries = universalCalculator.calculatePercentageTripRegioVsFernverkehr(tripsToEvaluate);
 
-        List<Trip> topDelayedTrips = universalCalculator.calculateTopDelayedTripsOrderedByDelay(tripToEvaluate, 10);
+        List<Trip> topDelayedTrips = universalCalculator.calculateTopDelayedTripsOrderedByDelay(tripsToEvaluate, 10);
 
         StationViewDashboard stationViewDashboard;
 
@@ -393,7 +393,7 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         // inform the user that mobile devices are currently not supported if he is using one
         if (UI.getCurrent().getSession().getBrowser().isAndroid() || UI.getCurrent().getSession().getBrowser().isIPhone()) {
-            Notification mobileDeviceNotification = NotificationFactory.createwNotification(NotificationTypes.CRITICAL,
+            Notification mobileDeviceNotification = NotificationFactory.createNotification(NotificationTypes.CRITICAL,
                     "Mobile Geräte werden aktuell nicht unterstützt. Es kommt zu Darstellungsproblemen. Bitte benutze einen Desktop-Browser.");
             mobileDeviceNotification.open();
         }

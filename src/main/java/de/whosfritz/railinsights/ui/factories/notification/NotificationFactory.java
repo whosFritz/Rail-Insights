@@ -15,7 +15,7 @@ public class NotificationFactory {
      * @param message The message of the notification
      * @return The created notification
      */
-    public static Notification createwNotification(NotificationTypes type, String message) {
+    public static Notification createNotification(NotificationTypes type, String message) {
         switch (type) {
             case INFO:
                 Notification infoNotification = new Notification(message, 5000);
