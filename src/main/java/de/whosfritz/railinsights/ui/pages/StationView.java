@@ -80,7 +80,7 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         TextField searchField = new TextField();
         searchField.setPlaceholder("Suche nach Bahnhof...");
         searchField.setWidthFull();
-        searchField.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.Padding.Top.NONE, LumoUtility.Padding.Bottom.NONE, LumoUtility.BoxSizing.BORDER);
+        searchField.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.Padding.Top.NONE, LumoUtility.Padding.Bottom.NONE, LumoUtility.BoxSizing.BORDER, LumoUtility.Margin.Bottom.MEDIUM);
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.addValueChangeListener(e -> updateFilter(searchField.getValue().toLowerCase()));
         searchField.setClearButtonVisible(true);
@@ -146,9 +146,7 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         map.setMinWidth(70f, Unit.PERCENTAGE);
         map.setHeightFull();
 
-        map.addFeatureClickListener(mapFeatureClickEvent -> {
-            openArrivalDepartureDialog(stopToLocation.get(mapFeatureClickEvent.getFeature()));
-        });
+        map.addFeatureClickListener(mapFeatureClickEvent -> openArrivalDepartureDialog(stopToLocation.get(mapFeatureClickEvent.getFeature())));
 
         HorizontalLayout infoLayout = new HorizontalLayout(infoButton, whenAfter, whenBefore);
         infoLayout.setAlignItems(Alignment.BASELINE);

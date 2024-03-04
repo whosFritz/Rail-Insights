@@ -146,11 +146,11 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
                         dialog.setHeight("80%");
                         dialog.open();
                     } else {
-                        Notification error = NotificationFactory.createwNotification(NotificationTypes.ERROR, "Fahrtverlauf konnte nicht geladen werden");
+                        Notification error = NotificationFactory.createNotification(NotificationTypes.ERROR, "Fahrtverlauf konnte nicht geladen werden");
                         error.open();
                     }
                 } else {
-                    Notification error = NotificationFactory.createwNotification(NotificationTypes.ERROR, "Der Fahrtverlauf ist nur für Fahrten des Fernverkehrs abrufbar");
+                    Notification error = NotificationFactory.createNotification(NotificationTypes.ERROR, "Der Fahrtverlauf ist nur für Fahrten des Fernverkehrs abrufbar");
                     error.open();
                 }
             }
