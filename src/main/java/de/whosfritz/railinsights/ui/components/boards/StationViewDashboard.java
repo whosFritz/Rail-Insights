@@ -68,17 +68,29 @@ public class StationViewDashboard extends VerticalLayout {
         whenBefore.setValue(LocalDateTime.now());
 
         Board board = new Board();
-        board.addRow(
-                createHighlight("Abfahrten/Ankünfte", String.valueOf(stopCount)),
-                createHighlight("Pünktliche Stopps", stopsPercentageOnTime + " %", percentage, "Pünktlichkeit im globalen Vergleich", false),
-                createHighlight("Verspätete Stopps", stopsPercentageDelayed + " %", percentageDelayed, "Verspätungen im globalen Vergleich", true),
-                createHighlight("Ausgefallene Stopps", stopsPercentageCancelled + " %", percentageCancelled, "Ausfälle im globalen Vergleich", true)
+        board.addRow(createHighlight("Abfahrten/Ankünfte", String.valueOf(stopCount)),
+                createHighlight("Pünktliche Stopps", stopsPercentageOnTime + " %", percentage, "Pünktlichkeit im deutschlandweiten Vergleich", true),
+                createHighlight("Verspätete Stopps", stopsPercentageDelayed + " %", percentageDelayed, "Verspätungen im deutschlandweiten Vergleich", false),
+                createHighlight("Ausgefallene Stopps", stopsPercentageCancelled + " %", percentageCancelled, "Ausfälle im deutschlandweiten Vergleich", false)
         );
         board.addRow(createStopsOverTimeChart());
         board.addRow(createRegionalLongDistanceChart());
         board.addRow(createDelayedTripsGrid(topDelayedTrips));
         add(board);
     }
+
+    public static Component createHighlight(String title, String value, Double percentage, String explanation, boolean inverted) {
+        return new Highlight(title, value, percentage, explanation, inverted, "%");
+    }
+
+    public static Component createHighlight(String title, String value) {
+        return new Highlight(title, value);
+    }
+
+    public static Component createHighlight(String title, String from, String to) {
+        return new Highlight(title, from, to);
+    }
+
 
     private Component createDelayedTripsGrid(List<Trip> topDelayedTrips) {
         Grid<Trip> grid = new Grid<>();
@@ -145,14 +157,6 @@ public class StationViewDashboard extends VerticalLayout {
         viewEvents.setSpacing(false);
         viewEvents.getElement().getThemeList().add("spacing-l");
         return viewEvents;
-    }
-
-    private Component createHighlight(String title, String value, Double percentage, String explanation, boolean inverted) {
-        return new Highlight(title, value, percentage, explanation, inverted, "%");
-    }
-
-    private Component createHighlight(String title, String value) {
-        return new Highlight(title, value);
     }
 
     private Component createStopsOverTimeChart() {

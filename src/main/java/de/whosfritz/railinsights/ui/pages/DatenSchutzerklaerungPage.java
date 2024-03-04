@@ -6,9 +6,9 @@ import com.vaadin.flow.router.Route;
 import de.whosfritz.railinsights.ui.layout.MainView;
 
 @Route(value = "datenschutzerklaerung", layout = MainView.class)
-public class DatenSchutzerklaerung extends VerticalLayout {
+public class DatenSchutzerklaerungPage extends VerticalLayout {
 
-    public DatenSchutzerklaerung() {
+    public DatenSchutzerklaerungPage() {
         add(new Html("<div>\n" +
                 "<h1>Datenschutzerklärung</h1>\n" +
                 "<h2 id=\"m716\">Präambel</h2>\n" +

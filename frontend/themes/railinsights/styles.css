@@ -44,56 +44,14 @@ html {
     --lumo-warning-text-color: rgb(255, 162, 0);
     --lumo-warning-color-50pct: rgba(255, 162, 0, 0.5);
     --lumo-warning-color-10pct: rgba(255, 162, 0, 0.1);
-}
 
-[theme~="dark"] {
+    vaadin-grid.styling::part(validTransfer) {
+        background-color: var(--lumo-success-text-color);
+    }
 
-    --lumo-tint-5pct: rgba(252, 245, 255, 0.05);
-    --lumo-tint-10pct: rgba(252, 245, 255, 0.1);
-    --lumo-tint-20pct: rgba(252, 245, 255, 0.2);
-    --lumo-tint-30pct: rgba(252, 245, 255, 0.3);
-    --lumo-tint-40pct: rgba(252, 245, 255, 0.4);
-    --lumo-tint-50pct: rgba(252, 245, 255, 0.5);
-    --lumo-tint-60pct: rgba(252, 245, 255, 0.6);
-    --lumo-tint-70pct: rgba(252, 245, 255, 0.7);
-    --lumo-tint-80pct: rgba(252, 245, 255, 0.8);
-    --lumo-tint-90pct: rgba(252, 245, 255, 0.9);
-    --lumo-primary-text-color: rgb(255, 255, 255);
-    --lumo-primary-color-50pct: rgba(236, 0, 22, 0.5);
-    --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
-    --lumo-error-text-color: rgb(255, 255, 255);
-    --lumo-error-color-50pct: rgba(255, 56, 103, 0.5);
-    --lumo-error-color-10pct: rgba(255, 56, 103, 0.1);
-    --lumo-success-text-color: rgb(99, 166, 21);
-    --lumo-success-color-50pct: rgba(99, 166, 21, 0.5);
-    --lumo-success-color-10pct: rgba(99, 166, 21, 0.1);
-    --lumo-base-color: #0b1323;
-    --lumo-tint: hsl(285, 100%, 98%);
-    --lumo-primary-color: #EC0016;
-    --lumo-error-color: hsl(346, 100%, 61%);
-    --lumo-success-color: #63A615;
-    --lumo-success-contrast-color: #2D2C29;
-    --lumo-header-text-color: hsl(285, 100%, 98%);
-    --lumo-body-text-color: hsla(285, 96%, 96%, 0.9);
-    --lumo-secondary-text-color: hsla(285, 87%, 92%, 0.7);
-    --lumo-tertiary-text-color: hsla(285, 78%, 88%, 0.5);
-    --lumo-disabled-text-color: hsla(285, 69%, 84%, 0.32);
-    --lumo-shade-5pct: rgba(22, 32, 44, 0.05);
-    --lumo-shade-10pct: rgba(22, 32, 44, 0.1);
-    --lumo-shade-20pct: rgba(22, 32, 44, 0.2);
-    --lumo-shade-30pct: rgba(22, 32, 44, 0.3);
-    --lumo-shade-40pct: rgba(22, 32, 44, 0.4);
-    --lumo-shade-50pct: rgba(22, 32, 44, 0.5);
-    --lumo-shade-60pct: rgba(22, 32, 44, 0.6);
-    --lumo-shade-70pct: rgba(22, 32, 44, 0.7);
-    --lumo-shade-80pct: rgba(22, 32, 44, 0.8);
-    --lumo-shade-90pct: rgba(22, 32, 44, 0.9);
-    --lumo-shade: hsl(214, 34%, 13%);
-
-    --lumo-warning-color: #fea200;
-    --lumo-warning-text-color: rgb(255, 162, 0);
-    --lumo-warning-color-50pct: rgba(255, 162, 0, 0.5);
-    --lumo-warning-color-10pct: rgba(255, 162, 0, 0.1);
+    vaadin-grid.styling::part(invalidTransfer) {
+        background-color: var(--lumo-error-color-10pct);
+    }
 
     .highcharts-contextmenu {
         background-color: #0B1323;
@@ -110,5 +68,68 @@ html {
     .highcharts-button-normal:hover {
         fill: #0B1323;
         stroke: #0B1323;
+    }
+
+    vaadin-grid.styling::part(lowTransfer) {
+        background-color: var(--lumo-warning-color);
+    }
+
+    vaadin-grid.styling::part(loading-row-cell) {
+        background-color: var(--lumo-base-color);
+    }
+
+    vaadin-grid.styling::part(font-weight-bold) {
+        font-weight: bold;
+    }
+}
+
+    [theme~="dark"] {
+
+        --lumo-tint-5pct: rgba(252, 245, 255, 0.05);
+        --lumo-tint-10pct: rgba(252, 245, 255, 0.1);
+        --lumo-tint-20pct: rgba(252, 245, 255, 0.2);
+        --lumo-tint-30pct: rgba(252, 245, 255, 0.3);
+        --lumo-tint-40pct: rgba(252, 245, 255, 0.4);
+        --lumo-tint-50pct: rgba(252, 245, 255, 0.5);
+        --lumo-tint-60pct: rgba(252, 245, 255, 0.6);
+        --lumo-tint-70pct: rgba(252, 245, 255, 0.7);
+        --lumo-tint-80pct: rgba(252, 245, 255, 0.8);
+        --lumo-tint-90pct: rgba(252, 245, 255, 0.9);
+        --lumo-primary-text-color: rgb(255, 255, 255);
+        --lumo-primary-color-50pct: rgba(236, 0, 22, 0.5);
+        --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
+        --lumo-error-text-color: rgb(255, 255, 255);
+        --lumo-error-color-50pct: rgba(255, 56, 103, 0.5);
+        --lumo-error-color-10pct: rgba(255, 56, 103, 0.1);
+        --lumo-success-text-color: rgb(99, 166, 21);
+        --lumo-success-color-50pct: rgba(99, 166, 21, 0.5);
+        --lumo-success-color-10pct: rgba(99, 166, 21, 0.1);
+        --lumo-base-color: #0b1323;
+        --lumo-tint: hsl(285, 100%, 98%);
+        --lumo-primary-color: #EC0016;
+        --lumo-error-color: hsl(346, 100%, 61%);
+        --lumo-success-color: #63A615;
+        --lumo-success-contrast-color: #2D2C29;
+        --lumo-header-text-color: hsl(285, 100%, 98%);
+        --lumo-body-text-color: hsla(285, 96%, 96%, 0.9);
+        --lumo-secondary-text-color: hsla(285, 87%, 92%, 0.7);
+        --lumo-tertiary-text-color: hsla(285, 78%, 88%, 0.5);
+        --lumo-disabled-text-color: hsla(285, 69%, 84%, 0.32);
+        --lumo-shade-5pct: rgba(22, 32, 44, 0.05);
+        --lumo-shade-10pct: rgba(22, 32, 44, 0.1);
+        --lumo-shade-20pct: rgba(22, 32, 44, 0.2);
+        --lumo-shade-30pct: rgba(22, 32, 44, 0.3);
+        --lumo-shade-40pct: rgba(22, 32, 44, 0.4);
+        --lumo-shade-50pct: rgba(22, 32, 44, 0.5);
+        --lumo-shade-60pct: rgba(22, 32, 44, 0.6);
+        --lumo-shade-70pct: rgba(22, 32, 44, 0.7);
+        --lumo-shade-80pct: rgba(22, 32, 44, 0.8);
+        --lumo-shade-90pct: rgba(22, 32, 44, 0.9);
+        --lumo-shade: hsl(214, 34%, 13%);
+
+        --lumo-warning-color: #fea200;
+        --lumo-warning-text-color: rgb(255, 162, 0);
+        --lumo-warning-color-50pct: rgba(255, 162, 0, 0.5);
+        --lumo-warning-color-10pct: rgba(255, 162, 0, 0.1);
     }
 }

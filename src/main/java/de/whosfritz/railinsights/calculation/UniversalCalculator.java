@@ -3,6 +3,7 @@ package de.whosfritz.railinsights.calculation;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
+import de.whosfritz.railinsights.data.LoadFactor;
 import de.whosfritz.railinsights.data.dto.TripCounts;
 import de.whosfritz.railinsights.data.dto.TripStatistics;
 import de.whosfritz.railinsights.utils.PercentageUtil;
@@ -10,9 +11,7 @@ import de.whosfritz.railinsights.utils.PercentageUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -35,6 +34,136 @@ public class UniversalCalculator {
         double percentage = (count / total) * 100;
         percentage = PercentageUtil.convertToTwoDecimalPlaces(percentage);
         return percentage;
+    }
+
+    public static String minutesToHoursAndMinutesAndSeconds(double totalMinutes) {
+        if (totalMinutes == 0.0) {
+            return "0 Minuten";
+        }
+
+        int hours = (int) (totalMinutes / 60);
+        double remainingMinutes = totalMinutes % 60;
+
+        int minutes = (int) remainingMinutes;
+        int seconds = (int) Math.round((remainingMinutes - minutes) * 60);
+
+        StringBuilder time = new StringBuilder();
+        if (hours > 0) {
+            time.append(hours).append("h ");
+        }
+        if (minutes > 0) {
+            time.append(minutes).append("m ");
+        }
+        if (seconds > 0) {
+            time.append(seconds).append("s");
+        }
+
+        return time.toString().trim();
+    }
+
+    public static LoadFactor getLoadFactorAsEnum(String loadFactor) {
+        if (loadFactor == null) {
+            return LoadFactor.KEINE;
+        }
+        String lowerCaseLoadFactor = loadFactor.toLowerCase();
+        return switch (lowerCaseLoadFactor) {
+            case "low-to-medium" -> LoadFactor.WENIG_BIS_NORMAL;
+            case "high" -> LoadFactor.HOCH;
+            case "very-high" -> LoadFactor.SEHR_HOCH;
+            default -> LoadFactor.valueOf(lowerCaseLoadFactor);
+        };
+    }
+
+    public static DataSeries buildDailyHighestLoadFactorSeries(List<Trip> tripsCorrespondingToLine) {
+        Map<LocalDate, List<LoadFactor>> loadFactorByDay = new HashMap<>();
+
+        for (Trip trip : tripsCorrespondingToLine) {
+            if (trip.getCancelled() == null) {
+                LocalDate date = trip.getPlannedWhen().toLocalDate();
+                LoadFactor currentLoadFactor = getLoadFactorAsEnum(trip.getLoadFactor());
+                loadFactorByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(currentLoadFactor);
+            }
+        }
+
+        Map<LocalDate, LoadFactor> highestLoadFactorByDay = new HashMap<>();
+        for (Map.Entry<LocalDate, List<LoadFactor>> entry : loadFactorByDay.entrySet()) {
+            LoadFactor highestLoadFactor = Collections.max(entry.getValue(), Comparator.comparingInt(LoadFactor::ordinal));
+            highestLoadFactorByDay.put(entry.getKey(), highestLoadFactor);
+        }
+
+        DataSeries dailyHighestLoadFactorSeries = new DataSeries();
+        for (Map.Entry<LocalDate, LoadFactor> entry : highestLoadFactorByDay.entrySet()) {
+            dailyHighestLoadFactorSeries.add(new DataSeriesItem(
+                    entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                    entry.getValue().ordinal()));
+        }
+
+        dailyHighestLoadFactorSeries.setName("Höchste Auslastung");
+
+        return dailyHighestLoadFactorSeries;
+    }
+
+    public static DataSeries buildDailyLowestLoadFactorSeries(List<Trip> tripsCorrespondingToLine) {
+        Map<LocalDate, List<LoadFactor>> loadFactorByDay = new HashMap<>();
+
+        for (Trip trip : tripsCorrespondingToLine) {
+            if (trip.getCancelled() == null) {
+                LocalDate date = trip.getPlannedWhen().toLocalDate();
+                LoadFactor currentLoadFactor = getLoadFactorAsEnum(trip.getLoadFactor());
+                loadFactorByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(currentLoadFactor);
+            }
+        }
+
+        Map<LocalDate, LoadFactor> lowestLoadFactorByDay = new HashMap<>();
+        for (Map.Entry<LocalDate, List<LoadFactor>> entry : loadFactorByDay.entrySet()) {
+            LoadFactor lowestLoadFactor = Collections.min(entry.getValue(), Comparator.comparingInt(LoadFactor::ordinal));
+            lowestLoadFactorByDay.put(entry.getKey(), lowestLoadFactor);
+        }
+
+        DataSeries dailyLowestLoadFactorSeries = new DataSeries();
+        for (Map.Entry<LocalDate, LoadFactor> entry : lowestLoadFactorByDay.entrySet()) {
+            dailyLowestLoadFactorSeries.add(new DataSeriesItem(
+                    entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                    entry.getValue().ordinal()));
+        }
+
+        dailyLowestLoadFactorSeries.setName("Geringste Auslastung");
+
+        return dailyLowestLoadFactorSeries;
+    }
+
+    public static DataSeries buildDailyDelaySeries(List<Trip> tripsCorrespondingToLine) {
+        Map<LocalDate, List<Double>> delayByDay = new HashMap<>();
+
+        for (Trip trip : tripsCorrespondingToLine) {
+            LocalDate date = trip.getPlannedWhen().toLocalDate();
+            if (trip.getCancelled() == null && trip.getDelay() >= 360) {
+                delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(trip.getDelay().doubleValue());
+            } else {
+                delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(0.0);
+            }
+        }
+
+        Map<LocalDate, Double> averageDelayByDay = new HashMap<>();
+        for (Map.Entry<LocalDate, List<Double>> entry : delayByDay.entrySet()) {
+            double averageDelay = entry.getValue().stream()
+                    .filter(val -> val >= 360)
+                    .mapToDouble(val -> val)
+                    .average()
+                    .orElse(0.0);
+            averageDelayByDay.put(entry.getKey(), PercentageUtil.convertToTwoDecimalPlaces(averageDelay));
+        }
+
+        DataSeries dailyDelaySeries = new DataSeries();
+        for (Map.Entry<LocalDate, Double> entry : averageDelayByDay.entrySet()) {
+            dailyDelaySeries.add(new DataSeriesItem(
+                    entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                    PercentageUtil.convertToTwoDecimalPlaces(entry.getValue() / 60))); // Convert delay from seconds to minutes
+        }
+
+        dailyDelaySeries.setName("Durchschnittliche Verspätung");
+
+        return dailyDelaySeries;
     }
 
     /**
@@ -113,8 +242,11 @@ public class UniversalCalculator {
         DataSeries dailyTripCountSeries = new DataSeries();
         // Parallel stream for processing entries concurrently
         dailyTripCounts.forEach((key, value) -> dailyTripCountSeries.add(new DataSeriesItem(
-                key.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                key.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant(),
                 value)));
+
+        dailyTripCountSeries.setName("Tägliche Anzahl an Fahrten");
+
         return dailyTripCountSeries;
     }
 
@@ -210,6 +342,22 @@ public class UniversalCalculator {
         return tripCounts;
     }
 
+    public TripCounts countTrips(List<Trip> trips) {
+        // for everyday count the trips
+        HashMap<LocalDate, Integer> dailyTripCounts = new HashMap<>();
+        trips.forEach(trip -> {
+            // If the trip is cancelled, skip this iteration
+            if (trip.getCancelled() != null && trip.getCancelled()) {
+                return;
+            }
+            LocalDate date = trip.getPlannedWhen().toLocalDate();
+            dailyTripCounts.put(date, dailyTripCounts.getOrDefault(date, 0) + 1);
+        });
+        TripCounts tripCounts = new TripCounts();
+        tripCounts.setDailyTripCounts(dailyTripCounts);
+        return tripCounts;
+    }
+
     /**
      * Calculate the trip statistics for a specific time period.
      *
@@ -223,11 +371,25 @@ public class UniversalCalculator {
         AtomicInteger cancelledTrips = new AtomicInteger();
         AtomicInteger delayedTrips = new AtomicInteger();
 
+        AtomicInteger delayMoreThan6min = new AtomicInteger();
+        AtomicInteger delayMoreThan15min = new AtomicInteger();
+        AtomicInteger delayMoreThan60min = new AtomicInteger();
+
+
         trips.parallelStream().forEach(trip -> {
             if (trip.getCancelled() != null && trip.getCancelled()) {
                 cancelledTrips.incrementAndGet();
-            } else if (trip.getDelay() != null && trip.getDelay() >= 300) {
+            } else if (trip.getDelay() != null && trip.getDelay() >= 360) {
                 delayedTrips.incrementAndGet();
+            }
+            if (trip.getDelay() != null && trip.getDelay() >= 360) {
+                delayMoreThan6min.incrementAndGet();
+            }
+            if (trip.getDelay() != null && trip.getDelay() >= 900) {
+                delayMoreThan15min.incrementAndGet();
+            }
+            if (trip.getDelay() != null && trip.getDelay() >= 3600) {
+                delayMoreThan60min.incrementAndGet();
             }
         });
 
@@ -235,7 +397,20 @@ public class UniversalCalculator {
         double percentageDelayed = calculatePercentage(delayedTrips.get(), totalTrips);
         double percentageOnTime = PercentageUtil.convertToTwoDecimalPlaces(100 - percentageCancelled - percentageDelayed);
 
-        return new TripStatistics(percentageCancelled, percentageDelayed, percentageOnTime);
+        double delayMoreThan6minPercentage = calculatePercentage(delayMoreThan6min.get(), totalTrips);
+        double delayMoreThan15minPercentage = calculatePercentage(delayMoreThan15min.get(), totalTrips);
+        double delayMoreThan60minPercentage = calculatePercentage(delayMoreThan60min.get(), totalTrips);
+
+        TripStatistics tripStatistics = new TripStatistics();
+        tripStatistics.setPercentageOnTime(percentageOnTime);
+        tripStatistics.setPercentageDelayed(percentageDelayed);
+        tripStatistics.setPercentageCancelled(percentageCancelled);
+        tripStatistics.setDelayMoreThan6min(delayMoreThan6minPercentage);
+        tripStatistics.setDelayMoreThan15min(delayMoreThan15minPercentage);
+        tripStatistics.setDelayMoreThan60min(delayMoreThan60minPercentage);
+
+        return tripStatistics;
     }
+
 
 }
