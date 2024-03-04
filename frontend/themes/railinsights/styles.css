@@ -94,4 +94,21 @@ html {
     --lumo-warning-text-color: rgb(255, 162, 0);
     --lumo-warning-color-50pct: rgba(255, 162, 0, 0.5);
     --lumo-warning-color-10pct: rgba(255, 162, 0, 0.1);
+
+    .highcharts-contextmenu {
+        background-color: #0B1323;
+    }
+
+    .highcharts-menu {
+        background: #0B1323;
+    }
+
+    .highcharts-button-normal {
+        fill: #0B1323;
+    }
+
+    .highcharts-button-normal:hover {
+        fill: #0B1323;
+        stroke: #0B1323;
+    }
 }

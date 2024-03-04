@@ -180,7 +180,7 @@ public class StationViewDashboard extends VerticalLayout {
         plotOptions.setPointPlacement(PointPlacement.ON);
         plotOptions.setMarker(new Marker(false));
         plotOptions.setConnectNulls(false);
-        plotOptions.setStacking(Stacking.NONE);
+        plotOptions.setStacking(Stacking.NORMAL);
         conf.addPlotOptions(plotOptions);
 
         conf.addSeries(seriesLongDistance);
