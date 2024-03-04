@@ -2,13 +2,12 @@ package de.whosfritz.railinsights.ui.layout;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -103,9 +102,30 @@ public class MainView extends AppLayout {
         VerticalLayout wrapper = new VerticalLayout();
         SideNav mainSideNav = getMainSideNav();
         SideNav subSideNav = getSubSideNav();
-        wrapper.add(mainSideNav, subSideNav);
+        wrapper.add(createDrawerContent(), mainSideNav, subSideNav);
         wrapper.setSizeFull();
         return wrapper;
+    }
+
+    private Component createDrawerContent() {
+        VerticalLayout logoLayout = new VerticalLayout();
+        Image logo = new Image(
+                getLogoSrc(ThemeUtil.getCurrentThemeVariant()), "Dynamic Theme Demo logo");
+        ThemeUtil.addThemeChangedListener(
+                UI.getCurrent(),
+                e -> logo.setSrc(getLogoSrc(e.getThemeVariant()))
+        );
+        logo.setWidth(150, Unit.PIXELS);
+        logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        logoLayout.add(logo);
+        return logoLayout;
+    }
+
+    private String getLogoSrc(ThemeVariant themeVariant) {
+        if (themeVariant == ThemeVariant.DARK) {
+            return "images/lightmode.png";
+        }
+        return "images/darkmode.png";
     }
 
     /**
@@ -156,11 +176,11 @@ public class MainView extends AppLayout {
         SideNav mainSideNav = new SideNav();
         mainSideNav.addItem(
                 createNavItem("Home", "/", VaadinIcon.HOME.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("Verspätungen", "/verspätungen", VaadinIcon.TIMER.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("Ausfälle", "/ausfälle", LineAwesomeIcon.BAN_SOLID.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("Verspätungen", "/verspaetungen", VaadinIcon.TIMER.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("Zugstatistiken", "/trainmetrics", LineAwesomeIcon.SUBWAY_SOLID.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("Bahnhöfe", "/bahnhöfe", LineAwesomeIcon.BUILDING.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("Verbindungsprognose", "/verbindungsprognose", VaadinIcon.TIME_BACKWARD.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("CSV-Export", "/csv-export", LineAwesomeIcon.FILE_CSV_SOLID.create(), LumoUtility.FontSize.MEDIUM)
+                createNavItem("Verbindungsprognose", "/verbindungsprognose", VaadinIcon.SEARCH.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("CSV-Export", "/csv-export", LineAwesomeIcon.FILE_DOWNLOAD_SOLID.create(), LumoUtility.FontSize.MEDIUM)
         );
         mainSideNav.setSizeFull();
         return mainSideNav;
@@ -229,8 +249,9 @@ public class MainView extends AppLayout {
      * @return SideNavItem representing the navigation item.
      */
     private SideNavItem createNavItem(String title, String route, Component icon, String className) {
+        icon.addClassNames(LumoUtility.Padding.NONE, LumoUtility.IconSize.SMALL);
         SideNavItem item = new SideNavItem(title, route, icon);
-        item.addClassName(className);
+        item.addClassNames(className, LumoUtility.Margin.Vertical.XSMALL);
         return item;
     }
 

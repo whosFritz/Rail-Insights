@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Getter
@@ -45,6 +46,12 @@ public class DataProviderService {
     Double stopsPercentageDelayed;
 
     Double stopsPercentageCancelled;
+
+    Double stopsPercentageDelayedMoreThan6min;
+
+    Double stopsPercentageDelayedMoreThan15min;
+
+    Double stopsPercentageDelayedMoreThan60min;
 
     DataSeries stoppsOverTimeDataSeries;
 
@@ -93,7 +100,7 @@ public class DataProviderService {
         double percentageDelayed = ((double) allTrips.stream().filter(trip -> {
             if (trip.getCancelled() == null || !trip.getCancelled()) {
                 if (trip.getDelay() != null) {
-                    return trip.getDelay() >= 300;
+                    return trip.getDelay() >= 360;
                 }
             }
             return false;
@@ -108,6 +115,32 @@ public class DataProviderService {
         stopsPercentageOnTime = (Math.round(percentageOnTime * 100.0) / 100.0) * 100;
         formatted = df.format(stopsPercentageOnTime);
         stopsPercentageOnTime = Double.parseDouble(formatted);
+
+        stopsPercentageDelayedMoreThan6min = stopsPercentageDelayed;
+
+        double percentageDelayedMoreThan15min = ((double) allTrips.stream().filter(trip -> {
+            if (trip.getCancelled() == null || !trip.getCancelled()) {
+                if (trip.getDelay() != null) {
+                    return trip.getDelay() >= 900;
+                }
+            }
+            return false;
+        }).count() / allTrips.size());
+
+        stopsPercentageDelayedMoreThan15min = (Math.round(percentageDelayedMoreThan15min * 100.0) / 100.0) * 100;
+        formatted = df.format(stopsPercentageDelayedMoreThan15min);
+        stopsPercentageDelayedMoreThan15min = Double.parseDouble(formatted);
+
+        double percentageDelayedMoreThan60min = ((double) allTrips.stream().filter(trip -> {
+            if (trip.getCancelled() == null || !trip.getCancelled()) {
+                if (trip.getDelay() != null) {
+                    return trip.getDelay() >= 3600;
+                }
+            }
+            return false;
+        }).count());
+        double stopsPercentageDelayedMoreThan60mi = percentageDelayedMoreThan60min / allTrips.size();
+        stopsPercentageDelayedMoreThan60min = Math.round(stopsPercentageDelayedMoreThan60mi * 1000.0) / 1000.0 * 100;
 
         generateHomeViewStatistics(allTrips);
 
@@ -156,10 +189,15 @@ public class DataProviderService {
      * @return the converted stopDTOs list
      */
     public List<StopDto> getAllNationalStopsConvertedToDto() {
-        List<StopDto> stopDtos = new ArrayList<>();
-        allStops.stream().filter(stop -> stop.getProducts().isNational()).toList().forEach(stop ->
-                stopDtos.add(new StopDto(stop.getStopId().toString(), stop.getName(), stop.getLocation().getLatitude(), stop.getLocation().getLongitude(), stop.getStation())));
-        return stopDtos;
+        return allStops.parallelStream()
+                .filter(stop -> stop.getProducts().isNational())
+                .map(stop -> new StopDto(
+                        stop.getStopId().toString(),
+                        stop.getName(),
+                        stop.getLocation().getLatitude(),
+                        stop.getLocation().getLongitude(),
+                        stop.getStation()))
+                .collect(Collectors.toList());
     }
 
 }

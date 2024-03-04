@@ -58,67 +58,48 @@ import java.util.Locale;
 
 
 @Route(value = "bahnhöfe", layout = MainView.class)
-public class StationView extends HorizontalLayout implements BeforeEnterListener {
+public class StationView extends VerticalLayout implements BeforeEnterListener {
     private final Map map = new Map();
 
     private final OrderedList cardList;
-    private final java.util.Map<StopDto, Button> stopToCard = new HashMap<>();
+    private final java.util.Map<StopDto, Span> stopToCard = new HashMap<>();
     private final java.util.Map<Feature, StopDto> stopToLocation = new HashMap<>();
+    private final UniversalCalculator universalCalculator = new UniversalCalculator();
     private List<StopDto> filteredStops;
-
     private LocalDateTime whenAfter = LocalDateTime.now().minusDays(1);
     private LocalDateTime whenBefore = LocalDateTime.now();
 
-    private UniversalCalculator universalCalculator = new UniversalCalculator();
-
     public StationView() {
-        addClassName("map-view");
-        map.getElement().setAttribute("theme", "borderless");
-        map.getElement().setAttribute("class", "map");
-        map.setHeight(90f, Unit.PERCENTAGE);
-        map.setMaxHeight(90f, Unit.PERCENTAGE);
-        map.setWidth(100f, Unit.PERCENTAGE);
-        map.setMaxWidth(100f, Unit.PERCENTAGE);
-        map.setMinHeight(90f, Unit.PERCENTAGE);
+
 
         VerticalLayout sidebar = new VerticalLayout();
         sidebar.setSpacing(false);
         sidebar.setPadding(false);
-
-        sidebar.setWidth(25f, Unit.PERCENTAGE);
-        sidebar.setHeight(90f, Unit.PERCENTAGE);
-        sidebar.setMaxHeight(90f, Unit.PERCENTAGE);
-        sidebar.setMinHeight(90f, Unit.PERCENTAGE);
-        sidebar.setMaxWidth(25f, Unit.PERCENTAGE);
-        sidebar.setMinWidth(25f, Unit.PERCENTAGE);
-
-        sidebar.addClassNames("sidebar");
+        sidebar.setHeightFull();
 
         TextField searchField = new TextField();
         searchField.setPlaceholder("Suche nach Bahnhof...");
         searchField.setWidthFull();
-        searchField.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.BoxSizing.BORDER);
+        searchField.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.Padding.Top.NONE, LumoUtility.Padding.Bottom.NONE, LumoUtility.BoxSizing.BORDER, LumoUtility.Margin.Bottom.MEDIUM);
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
-        searchField.addValueChangeListener(e -> {
-            updateFilter(searchField.getValue().toLowerCase());
-        });
+        searchField.addValueChangeListener(e -> updateFilter(searchField.getValue().toLowerCase()));
         searchField.setClearButtonVisible(true);
         searchField.setSuffixComponent(new Icon("lumo", "search"));
 
         Scroller scroller = new Scroller();
-        scroller.addClassNames(LumoUtility.Padding.Horizontal.MEDIUM, LumoUtility.Width.FULL, LumoUtility.BoxSizing.BORDER);
+        scroller.addClassNames(LumoUtility.BoxSizing.BORDER, LumoUtility.Width.FULL);
 
         cardList = new OrderedList();
         cardList.setType(OrderedList.NumberingType.LOWERCASE_LETTER);
-        cardList.addClassNames("card-list", LumoUtility.Gap.XSMALL, LumoUtility.FlexDirection.COLUMN, LumoUtility.ListStyleType.NONE, LumoUtility.Padding.XSMALL);
+        cardList.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.ListStyleType.NONE, LumoUtility.Padding.XSMALL);
         sidebar.setAlignItems(Alignment.BASELINE);
         sidebar.add(searchField, scroller);
         scroller.setContent(cardList);
 
         Paragraph infoParagraph = new Paragraph("In der interaktiven Karte findest du alle Fernverkehrsbahnhöfe in Deutschland." +
-                " Nutze die Suchfunktion auf der rechten Seite um nach einem bestimmten Bahnhof zu suchen.");
+                " Nutze die Suchfunktion auf der rechten Seite, um nach einem bestimmten Bahnhof zu suchen.");
 
-        Paragraph infoCalcParagraph = new Paragraph("Hinweis zur vollständigkeit: Es werden nur Bahnhöfe angezeigt, " +
+        Paragraph infoCalcParagraph = new Paragraph("Hinweis zur Vollständigkeit: Es werden nur Bahnhöfe angezeigt, " +
                 "an denen mindestens Nationaler Fernverkehr stattfindet. Es kann sein, dass einzelne Sub-Betriebsstellen " +
                 "wie Berlin Hbf (tief) nicht vorkommen, da Sie hier als Berlin Hbf indexiert sind. Es kann ebenfalls sein," +
                 " dass Bahnhöfe auftauchen, die nicht vom Fernverkehr bedient werden, jedoch zu einer Betriebsstelle gehören," +
@@ -142,57 +123,39 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         });
 
         DateTimePicker whenAfter = new DateTimePicker();
+        whenAfter.setLocale(new Locale("de", "DE"));
         whenAfter.setLabel("Ab wann");
         whenAfter.setTooltipText("Wähle den Zeitpunkt ab wann die Daten im Dashboard angezeigt werden sollen.");
         whenAfter.setValue(LocalDateTime.now().minusDays(1));
-        whenAfter.addValueChangeListener(e -> {
-            this.whenAfter = whenAfter.getValue();
-        });
+        whenAfter.addValueChangeListener(e -> this.whenAfter = whenAfter.getValue());
 
         DateTimePicker whenBefore = new DateTimePicker();
+        whenBefore.setLocale(new Locale("de", "DE"));
         whenBefore.setLabel("Bis wann");
         whenBefore.setTooltipText("Wähle den Zeitpunkt bis wann die Daten im Dashboard angezeigt werden sollen.");
         whenBefore.setValue(LocalDateTime.now());
-        whenBefore.addValueChangeListener(e -> {
-            this.whenBefore = whenBefore.getValue();
-        });
+        whenBefore.addValueChangeListener(e -> this.whenBefore = whenBefore.getValue());
 
-        HorizontalLayout mapLayout = new HorizontalLayout(map);
-        mapLayout.setHeight(100f, Unit.PERCENTAGE);
-        mapLayout.setWidth(100f, Unit.PERCENTAGE);
-        mapLayout.setMaxHeight(100f, Unit.PERCENTAGE);
-        mapLayout.setMaxWidth(100f, Unit.PERCENTAGE);
-        mapLayout.setMinHeight(100f, Unit.PERCENTAGE);
-        mapLayout.setMinWidth(100f, Unit.PERCENTAGE);
-        mapLayout.add(map, sidebar);
+        HorizontalLayout mapLayout = new HorizontalLayout(map, sidebar);
+        mapLayout.setWidthFull();
+        mapLayout.setMaxHeight(90f, Unit.PERCENTAGE);
+        mapLayout.setMinHeight(90f, Unit.PERCENTAGE);
+
+        map.setWidth(70f, Unit.PERCENTAGE);
+        map.setMaxWidth(70f, Unit.PERCENTAGE);
+        map.setMinWidth(70f, Unit.PERCENTAGE);
+        map.setHeightFull();
+
+        map.addFeatureClickListener(mapFeatureClickEvent -> openArrivalDepartureDialog(stopToLocation.get(mapFeatureClickEvent.getFeature())));
 
         HorizontalLayout infoLayout = new HorizontalLayout(infoButton, whenAfter, whenBefore);
         infoLayout.setAlignItems(Alignment.BASELINE);
-        VerticalLayout content = new VerticalLayout(infoLayout, mapLayout);
-        content.setSizeFull();
-        content.setMaxHeight(100f, Unit.PERCENTAGE);
-        content.setMaxWidth(100f, Unit.PERCENTAGE);
-
-        cardList.setWidth(100f, Unit.PERCENTAGE);
-        cardList.setMaxWidth(100f, Unit.PERCENTAGE);
-        cardList.setHeight(100f, Unit.PERCENTAGE);
-        cardList.setMaxHeight(100f, Unit.PERCENTAGE);
-        cardList.setMinHeight(100f, Unit.PERCENTAGE);
-        cardList.setMinWidth(100f, Unit.PERCENTAGE);
-
-        setFlexGrow(0);
-        setFlexShrink(0);
-
-        add(content);
+        add(infoLayout, mapLayout);
 
         configureMap();
         updateCardList();
 
         setSizeFull();
-        setMaxHeight(100f, Unit.PERCENTAGE);
-        setMaxWidth(100f, Unit.PERCENTAGE);
-        setMinHeight(100f, Unit.PERCENTAGE);
-        setMinWidth(100f, Unit.PERCENTAGE);
     }
 
     /**
@@ -249,24 +212,20 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         cardList.removeAll();
         stopToCard.clear();
         for (StopDto stop : filteredStops) {
-            Button button = new Button();
-            button.setWidth(100f, Unit.PERCENTAGE);
-            button.setAriaLabel("Klick um auf Karte zu zentrieren, Rechtsklick oder langes Drücken für mehr Option");
-            button.addClassNames(LumoUtility.Height.AUTO, LumoUtility.Padding.MEDIUM);
-            button.addClickListener(e -> {
-                centerMapOn(stop);
-            });
+            Button pinOnMapIconButton = new Button();
+            pinOnMapIconButton.setIcon(VaadinIcon.MAP_MARKER.create());
+            pinOnMapIconButton.setAriaLabel("Klick um auf Karte zu zentrieren, Rechtsklick oder langes Drücken für mehr Option");
+            pinOnMapIconButton.addClickListener(e -> centerMapOn(stop));
 
             ContextMenu contextMenu = new ContextMenu();
-            contextMenu.setTarget(button);
+            Button threeDotButton = new Button();
+            contextMenu.setTarget(threeDotButton);
+            contextMenu.setOpenOnClick(true);
+            threeDotButton.setIcon(new Icon(VaadinIcon.ELLIPSIS_DOTS_V));
             if (stop.isProvidesFurtherInformation()) {
-                contextMenu.addItem("Weitere Informationen", e -> {
-                    openFullStopInfo(stop);
-                });
+                contextMenu.addItem("Weitere Informationen", e -> openFullStopInfo(stop));
             }
-            contextMenu.addItem("Ankünfte und Abfahrten", e -> {
-                openArrivalDepartureDialog(stop);
-            });
+            contextMenu.addItem("Ankünfte und Abfahrten", e -> openArrivalDepartureDialog(stop));
 
             contextMenu.addItem("Dashboard", e -> {
                 GeneralRailInsightsDialog dialog = new GeneralRailInsightsDialog();
@@ -275,18 +234,23 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
                 dialog.open();
             });
 
-            Span card = new Span();
-            card.addClassNames("card", LumoUtility.Width.FULL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.START, LumoUtility.Gap.XSMALL);
+            Span textSpan = new Span();
+            textSpan.addClassNames(LumoUtility.Width.FULL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.START);
             Span city = new Span(stop.getStopName());
-            city.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER, LumoUtility.Padding.Bottom.XSMALL);
+            city.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER);
             Span place = new Span("Haltepunkt ID: " + stop.getStopId());
             place.addClassNames(LumoUtility.TextColor.SECONDARY);
+            textSpan.add(city, place);
+            textSpan.setWidthFull();
 
-            card.add(city, place);
-
-            button.getElement().appendChild(card.getElement());
-            cardList.add(new ListItem(button));
-            stopToCard.put(stop, button);
+            Span buttons = new Span(pinOnMapIconButton, threeDotButton);
+            buttons.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+            HorizontalLayout buttonSpanButtonLayout = new HorizontalLayout(textSpan, buttons);
+            buttonSpanButtonLayout.setAlignItems(Alignment.CENTER);
+            buttonSpanButtonLayout.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM);
+            buttonSpanButtonLayout.addClassNames(LumoUtility.Margin.SMALL, LumoUtility.Background.CONTRAST_5);
+            cardList.add(new ListItem(buttonSpanButtonLayout));
+            stopToCard.put(stop, textSpan);
         }
     }
 
@@ -306,13 +270,13 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
 
         Stop fullStop = stopService.findStopByStopId(Long.valueOf(stop.getStopId())).getData();
 
-        List<Trip> tripToEvaluate = tripService.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(fullStop, from, to).getData();
+        List<Trip> tripsToEvaluate = tripService.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(fullStop, from, to).getData();
 
-        TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripToEvaluate);
+        TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripsToEvaluate);
 
-        int tripCount = tripToEvaluate.size();
+        int tripCount = tripsToEvaluate.size();
 
-        TripCounts tripCounts = universalCalculator.countTrips(tripToEvaluate, from, to);
+        TripCounts tripCounts = universalCalculator.countTrips(tripsToEvaluate, from, to);
 
         DataSeries dailyTripCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripCounts());
         DataSeries dailyTripLongDistanceCountSeries = universalCalculator.buildDailyTripCountSeries(tripCounts.getDailyTripLongDistanceCounts());
@@ -321,9 +285,9 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
         DataSeries hourlyTripLongDistanceCountSeries = universalCalculator.buildHourlyTripCountSeries(tripCounts.getHourlyTripLongDistanceCounts());
         DataSeries hourlyTripRegionalCountSeries = universalCalculator.buildHourlyTripCountSeries(tripCounts.getHourlyTripRegionalCounts());
 
-        DataSeries nationalRegionalSeries = universalCalculator.calculatePercentageTripRegioVsFernverkehr(tripToEvaluate);
+        DataSeries nationalRegionalSeries = universalCalculator.calculatePercentageTripRegioVsFernverkehr(tripsToEvaluate);
 
-        List<Trip> topDelayedTrips = universalCalculator.calculateTopDelayedTripsOrderedByDelay(tripToEvaluate, 10);
+        List<Trip> topDelayedTrips = universalCalculator.calculateTopDelayedTripsOrderedByDelay(tripsToEvaluate, 10);
 
         StationViewDashboard stationViewDashboard;
 
@@ -425,7 +389,7 @@ public class StationView extends HorizontalLayout implements BeforeEnterListener
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        // inform the user, that mobile devices are currently not supported if he is using one
+        // inform the user that mobile devices are currently not supported if he is using one
         if (UI.getCurrent().getSession().getBrowser().isAndroid() || UI.getCurrent().getSession().getBrowser().isIPhone()) {
             Notification mobileDeviceNotification = NotificationFactory.createNotification(NotificationTypes.CRITICAL,
                     "Mobile Geräte werden aktuell nicht unterstützt. Es kommt zu Darstellungsproblemen. Bitte benutze einen Desktop-Browser.");
