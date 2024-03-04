@@ -85,9 +85,7 @@ public class CsvExportView extends VerticalLayout {
                     });
                 }
         );
-        dynamicFileDownloader.addDownloadFailedListener(e -> {
-            NotificationFactory.createNotification(NotificationTypes.ERROR, "Download ist fehlgeschlagen.").open();
-        });
+        dynamicFileDownloader.addDownloadFailedListener(e -> NotificationFactory.createNotification(NotificationTypes.ERROR, "Download ist fehlgeschlagen.").open());
 
         UI.getCurrent().setPollInterval(500);
 
