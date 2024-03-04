@@ -10,7 +10,6 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
-
 import de.olech2412.adapter.dbadapter.APIConfiguration;
 import de.olech2412.adapter.dbadapter.DB_Adapter_v6;
 import de.olech2412.adapter.dbadapter.exception.Error;
@@ -18,8 +17,8 @@ import de.olech2412.adapter.dbadapter.exception.Result;
 import de.olech2412.adapter.dbadapter.model.journey.Journey;
 import de.olech2412.adapter.dbadapter.request.parameters.Parameter;
 import de.olech2412.adapter.dbadapter.request.parameters.RequestParametersNames;
+import de.whosfritz.railinsights.data.Ticket;
 import de.whosfritz.railinsights.data.dto.StopDto;
-import de.whosfritz.railinsights.ui.components.Ticket;
 import de.whosfritz.railinsights.ui.components.TicketComponent;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
@@ -37,7 +36,7 @@ import java.util.Locale;
 @Route(value = "verbindungsprognose", layout = MainView.class)
 public class ConnectionPrognoseView extends VerticalLayout {
 
-    private TicketComponent ticketComponent;
+    private final TicketComponent ticketComponent;
 
     public ConnectionPrognoseView(DataProviderService dataProviderService) {
 
@@ -64,9 +63,17 @@ public class ConnectionPrognoseView extends VerticalLayout {
         searchButton.setIcon(VaadinIcon.SEARCH.create());
         searchButton.addClickListener(valueChangeEvent ->
                 {
+                    // check if input is complete and valid else notify user
+                    if (stopComboBox.getValue() == null || stopComboBox2.getValue() == null || dateTimePicker.getValue() == null) {
+                        Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Bitte wähle einen Start- und Zielbahnhof aus");
+                        error.open();
+                        return;
+                    }
                     try {
                         updateTicketComponent(stopComboBox.getValue().getStopId(), stopComboBox2.getValue().getStopId(), dateTimePicker.getValue());
                     } catch (IOException e) {
+                        Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Ein Fehler bei der Kommunikation zum HAFAS-Server ist aufgetreten. Bitte versuche es später erneut.");
+                        error.open();
                         throw new RuntimeException(e);
                     }
                 }
@@ -83,10 +90,11 @@ public class ConnectionPrognoseView extends VerticalLayout {
     }
 
     public void updateTicketComponent(String stopIdFrom, String stopIdTo, LocalDateTime when) throws IOException {
-        if(stopIdFrom == null || stopIdTo == null) return;
+        if (stopIdFrom == null || stopIdTo == null) return;
 
         DB_Adapter_v6 db_adapter_v6 = createDBAdapter();
 
+        when = when.minusHours(1);
         //parse when to ISO8601
         String formattedDateTime = when.format(DateTimeFormatter.ISO_DATE_TIME);
 
@@ -110,17 +118,19 @@ public class ConnectionPrognoseView extends VerticalLayout {
                         .add(RequestParametersNames.NATIONAL_EXPRESS, true)
                         .build());
 
-        if(journeys.isSuccess()) {
-            if(journeys.getData() == null){
+        if (journeys.isSuccess()) {
+            if (journeys.getData() == null) {
                 Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Keine Verbindungen für die angegebenen Daten gefunden");
                 error.open();
 
                 return;
             }
-            List<Ticket> tickets = TicketUtil.convertJourneysToTickets(Arrays.stream(journeys.getData()).toList());
+            List<Journey> journeyList = Arrays.stream(journeys.getData()).toList();
+            List<Ticket> tickets = TicketUtil.convertJourneysToTickets(journeyList);
             ticketComponent.updateTickets(tickets);
+            ticketComponent.setJourneys(journeyList);
         } else {
-            if(journeys.getError().getCode() == 404){
+            if (journeys.getError().getCode() == 404) {
                 Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Keine Verbindungen für die angegebenen Daten gefunden");
                 error.open();
             } else {
@@ -130,7 +140,7 @@ public class ConnectionPrognoseView extends VerticalLayout {
         }
     }
 
-    private DB_Adapter_v6 createDBAdapter(){
+    private DB_Adapter_v6 createDBAdapter() {
         APIConfiguration apiConfiguration = new APIConfiguration();
         apiConfiguration.setBaseUrl("http://localhost:3000");
 

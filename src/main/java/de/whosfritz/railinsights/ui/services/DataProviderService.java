@@ -94,7 +94,7 @@ public class DataProviderService {
         double percentageDelayed = ((double) allTrips.stream().filter(trip -> {
             if (trip.getCancelled() == null || !trip.getCancelled()) {
                 if (trip.getDelay() != null) {
-                    return trip.getDelay() >= 300;
+                    return trip.getDelay() >= 360;
                 }
             }
             return false;

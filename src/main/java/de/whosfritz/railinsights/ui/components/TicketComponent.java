@@ -1,23 +1,19 @@
 package de.whosfritz.railinsights.ui.components;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.theme.lumo.LumoIcon;
-import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
-import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
+import de.olech2412.adapter.dbadapter.model.journey.Journey;
+import de.whosfritz.railinsights.data.Ticket;
+import de.whosfritz.railinsights.ui.components.dialogs.ConnectionPrognoseDialog;
+import lombok.Getter;
+import lombok.Setter;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.util.ArrayList;
@@ -25,11 +21,15 @@ import java.util.List;
 
 public class TicketComponent extends VerticalLayout {
 
-    // Create a grid to display the tickets
-    private Grid<Ticket> grid = new Grid<>(Ticket.class);
+    @Getter
+    private final Grid<Ticket> grid = new Grid<>(Ticket.class);
 
     // Create a list of sample tickets
-    private List<Ticket> tickets = new ArrayList<>();
+    private final List<Ticket> tickets = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private List<Journey> journeys = new ArrayList<>();
 
     public TicketComponent() {
         // Set the data provider for the grid
@@ -56,8 +56,7 @@ public class TicketComponent extends VerticalLayout {
             Button button = new Button("Zur Prognose");
             button.setIcon(LineAwesomeIcon.FLASK_SOLID.create());
             button.addClickListener(event -> {
-                Notification nte = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Prognose für die Verbindung " + ticket.getDeparture() + " - " + ticket.getArrival() + " anzeigen");
-                nte.open();
+                ConnectionPrognoseDialog dialog = new ConnectionPrognoseDialog(ticket.getJourney());
             });
             return button;
         }).setHeader("Zur Prognose");
@@ -73,6 +72,10 @@ public class TicketComponent extends VerticalLayout {
                 // Create a div for the train
                 Div trainDiv = new Div();
                 trainDiv.addClassName("train");
+                trainDiv.getStyle().set("padding", "5px 0");
+                trainDiv.getStyle().set("display", "flex");
+                trainDiv.getStyle().set("margin", "5px 0");
+                trainDiv.getStyle().set("border-radius", "5px");
 
                 // Set the background color according to the train type
                 if (train.contains("ICE")) {
@@ -81,8 +84,6 @@ public class TicketComponent extends VerticalLayout {
                     trainDiv.getStyle().set("background-color", "gray");
                 }
 
-                // Set the text color to white
-                trainDiv.getStyle().set("color", "white");
 
                 // Set the text content to the train number
                 trainDiv.setText(train);
@@ -101,6 +102,7 @@ public class TicketComponent extends VerticalLayout {
 
     /**
      * Update the tickets displayed in the grid
+     *
      * @param newTickets The new list of tickets
      */
     public void updateTickets(List<Ticket> newTickets) {
@@ -113,4 +115,5 @@ public class TicketComponent extends VerticalLayout {
         // Refresh the grid
         grid.getDataProvider().refreshAll();
     }
+
 }

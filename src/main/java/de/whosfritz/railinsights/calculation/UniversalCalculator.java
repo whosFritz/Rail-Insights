@@ -226,7 +226,7 @@ public class UniversalCalculator {
         trips.parallelStream().forEach(trip -> {
             if (trip.getCancelled() != null && trip.getCancelled()) {
                 cancelledTrips.incrementAndGet();
-            } else if (trip.getDelay() != null && trip.getDelay() >= 300) {
+            } else if (trip.getDelay() != null && trip.getDelay() >= 360) {
                 delayedTrips.incrementAndGet();
             }
         });
