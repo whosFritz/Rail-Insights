@@ -65,14 +65,14 @@ public class ConnectionPrognoseView extends VerticalLayout {
                 {
                     // check if input is complete and valid else notify user
                     if (stopComboBox.getValue() == null || stopComboBox2.getValue() == null || dateTimePicker.getValue() == null) {
-                        Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Bitte wähle einen Start- und Zielbahnhof aus");
+                        Notification error = NotificationFactory.createNotification(NotificationTypes.CRITICAL, "Bitte wähle einen Start- und Zielbahnhof aus");
                         error.open();
                         return;
                     }
                     try {
                         updateTicketComponent(stopComboBox.getValue().getStopId(), stopComboBox2.getValue().getStopId(), dateTimePicker.getValue());
                     } catch (IOException e) {
-                        Notification error = NotificationFactory.createwNotification(NotificationTypes.CRITICAL, "Ein Fehler bei der Kommunikation zum HAFAS-Server ist aufgetreten. Bitte versuche es später erneut.");
+                        Notification error = NotificationFactory.createNotification(NotificationTypes.CRITICAL, "Ein Fehler bei der Kommunikation zum HAFAS-Server ist aufgetreten. Bitte versuche es später erneut.");
                         error.open();
                         throw new RuntimeException(e);
                     }

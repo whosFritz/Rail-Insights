@@ -38,20 +38,20 @@ public class ConnectionPrognoseDialog extends GeneralRailInsightsDialog {
         HashMap<Integer, List<Trip>> tripsByJourney = journeyDataProvider.findTripsByJourney(ticket);
 
         if (tripsByJourney.isEmpty()) {
-            Notification errorNotification = NotificationFactory.createwNotification(NotificationTypes.ERROR, "Für diese Verbindung kann leider keine Prognose erstellt werden.");
+            Notification errorNotification = NotificationFactory.createNotification(NotificationTypes.ERROR, "Für diese Verbindung kann leider keine Prognose erstellt werden.");
             errorNotification.open();
         }
 
         List<PrognoseDTO> prognoseDTOs = createPrognose(tripsByJourney, ticket);
         if (prognoseDTOs.isEmpty()) {
-            Notification errorNotification = NotificationFactory.createwNotification(NotificationTypes.ERROR, "Für diese Verbindung kann leider keine Prognose erstellt werden, da unser Datenbestand nicht ausreicht.");
+            Notification errorNotification = NotificationFactory.createNotification(NotificationTypes.ERROR, "Für diese Verbindung kann leider keine Prognose erstellt werden, da unser Datenbestand nicht ausreicht.");
             errorNotification.open();
             return;
         }
 
         // if the first item does not contain the correct start stop or the last item does not contain the correct end stop throw a notification
         if (!prognoseDTOs.get(0).getStop().equals(ticket.getLegs().get(0).getOrigin().getName()) || !prognoseDTOs.get(prognoseDTOs.size() - 1).getStop().equals(ticket.getLegs().get(ticket.getLegs().size() - 1).getDestination().getName())) {
-            Notification errorNotification = NotificationFactory.createwNotification(NotificationTypes.ERROR, "Für diese Verbindung kann leider keine Prognose erstellt werden, da unser Datenbestand nicht ausreicht.");
+            Notification errorNotification = NotificationFactory.createNotification(NotificationTypes.ERROR, "Für diese Verbindung kann leider keine Prognose erstellt werden, da unser Datenbestand nicht ausreicht.");
             errorNotification.open();
             return;
         }
