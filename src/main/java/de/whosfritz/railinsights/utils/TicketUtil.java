@@ -2,7 +2,7 @@ package de.whosfritz.railinsights.utils;
 
 import de.olech2412.adapter.dbadapter.model.journey.Journey;
 import de.olech2412.adapter.dbadapter.model.stop.sub.Line;
-import de.whosfritz.railinsights.ui.components.Ticket;
+import de.whosfritz.railinsights.data.Ticket;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -54,7 +54,7 @@ public class TicketUtil {
                 trainDetails.add(trainDetail.toString());
             }
 
-            Ticket ticket = new Ticket(departure, arrival, durationInMinutes, transfers, price, trainDetails);
+            Ticket ticket = new Ticket(departure, arrival, durationInMinutes, transfers, price, trainDetails, journey);
             tickets.add(ticket);
         }
 

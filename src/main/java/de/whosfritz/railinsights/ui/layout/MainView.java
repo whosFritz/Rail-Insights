@@ -123,9 +123,9 @@ public class MainView extends AppLayout {
 
     private String getLogoSrc(ThemeVariant themeVariant) {
         if (themeVariant == ThemeVariant.DARK) {
-            return "images/darkmode.png";
+            return "images/lightmode.png";
         }
-        return "images/lightmode.png";
+        return "images/darkmode.png";
     }
 
     /**
@@ -176,11 +176,11 @@ public class MainView extends AppLayout {
         SideNav mainSideNav = new SideNav();
         mainSideNav.addItem(
                 createNavItem("Home", "/", VaadinIcon.HOME.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("Verspätungen", "/verspätungen", VaadinIcon.TIMER.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("Ausfälle", "/ausfälle", LineAwesomeIcon.BAN_SOLID.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("Verspätungen", "/verspaetungen", VaadinIcon.TIMER.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("Zugstatistiken", "/trainmetrics", LineAwesomeIcon.SUBWAY_SOLID.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("Bahnhöfe", "/bahnhöfe", LineAwesomeIcon.BUILDING.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("Verbindungsprognose", "/verbindungsprognose", VaadinIcon.TIME_BACKWARD.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("CSV-Export", "/csv-export", LineAwesomeIcon.FILE_CSV_SOLID.create(), LumoUtility.FontSize.MEDIUM)
+                createNavItem("Verbindungsprognose", "/verbindungsprognose", VaadinIcon.SEARCH.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("CSV-Export", "/csv-export", LineAwesomeIcon.FILE_DOWNLOAD_SOLID.create(), LumoUtility.FontSize.MEDIUM)
         );
         mainSideNav.setSizeFull();
         return mainSideNav;
@@ -224,7 +224,7 @@ public class MainView extends AppLayout {
                 iconLayout.add(VaadinIcon.CLOCK.create());
                 span.getElement().getThemeList().add("badge pill");
                 span.setTitle("Es werden gerade Daten aktualisiert");
-                notification = NotificationFactory.createwNotification(NotificationTypes.INFO, "Wir aktualisieren " +
+                notification = NotificationFactory.createNotification(NotificationTypes.INFO, "Wir aktualisieren " +
                         "gerade die Daten, aktualisiere die Seite in ein paar Sekunden");
                 notification.open();
             }
@@ -249,8 +249,9 @@ public class MainView extends AppLayout {
      * @return SideNavItem representing the navigation item.
      */
     private SideNavItem createNavItem(String title, String route, Component icon, String className) {
+        icon.addClassNames(LumoUtility.Padding.NONE, LumoUtility.IconSize.SMALL);
         SideNavItem item = new SideNavItem(title, route, icon);
-        item.addClassName(className);
+        item.addClassNames(className, LumoUtility.Margin.Vertical.XSMALL);
         return item;
     }
 

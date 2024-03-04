@@ -1,6 +1,5 @@
 package de.whosfritz.railinsights.rest.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import de.olech2412.adapter.dbadapter.model.station.Station;
 import de.whosfritz.railinsights.data.repositories.station_repositories.StationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ public class StationController {
 
     // GET-Endpunkt zum Finden einer Station anhand ihrer stationId
     @GetMapping("/stations/{stationId}")
-    public ResponseEntity<Station> getStationById(@PathVariable("stationId") Long stationId) throws JsonProcessingException {
+    public ResponseEntity<Station> getStationById(@PathVariable("stationId") Long stationId) {
         Optional<Station> station = stationRepository.findByStationId(stationId);
 
         return station.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));

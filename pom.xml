@@ -49,11 +49,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>org.vaadin.addons.mygroup</groupId>
-            <artifactId>simpletimeline</artifactId>
-            <version>1.0.0</version>
-        </dependency>
         <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -93,6 +88,11 @@
             <groupId>org.parttio</groupId>
             <artifactId>line-awesome</artifactId>
             <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>in.virit</groupId>
+            <artifactId>viritin</artifactId>
+            <version>2.7.3</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin.componentfactory</groupId>

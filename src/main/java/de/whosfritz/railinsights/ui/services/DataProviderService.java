@@ -47,6 +47,12 @@ public class DataProviderService {
 
     Double stopsPercentageCancelled;
 
+    Double stopsPercentageDelayedMoreThan6min;
+
+    Double stopsPercentageDelayedMoreThan15min;
+
+    Double stopsPercentageDelayedMoreThan60min;
+
     DataSeries stoppsOverTimeDataSeries;
 
     int totalTrips;

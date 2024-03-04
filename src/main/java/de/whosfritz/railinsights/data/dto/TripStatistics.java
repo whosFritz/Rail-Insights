@@ -14,9 +14,8 @@ public class TripStatistics {
     private double percentageDelayed;
     private double percentageCancelled;
 
-    public TripStatistics(double percentageCancelled, double percentageDelayed, double percentageOnTime) {
-        this.percentageCancelled = percentageCancelled;
-        this.percentageDelayed = percentageDelayed;
-        this.percentageOnTime = percentageOnTime;
-    }
+    private double delayMoreThan6min;
+    private double delayMoreThan15min;
+    private double delayMoreThan60min;
+
 }

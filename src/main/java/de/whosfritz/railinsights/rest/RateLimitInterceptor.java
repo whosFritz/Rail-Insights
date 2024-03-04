@@ -18,13 +18,14 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
     private static final long MAX_REQUESTS_PER_MINUTE = 60; // maximum number of requests per minute
     private static final long ONE_MINUTE_MILLIS = TimeUnit.MINUTES.toMillis(1); // 1 minute in milliseconds
-    private ConcurrentHashMap<Request, Long> requestCounts = new ConcurrentHashMap<>(); // ConcurrentHashMap is used to avoid concurrent modification exceptions
+    private final ConcurrentHashMap<Request, Long> requestCounts = new ConcurrentHashMap<>(); // ConcurrentHashMap is used to avoid concurrent modification exceptions
 
     /**
      * This method is called before the actual handler method is called. It returns true if the request should be
-     * @param request the request object
+     *
+     * @param request  the request object
      * @param response the response object
-     * @param handler the handler object
+     * @param handler  the handler object
      * @return true if the request should be allowed, false otherwise
      */
     @Override
@@ -61,6 +62,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
     /**
      * This method is called after the handler method is called. It is used to clean up the requestCounts map.
+     *
      * @param request the request object
      * @return true
      */
@@ -71,6 +73,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
     /**
      * This method is called after the handler method is called. It is used to clean up the requestCounts map.
+     *
      * @param currentTimestamp the current timestamp
      */
     private void cleanupExpiredRequests(long currentTimestamp) {
