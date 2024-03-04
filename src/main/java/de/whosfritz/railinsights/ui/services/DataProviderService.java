@@ -4,25 +4,23 @@ import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.style.SolidColor;
 import de.olech2412.adapter.dbadapter.model.stop.Stop;
-import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.whosfritz.railinsights.data.dto.StopDto;
 import de.whosfritz.railinsights.data.repositories.stop_repositories.StopRepository;
 import de.whosfritz.railinsights.data.repositories.trip_repositories.TripsRepository;
 import de.whosfritz.railinsights.ui.color_scheme.ColorScheme;
 import de.whosfritz.railinsights.utils.PercentageUtil;
-import de.whosfritz.railinsights.utils.TripUtil;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -71,6 +69,8 @@ public class DataProviderService {
     /**
      * Run the data calculation every 20 minutes.
      */
+    @Scheduled(cron = "0 0/20 * * * ?") // every 20 minutes
+    @Async
     @Transactional
     public void calculateData() {
         state = DataProviderServiceState.PENDING; // Set the state to pending
