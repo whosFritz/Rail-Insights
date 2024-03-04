@@ -64,9 +64,9 @@ public class TrainStatsView extends VerticalLayout {
         this.tripService = tripService;
 
 
-        HorizontalLayout searchLayout = new HorizontalLayout();
-        searchLayout.addClassNames(LumoUtility.Margin.MEDIUM);
-        searchLayout.setAlignItems(Alignment.BASELINE);
+        HorizontalLayout inputsLayout = new HorizontalLayout();
+        inputsLayout.addClassNames(LumoUtility.Margin.MEDIUM);
+        inputsLayout.setAlignItems(Alignment.BASELINE);
 
         Paragraph infoParagraph = new Paragraph("Hier kannst du dir die Statistiken zu Zügen anzeigen lassen.");
         Paragraph infoCalcParagraph = new Paragraph("Wähle aus der Liste einen Fernverkehrszug aus und gib den Zeitraum an, für den du die Statistiken sehen möchtest. z.B. 2.3.2024 - 4.3.2024 wird dir die Daten von 2.3.2024 0 Uhr bis zum 5.3.2024 0 Uhr anzeigen, ergo den vollen ausgewählten Endtag.");
@@ -92,6 +92,7 @@ public class TrainStatsView extends VerticalLayout {
         fernVerkehrLinesCombobox.setLabel("Fernverkehrszug");
         fernVerkehrLinesCombobox.addClassNames(LumoUtility.Margin.Top.MEDIUM);
         fernVerkehrLinesCombobox.setPrefixComponent(LineAwesomeIcon.SUBWAY_SOLID.create());
+        fernVerkehrLinesCombobox.setClearButtonVisible(true);
 
         startDatePicker.setLabel("Startdatum");
         startDatePicker.setValue(LocalDate.now().minusMonths(1));
@@ -105,17 +106,21 @@ public class TrainStatsView extends VerticalLayout {
 
         Button calculateStatsButton = new Button("Statistiken berechnen");
         calculateStatsButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        calculateStatsButton.addClickListener(e -> {
-            createStats();
+        calculateStatsButton.addClickListener(e -> createStats());
+
+        Button clearButton = new Button("Zurücksetzen");
+        clearButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        clearButton.addClickListener(e -> {
+            tripStatsLayout.removeAll();
             fernVerkehrLinesCombobox.clear();
         });
 
 
         // Todo: Remarks / Bemerkungen zu den Fahrten (idk yet)
 
-        searchLayout.add(infoButton, startDatePicker, endDatePicker, fernVerkehrLinesCombobox, calculateStatsButton);
+        inputsLayout.add(infoButton, startDatePicker, endDatePicker, fernVerkehrLinesCombobox, calculateStatsButton, clearButton);
 
-        add(searchLayout, tripStatsLayout);
+        add(inputsLayout, tripStatsLayout);
         tripStatsLayout.setVisible(false);
 
         setSizeFull();
