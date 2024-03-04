@@ -86,7 +86,7 @@ public class CsvExportView extends VerticalLayout {
                 }
         );
         dynamicFileDownloader.addDownloadFailedListener(e -> {
-            NotificationFactory.createNotification(NotificationTypes.ERROR, "Download failed").open();
+            NotificationFactory.createNotification(NotificationTypes.ERROR, "Download ist fehlgeschlagen.").open();
         });
 
         UI.getCurrent().setPollInterval(500);
@@ -95,7 +95,7 @@ public class CsvExportView extends VerticalLayout {
         dynamicFileDownloader.asButton();
         dynamicFileDownloader.getButton().setIcon(new Icon(VaadinIcon.DOWNLOAD));
         dynamicFileDownloader.getButton().addClickListener(e -> {
-            NotificationFactory.createNotification(NotificationTypes.WARNING, "Download started").open();
+            NotificationFactory.createNotification(NotificationTypes.WARNING, "Download gestartet...").open();
             tableToDownloadComboBox.setEnabled(false);
         });
 
