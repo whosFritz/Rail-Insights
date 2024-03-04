@@ -137,11 +137,9 @@ public class DataProviderService {
                 }
             }
             return false;
-        }).count() / allTrips.size());
-
-        stopsPercentageDelayedMoreThan60min = (Math.round(percentageDelayedMoreThan60min * 100.0) / 100.0) * 100;
-        formatted = df.format(stopsPercentageDelayedMoreThan60min);
-        stopsPercentageDelayedMoreThan60min = Double.parseDouble(formatted);
+        }).count());
+        double stopsPercentageDelayedMoreThan60mi = percentageDelayedMoreThan60min / allTrips.size();
+        stopsPercentageDelayedMoreThan60min = Math.round(stopsPercentageDelayedMoreThan60mi * 1000.0) / 1000.0 * 100;
 
         generateHomeViewStatistics(allTrips);
 
