@@ -289,13 +289,13 @@ public class UniversalCalculator {
      * @return the trip counts for the specific time period
      */
     public TripCounts countTrips(List<Trip> trips, LocalDateTime from, LocalDateTime to) {
-        HashMap<LocalDate, Integer> dailyTripCounts = new HashMap<>();
-        HashMap<LocalDate, Integer> dailyTripLongDistanceCounts = new HashMap<>();
-        HashMap<LocalDate, Integer> dailyTripRegionalCounts = new HashMap<>();
+        TreeMap<LocalDate, Integer> dailyTripCounts = new TreeMap<>();
+        TreeMap<LocalDate, Integer> dailyTripLongDistanceCounts = new TreeMap<>();
+        TreeMap<LocalDate, Integer> dailyTripRegionalCounts = new TreeMap<>();
 
-        HashMap<LocalDateTime, Integer> hourlyTripCounts = new HashMap<>();
-        HashMap<LocalDateTime, Integer> hourlyTripLongDistanceCounts = new HashMap<>();
-        HashMap<LocalDateTime, Integer> hourlyTripRegionalCounts = new HashMap<>();
+        TreeMap<LocalDateTime, Integer> hourlyTripCounts = new TreeMap<>();
+        TreeMap<LocalDateTime, Integer> hourlyTripLongDistanceCounts = new TreeMap<>();
+        TreeMap<LocalDateTime, Integer> hourlyTripRegionalCounts = new TreeMap<>();
 
         for (Trip trip : trips) {
             LocalDateTime date;
@@ -346,13 +346,32 @@ public class UniversalCalculator {
             }
         }
 
+        //run through dailytripcounts if a date does not exist in longdistancecounts or regionalcounts fill up with 0 values
+        for (LocalDate date : dailyTripCounts.keySet()) {
+            if (!dailyTripLongDistanceCounts.containsKey(date)) {
+                dailyTripLongDistanceCounts.put(date, 0);
+            }
+            if (!dailyTripRegionalCounts.containsKey(date)) {
+                dailyTripRegionalCounts.put(date, 0);
+            }
+        }
+
+        for(LocalDateTime date : hourlyTripCounts.keySet()) {
+            if (!hourlyTripLongDistanceCounts.containsKey(date)) {
+                hourlyTripLongDistanceCounts.put(date, 0);
+            }
+            if (!hourlyTripRegionalCounts.containsKey(date)) {
+                hourlyTripRegionalCounts.put(date, 0);
+            }
+        }
+
         TripCounts tripCounts = new TripCounts();
-        tripCounts.setDailyTripCounts(new HashMap<>(dailyTripCounts));
-        tripCounts.setDailyTripLongDistanceCounts(new HashMap<>(dailyTripLongDistanceCounts));
-        tripCounts.setDailyTripRegionalCounts(new HashMap<>(dailyTripRegionalCounts));
-        tripCounts.setHourlyTripCounts(new HashMap<>(hourlyTripCounts));
-        tripCounts.setHourlyTripLongDistanceCounts(new HashMap<>(hourlyTripLongDistanceCounts));
-        tripCounts.setHourlyTripRegionalCounts(new HashMap<>(hourlyTripRegionalCounts));
+        tripCounts.setDailyTripCounts(dailyTripCounts);
+        tripCounts.setDailyTripLongDistanceCounts(dailyTripLongDistanceCounts);
+        tripCounts.setDailyTripRegionalCounts(dailyTripRegionalCounts);
+        tripCounts.setHourlyTripCounts(hourlyTripCounts);
+        tripCounts.setHourlyTripLongDistanceCounts(hourlyTripLongDistanceCounts);
+        tripCounts.setHourlyTripRegionalCounts(hourlyTripRegionalCounts);
 
         return tripCounts;
     }

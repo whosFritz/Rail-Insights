@@ -162,7 +162,7 @@ public class StationViewDashboard extends VerticalLayout {
     private Component createStopsOverTimeChart() {
         HorizontalLayout header = createHeader("Stopps - Zeitverlauf", "Aufgeteilt nach Regional, Fern und Gesamtverkehr");
 
-        ChartType chartType = ChartType.COLUMN;
+        ChartType chartType = ChartType.AREA;
 
         // Chart
         Chart chart = new Chart(chartType);
@@ -176,6 +176,7 @@ public class StationViewDashboard extends VerticalLayout {
 
         XAxis xAxis = new XAxis();
         xAxis.setType(AxisType.DATETIME);
+        xAxis.setStartOfWeek(1);
         conf.addxAxis(xAxis);
 
         conf.getyAxis().setTitle("Anzahl der Stopps");
@@ -183,7 +184,7 @@ public class StationViewDashboard extends VerticalLayout {
         PlotOptionsAreaspline plotOptions = new PlotOptionsAreaspline();
         plotOptions.setPointPlacement(PointPlacement.ON);
         plotOptions.setMarker(new Marker(false));
-        plotOptions.setConnectNulls(false);
+        plotOptions.setConnectNulls(true);
         plotOptions.setStacking(Stacking.NORMAL);
         conf.addPlotOptions(plotOptions);
 
