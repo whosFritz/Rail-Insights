@@ -62,8 +62,6 @@ public class TicketComponent extends VerticalLayout {
             Button button = new Button("Zur Prognose");
             button.setIcon(LineAwesomeIcon.FLASK_SOLID.create());
             button.addClickListener(event -> {
-                Notification nte = NotificationFactory.createNotification(NotificationTypes.CRITICAL, "Prognose für die Verbindung " + ticket.getDeparture() + " - " + ticket.getArrival() + " anzeigen");
-                nte.open();
                 ConnectionPrognoseDialog dialog = new ConnectionPrognoseDialog(ticket.getJourney());
             });
             return button;

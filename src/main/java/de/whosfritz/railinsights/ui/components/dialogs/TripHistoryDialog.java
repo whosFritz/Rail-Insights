@@ -26,7 +26,7 @@ public class TripHistoryDialog extends GeneralRailInsightsDialog {
         }
 
         Grid<Trip> grid = new Grid<>();
-        grid.setWidth("100%");
+        grid.setSizeFull();
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES, GridVariant.LUMO_NO_BORDER);
         grid.setColumnReorderingAllowed(true);
 
