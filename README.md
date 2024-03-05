@@ -13,16 +13,19 @@
 
 Rail Insights ist ein Softwareprojekt auf GitHub, das sich auf die Auswertung und statistische Darstellung von Zügen der
 Deutschen Bahn konzentriert. Die zugehörige Webanwendung ermöglicht es Benutzern, in Echtzeit zu erfahren, welche Züge
-sich wo gerade befinden und ob es Verspätungen gibt. Zusätzlich bietet die Anwendung eine Prognosefunktion und eine
-Live-Karte, um die Positionen der Züge zu visualisieren.
+wo fahren und welche Verspätungen diese haben.
+Zusätzlich bietet die Anwendung eine Prognosefunktion für zukünftige Fahrten.
 
 ## Funktionalitäten
 
-- **Live-Verfolgung von Zügen:** Nutzer können die aktuelle Position und den Status von Zügen in Echtzeit verfolgen.
+- **HomeView:** Die Startseite der Anwendung zeigt Statistiken über die ausgewerteten Daten.
 - **Verspätungsanzeige:** Die Anwendung zeigt an, welche Züge Verspätungen haben und ermöglicht es den Benutzern,
   detaillierte Informationen zu erhalten.
-- **Prognosefunktion:** Benutzer können eine Prognose für die voraussichtliche Ankunftszeit von Zügen erhalten.
-- **Live-Karte:** Visualisierung der aktuellen Positionen der Züge auf einer interaktiven Karte.
+- **Statistiken nach Zug:** Die Anwendung zeigt Statistiken über eine Linie in einem gewählten Zeitraum an.
+- **Prognosefunktion:** Benutzer können eine Prognose für voraussichtliche Fahrten anzeigen lassen.
+- **Echtzeitdaten:** Die Anwendung zeigt eine Karten mit Bahnhöfen an und man kann sich Details zu diesen anzeigen
+  lassen.
+- **CSV-Export:** Die Anwendung ermöglicht es Benutzern, die ausgewerteten Daten als CSV-Datei zu exportieren.
 
 ## Technologien
 
@@ -30,8 +33,9 @@ Die Webanwendung wurde unter Verwendung der folgenden Technologien erstellt:
 
 - **Vaadin:** Ein Java-Framework für die Entwicklung von Webanwendungen, das eine moderne und benutzerfreundliche
   Oberfläche bietet.
-- **Spring:** Ein umfassendes Framework für die Entwicklung von Java-Anwendungen, das die Implementierung von
+- **Spring Boot v3:** Ein umfassendes Framework für die Entwicklung von Java-Anwendungen, das die Implementierung von
   Unternehmensanwendungen erleichtert.
+- **MariaDB:** Ein relationales Datenbankmanagementsystem, das als Open-Source-Software verfügbar ist.
 
 ## Nutzung
 
@@ -41,6 +45,14 @@ Die Webseite des Projekts lautet [Railsights](https://www.railinsights.de).
 
 Wir begrüßen Beiträge und Feedback von der Community.
 
+## [![Repography logo](https://images.repography.com/logo.svg)](https://repography.com) / Recent activity [![Time period](https://images.repography.com/33848202/whosFritz/Rail-Insights/recent-activity/fxK1KNmwagTIeO43sw4ZqRAUCCarzLxyLFDCcV11_-k/Vsa8Dx0RMZ8PkC_RRfJHeTOleE-_fV1fc5Ulyepy61Q_badge.svg)](https://repography.com)
+
+[![Timeline graph](https://images.repography.com/33848202/whosFritz/Rail-Insights/recent-activity/fxK1KNmwagTIeO43sw4ZqRAUCCarzLxyLFDCcV11_-k/Vsa8Dx0RMZ8PkC_RRfJHeTOleE-_fV1fc5Ulyepy61Q_timeline.svg)](https://github.com/whosFritz/Rail-Insights/commits)
+[![Issue status graph](https://images.repography.com/33848202/whosFritz/Rail-Insights/recent-activity/fxK1KNmwagTIeO43sw4ZqRAUCCarzLxyLFDCcV11_-k/Vsa8Dx0RMZ8PkC_RRfJHeTOleE-_fV1fc5Ulyepy61Q_issues.svg)](https://github.com/whosFritz/Rail-Insights/issues)
+[![Pull request status graph](https://images.repography.com/33848202/whosFritz/Rail-Insights/recent-activity/fxK1KNmwagTIeO43sw4ZqRAUCCarzLxyLFDCcV11_-k/Vsa8Dx0RMZ8PkC_RRfJHeTOleE-_fV1fc5Ulyepy61Q_prs.svg)](https://github.com/whosFritz/Rail-Insights/pulls)
+[![Trending topics](https://images.repography.com/33848202/whosFritz/Rail-Insights/recent-activity/fxK1KNmwagTIeO43sw4ZqRAUCCarzLxyLFDCcV11_-k/Vsa8Dx0RMZ8PkC_RRfJHeTOleE-_fV1fc5Ulyepy61Q_words.svg)](https://github.com/whosFritz/Rail-Insights/commits)
+[![Top contributors](https://images.repography.com/33848202/whosFritz/Rail-Insights/recent-activity/fxK1KNmwagTIeO43sw4ZqRAUCCarzLxyLFDCcV11_-k/Vsa8Dx0RMZ8PkC_RRfJHeTOleE-_fV1fc5Ulyepy61Q_users.svg)](https://github.com/whosFritz/Rail-Insights/graphs/contributors)
+
 ## Lizenz
 
 Dieses Projekt ist unter der [GNU General Public License](LICENSE) lizenziert - siehe die Datei LICENSE für weitere
@@ -48,7 +60,8 @@ Details.
 
 ---
 
-**Hinweis:** Dieses Projekt wird von [whosFritz](https://github.com/whosFritz)
-und [olech2412](https://github.com/olech2412) entwickelt. Besuchen Sie
+**Hinweis:** Dieses Projekt wird
+von [olech2412](https://github.com/olech2412), [whosFritz](https://github.com/whosFritz) und Eric Jarka entwickelt.
+Besuchen Sie
 das [Repository](https://github.com/whosFritz/Rail-Insights) für weitere Informationen und um das Projekt zu fork-en
 oder zu klonen.
