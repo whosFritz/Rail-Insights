@@ -14,7 +14,6 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * A universal calculator for RailInsights can be used to calculate different kinds of information.
@@ -76,98 +75,108 @@ public class UniversalCalculator {
     }
 
     public static DataSeries buildDailyHighestLoadFactorSeries(List<Trip> tripsCorrespondingToLine) {
-        Map<LocalDate, List<LoadFactor>> loadFactorByDay = new HashMap<>();
+        Map<LocalDate, List<LoadFactor>> loadFactorByDay = new TreeMap<>();
 
+        // Step 2: Iterate over the trips
         for (Trip trip : tripsCorrespondingToLine) {
-            if (trip.getCancelled() == null) {
-                LocalDate date = trip.getPlannedWhen().toLocalDate();
-                LoadFactor currentLoadFactor = getLoadFactorAsEnum(trip.getLoadFactor());
-                loadFactorByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(currentLoadFactor);
-            }
-        }
+            // Step 3: Get the plannedWhen date and the loadFactor
+            LocalDate date = trip.getPlannedWhen().toLocalDate();
+            LoadFactor loadFactor = getLoadFactorAsEnum(trip.getLoadFactor());
 
-        Map<LocalDate, LoadFactor> highestLoadFactorByDay = new HashMap<>();
-        for (Map.Entry<LocalDate, List<LoadFactor>> entry : loadFactorByDay.entrySet()) {
-            LoadFactor highestLoadFactor = Collections.max(entry.getValue(), Comparator.comparingInt(LoadFactor::ordinal));
-            highestLoadFactorByDay.put(entry.getKey(), highestLoadFactor);
+            // Step 4: Add the loadFactor to the corresponding date in the map
+            loadFactorByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(loadFactor);
         }
 
         DataSeries dailyHighestLoadFactorSeries = new DataSeries();
-        for (Map.Entry<LocalDate, LoadFactor> entry : highestLoadFactorByDay.entrySet()) {
-            dailyHighestLoadFactorSeries.add(new DataSeriesItem(
-                    entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(),
-                    entry.getValue().ordinal()));
-        }
-
         dailyHighestLoadFactorSeries.setName("Höchste Auslastung");
+
+        // Step 5: Iterate over the map
+        for (Map.Entry<LocalDate, List<LoadFactor>> entry : loadFactorByDay.entrySet()) {
+            LocalDate date = entry.getKey();
+            List<LoadFactor> loadFactors = entry.getValue();
+
+            // Step 6: Find the highest LoadFactor in the ArrayList
+            LoadFactor highestLoadFactor = Collections.max(loadFactors);
+
+            // Create a DataSeriesItem with the date and the highest LoadFactor
+            DataSeriesItem item = new DataSeriesItem(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant(), highestLoadFactor.ordinal());
+
+            // Step 7: Add the DataSeriesItem to the DataSeries
+            dailyHighestLoadFactorSeries.add(item);
+        }
 
         return dailyHighestLoadFactorSeries;
     }
 
     public static DataSeries buildDailyLowestLoadFactorSeries(List<Trip> tripsCorrespondingToLine) {
-        Map<LocalDate, List<LoadFactor>> loadFactorByDay = new HashMap<>();
 
+
+        Map<LocalDate, List<LoadFactor>> loadFactorByDay = new TreeMap<>();
+
+        // Step 2: Iterate over the trips
         for (Trip trip : tripsCorrespondingToLine) {
-            if (trip.getCancelled() == null) {
-                LocalDate date = trip.getPlannedWhen().toLocalDate();
-                LoadFactor currentLoadFactor = getLoadFactorAsEnum(trip.getLoadFactor());
-                loadFactorByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(currentLoadFactor);
-            }
-        }
+            // Step 3: Get the plannedWhen date and the loadFactor
+            LocalDate date = trip.getPlannedWhen().toLocalDate();
+            LoadFactor loadFactor = getLoadFactorAsEnum(trip.getLoadFactor());
 
-        Map<LocalDate, LoadFactor> lowestLoadFactorByDay = new HashMap<>();
-        for (Map.Entry<LocalDate, List<LoadFactor>> entry : loadFactorByDay.entrySet()) {
-            LoadFactor lowestLoadFactor = Collections.min(entry.getValue(), Comparator.comparingInt(LoadFactor::ordinal));
-            lowestLoadFactorByDay.put(entry.getKey(), lowestLoadFactor);
+            // Step 4: Add the loadFactor to the corresponding date in the map
+            loadFactorByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(loadFactor);
         }
 
         DataSeries dailyLowestLoadFactorSeries = new DataSeries();
-        for (Map.Entry<LocalDate, LoadFactor> entry : lowestLoadFactorByDay.entrySet()) {
-            dailyLowestLoadFactorSeries.add(new DataSeriesItem(
-                    entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(),
-                    entry.getValue().ordinal()));
-        }
-
         dailyLowestLoadFactorSeries.setName("Geringste Auslastung");
+
+        // Step 5: Iterate over the map
+        for (Map.Entry<LocalDate, List<LoadFactor>> entry : loadFactorByDay.entrySet()) {
+            LocalDate date = entry.getKey();
+            List<LoadFactor> loadFactors = entry.getValue();
+
+            // Step 6: Find the highest LoadFactor in the ArrayList
+            LoadFactor lowestLoadFactor = Collections.min(loadFactors);
+
+            // Create a DataSeriesItem with the date and the highest LoadFactor
+            DataSeriesItem item = new DataSeriesItem(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant(), lowestLoadFactor.ordinal());
+
+            // Step 7: Add the DataSeriesItem to the DataSeries
+            dailyLowestLoadFactorSeries.add(item);
+        }
 
         return dailyLowestLoadFactorSeries;
     }
 
     public static DataSeries buildDailyDelaySeries(List<Trip> tripsCorrespondingToLine) {
-        Map<LocalDate, List<Double>> delayByDay = new HashMap<>();
+        Map<LocalDate, List<Integer>> delayByDay = new TreeMap<>();
 
+        // Iterate over the trips
         for (Trip trip : tripsCorrespondingToLine) {
+            // Get the plannedWhen date and the delay
             LocalDate date = trip.getPlannedWhen().toLocalDate();
-            if (trip.getCancelled() == null && trip.getDelay() >= 360) {
-                delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(trip.getDelay().doubleValue());
-            } else {
-                delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(0.0);
+            Integer delay = trip.getDelay();
+
+            // If the delay is greater than or equal to 360, add the delay to the corresponding date in the map
+            // If the delay is less than 360, add 0 to the corresponding date in the map
+            if (delay != null) {
+                delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(delay >= 360 ? delay : 0);
             }
         }
 
-        Map<LocalDate, Double> averageDelayByDay = new HashMap<>();
-        for (Map.Entry<LocalDate, List<Double>> entry : delayByDay.entrySet()) {
-            double averageDelay = entry.getValue().stream()
-                    .filter(val -> val >= 360)
-                    .mapToDouble(val -> val)
-                    .average()
-                    .orElse(0.0);
-            averageDelayByDay.put(entry.getKey(), PercentageUtil.convertToTwoDecimalPlaces(averageDelay));
-        }
-
-        // order the map by localDate
-        averageDelayByDay = averageDelayByDay.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, HashMap::new));
-
         DataSeries dailyDelaySeries = new DataSeries();
-        for (Map.Entry<LocalDate, Double> entry : averageDelayByDay.entrySet()) {
-            dailyDelaySeries.add(new DataSeriesItem(
-                    entry.getKey().atStartOfDay(ZoneId.systemDefault()).toInstant(),
-                    PercentageUtil.convertToTwoDecimalPlaces(entry.getValue() / 60))); // Convert delay from seconds to minutes
-        }
-
         dailyDelaySeries.setName("Durchschnittliche Verspätung");
+
+        // Iterate over the map
+        for (Map.Entry<LocalDate, List<Integer>> entry : delayByDay.entrySet()) {
+            LocalDate date = entry.getKey();
+            List<Integer> delays = entry.getValue();
+
+            // Calculate the average delay in the ArrayList
+            double averageDelay = delays.stream().mapToInt(Integer::intValue).average().orElse(0);
+
+            // Create a DataSeriesItem with the date and the average delay
+            DataSeriesItem item = new DataSeriesItem(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant(), averageDelay);
+
+            // Add the DataSeriesItem to the DataSeries
+            dailyDelaySeries.add(item);
+        }
 
         return dailyDelaySeries;
     }

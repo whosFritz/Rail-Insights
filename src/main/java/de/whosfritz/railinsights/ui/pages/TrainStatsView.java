@@ -140,8 +140,6 @@ public class TrainStatsView extends VerticalLayout {
         }
 
         List<Trip> tripsCorrespondingToLine = tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(from, to, comboboxValue.getName()).getData();
-        // sort by plannedwhen ascending
-        tripsCorrespondingToLine.sort(Comparator.comparing(Trip::getPlannedWhen));
         // when null notifcation
         if (tripsCorrespondingToLine.isEmpty()) {
             NotificationFactory.createNotification(NotificationTypes.WARNING, "Der Zeitraum ist zu kurz gewählt. Es wurden keine Daten gefunden").open();
