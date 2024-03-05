@@ -14,6 +14,7 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * A universal calculator for RailInsights can be used to calculate different kinds of information.
@@ -153,6 +154,11 @@ public class UniversalCalculator {
                     .orElse(0.0);
             averageDelayByDay.put(entry.getKey(), PercentageUtil.convertToTwoDecimalPlaces(averageDelay));
         }
+
+        // order the map by localDate
+        averageDelayByDay = averageDelayByDay.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, HashMap::new));
 
         DataSeries dailyDelaySeries = new DataSeries();
         for (Map.Entry<LocalDate, Double> entry : averageDelayByDay.entrySet()) {

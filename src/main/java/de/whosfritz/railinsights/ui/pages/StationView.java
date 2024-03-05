@@ -348,7 +348,7 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
             if (afterDate != null && beforeDate != null) {
                 long daysBetween = ChronoUnit.DAYS.between(afterDate, beforeDate);
                 if (daysBetween > 7) {
-                    Notification errorNotification = NotificationFactory.createwNotification(NotificationTypes.CRITICAL,
+                    Notification errorNotification = NotificationFactory.createNotification(NotificationTypes.CRITICAL,
                             "Die ausgewählte Zeitspanne darf maximal 7 Tage betragen");
                     errorNotification.open();
                     return;
@@ -365,7 +365,7 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
             if (afterDate != null && beforeDate != null) {
                 long daysBetween = ChronoUnit.DAYS.between(afterDate, beforeDate);
                 if (daysBetween > 7) {
-                    Notification errorNotification = NotificationFactory.createwNotification(NotificationTypes.CRITICAL,
+                    Notification errorNotification = NotificationFactory.createNotification(NotificationTypes.CRITICAL,
                             "Die ausgewählte Zeitspanne darf maximal 7 Tage betragen");
                     errorNotification.open();
                     return;

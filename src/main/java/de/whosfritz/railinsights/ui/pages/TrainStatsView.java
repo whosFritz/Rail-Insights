@@ -46,7 +46,7 @@ import java.util.Locale;
 
 import static de.whosfritz.railinsights.ui.components.boards.StationViewDashboard.createHighlight;
 
-@Route(value = "trainmetrics", layout = MainView.class)
+@Route(value = "zugstatistiken", layout = MainView.class)
 @Transactional
 public class TrainStatsView extends VerticalLayout {
     private final UniversalCalculator universalCalculator = new UniversalCalculator();
@@ -201,14 +201,14 @@ public class TrainStatsView extends VerticalLayout {
                 createHighlight("Durchschnittliche Verspätung", UniversalCalculator.minutesToHoursAndMinutesAndSeconds(avgDelayInSeconds / 60.0))
         );
         Row abfahrtenStats1 = new Row();
-        abfahrtenStats1.add(createHighlight("Pünktliche Stopps", percentageOnTime + " %", onTimeGlobalComparison, "Pünktlichkeit im globalen Vergleich", true));
-        abfahrtenStats1.add(createHighlight("Verspätete Stopps", percentageDelayed + " %", delayedGlobalComparison, "Verspätungen im globalen Vergleich", false));
-        abfahrtenStats1.add(createHighlight("Ausgefallene Stopps", percentageCancelled + " %", cancelledGlobalComparison, "Ausfälle im globalen Vergleich", false));
+        abfahrtenStats1.add(createHighlight("Pünktliche Stopps", percentageOnTime + " %", onTimeGlobalComparison, "Pünktlichkeit im deutschlandweiten Vergleich", true));
+        abfahrtenStats1.add(createHighlight("Verspätete Stopps", percentageDelayed + " %", delayedGlobalComparison, "Verspätungen im deutschlandweiten Vergleich", false));
+        abfahrtenStats1.add(createHighlight("Ausgefallene Stopps", percentageCancelled + " %", cancelledGlobalComparison, "Ausfälle im deutschlandweiten Vergleich", false));
 
         Row abfahrtenStats2 = new Row();
-        abfahrtenStats2.add(createHighlight("Verspätung über 6 min", delayMoreThan6min + " %", delayedMoreThan6minGlobalComparison, "Verspätungen im globalen Vergleich", false));
-        abfahrtenStats2.add(createHighlight("Verspätung über 15 min", delayMoreThan15min + " %", delayedMoreThan15minGlobalComparison, "Verspätungen im globalen Vergleich", false));
-        abfahrtenStats2.add(createHighlight("Verspätung über 60 min", delayMoreThan60min + " %", delayedMoreThan60minGlobalComparison, "Verspätungen im globalen Vergleich", false));
+        abfahrtenStats2.add(createHighlight("Verspätung über 6 min", delayMoreThan6min + " %", delayedMoreThan6minGlobalComparison, "Verspätungen im deutschlandweiten Vergleich", false));
+        abfahrtenStats2.add(createHighlight("Verspätung über 15 min", delayMoreThan15min + " %", delayedMoreThan15minGlobalComparison, "Verspätungen im deutschlandweiten Vergleich", false));
+        abfahrtenStats2.add(createHighlight("Verspätung über 60 min", delayMoreThan60min + " %", delayedMoreThan60minGlobalComparison, "Verspätungen im deutschlandweiten Vergleich", false));
 
         abfahrtenStats2.addClassNames(LumoUtility.Margin.Bottom.XLARGE);
         board.addRow(abfahrtenStats1);
@@ -228,7 +228,7 @@ public class TrainStatsView extends VerticalLayout {
     }
 
     private Component createDailyDelayChart(DataSeries dailyDelaySeries) {
-        Chart chart = new Chart(ChartType.LINE);
+        Chart chart = new Chart(ChartType.AREA);
 
         chart.addClassNames(LumoUtility.Margin.Top.XLARGE, LumoUtility.Margin.Bottom.XLARGE);
 
@@ -251,11 +251,13 @@ public class TrainStatsView extends VerticalLayout {
 
         XAxis xAxis = chart.getConfiguration().getxAxis();
         xAxis.setType(AxisType.DATETIME);
+        xAxis.setStartOfWeek(1);
         xAxis.setTitle(new AxisTitle());
 
         PlotOptionsLine plotOptions = new PlotOptionsLine();
         plotOptions.setEnableMouseTracking(true);
         plotOptions.setDataLabels(new DataLabels(true));
+        plotOptions.setStacking(Stacking.NORMAL);
         conf.setPlotOptions(plotOptions);
 
         return chart;

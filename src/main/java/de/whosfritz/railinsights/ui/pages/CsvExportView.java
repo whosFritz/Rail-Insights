@@ -52,7 +52,7 @@ public class CsvExportView extends VerticalLayout {
                 "Fahrten (Stops)"
         );
 
-        DatePicker startDateTimePicker = new DatePicker("Start Date");
+        DatePicker startDateTimePicker = new DatePicker("Start-Zeitpunkt");
         startDateTimePicker.setValue(LocalDate.now());
         startDateTimePicker.setVisible(false);
 
