@@ -102,36 +102,15 @@ public class DataProviderService {
         int countAllByCancelled = tripsRepository.countAllByCancelled(true);
         int countAllByDelayIsGreaterThanEqual = tripsRepository.countAllByDelayIsGreaterThanEqual(360);
         int countOnTime = totalTrips - countAllByCancelled - countAllByDelayIsGreaterThanEqual;
+        int countDelayedMoreThan15min = tripsRepository.countAllByDelayIsGreaterThanEqual(900);
+        int countDelayedMoreThan60min = tripsRepository.countAllByDelayIsGreaterThanEqual(3600);
 
         stopsPercentageOnTime = PercentageUtil.convertToTwoDecimalPlaces((double) countOnTime / totalTrips * 100);
         stopsPercentageDelayed = PercentageUtil.convertToTwoDecimalPlaces((double) countAllByDelayIsGreaterThanEqual / totalTrips * 100);
         stopsPercentageCancelled = PercentageUtil.convertToTwoDecimalPlaces((double) countAllByCancelled / totalTrips * 100);
-
         stopsPercentageDelayedMoreThan6min = stopsPercentageDelayed;
-
-        double percentageDelayedMoreThan15min = ((double) allTrips.stream().filter(trip -> {
-            if (trip.getCancelled() == null || !trip.getCancelled()) {
-                if (trip.getDelay() != null) {
-                    return trip.getDelay() >= 900;
-                }
-            }
-            return false;
-        }).count() / allTrips.size());
-
-        stopsPercentageDelayedMoreThan15min = (Math.round(percentageDelayedMoreThan15min * 100.0) / 100.0) * 100;
-        formatted = df.format(stopsPercentageDelayedMoreThan15min);
-        stopsPercentageDelayedMoreThan15min = Double.parseDouble(formatted);
-
-        double percentageDelayedMoreThan60min = ((double) allTrips.stream().filter(trip -> {
-            if (trip.getCancelled() == null || !trip.getCancelled()) {
-                if (trip.getDelay() != null) {
-                    return trip.getDelay() >= 3600;
-                }
-            }
-            return false;
-        }).count());
-        double stopsPercentageDelayedMoreThan60mi = percentageDelayedMoreThan60min / allTrips.size();
-        stopsPercentageDelayedMoreThan60min = Math.round(stopsPercentageDelayedMoreThan60mi * 1000.0) / 1000.0 * 100;
+        stopsPercentageDelayedMoreThan15min = PercentageUtil.convertToTwoDecimalPlaces((double) countDelayedMoreThan15min / totalTrips * 100);
+        stopsPercentageDelayedMoreThan60min = Math.round((double) countDelayedMoreThan60min / totalTrips * 1000.0) / 1000.0 * 100;
 
         DataSeries dataSeries = new DataSeries();
         dataSeries.setName("Stopps");
