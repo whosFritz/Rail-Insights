@@ -29,6 +29,7 @@ public class StoppsOverTimeChart extends Div {
 
         PlotOptionsArea plotOptions = new PlotOptionsArea();
         plotOptions.setStacking(Stacking.NORMAL);
+        plotOptions.setConnectNulls(false);
         configuration.setPlotOptions(plotOptions);
 
         configuration.getTooltip().setValueSuffix(" Stopps");

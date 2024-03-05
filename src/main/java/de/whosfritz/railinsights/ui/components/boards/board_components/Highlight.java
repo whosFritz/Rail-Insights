@@ -35,6 +35,7 @@ public class Highlight extends VerticalLayout {
             } else {
                 theme += " error";
             }
+            icon = VaadinIcon.ARROW_UP;
         } else if (percentage < 0) {
             if (inverted) {
                 theme += " success";
