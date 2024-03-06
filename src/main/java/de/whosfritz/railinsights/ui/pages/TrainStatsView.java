@@ -39,10 +39,7 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static de.whosfritz.railinsights.ui.components.boards.StationViewDashboard.createHighlight;
 
@@ -145,7 +142,16 @@ public class TrainStatsView extends VerticalLayout {
             NotificationFactory.createNotification(NotificationTypes.WARNING, "Der Zeitraum ist zu kurz gewählt. Es wurden keine Daten gefunden").open();
             return;
         }
-        tripsCorrespondingToLine = TripUtil.removeDuplicates(tripsCorrespondingToLine);
+
+        // fetch out the different local dates
+        List<LocalDate> localDates = tripsCorrespondingToLine.parallelStream().map(trip -> trip.getPlannedWhen().toLocalDate()).distinct().toList();
+
+        List<Trip> uniqueTrips = new ArrayList<>();
+        for (LocalDate localDate : localDates) {
+            List<Trip> tripsForLocalDate = tripsCorrespondingToLine.parallelStream().filter(trip -> trip.getPlannedWhen().toLocalDate().equals(localDate)).toList();
+            uniqueTrips.addAll(TripUtil.removeDuplicates(tripsForLocalDate));
+        }
+        tripsCorrespondingToLine = uniqueTrips;
         tripsCorrespondingToLine.sort(Comparator.comparing(Trip::getPlannedWhen));
 
         int fahrtenCount = tripsCorrespondingToLine.stream().filter(trip -> trip.getDirection() == null && trip.getCancelled() == null).mapToInt(trip -> 1).sum();

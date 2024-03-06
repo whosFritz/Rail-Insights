@@ -43,6 +43,7 @@ public class RemarksDialog extends GeneralRailInsightsDialog {
         station.setLabel("Bahnhof");
         station.setPrefixComponent(new Icon(VaadinIcon.MAP_MARKER));
         station.setReadOnly(true);
+        station.setWidth("30%");
         content.add(station);
 
         content.add(new H3("Meldungen:"));

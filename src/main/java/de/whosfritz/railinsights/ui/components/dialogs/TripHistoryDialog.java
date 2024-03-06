@@ -44,18 +44,19 @@ public class TripHistoryDialog extends GeneralRailInsightsDialog {
         grid.addColumn(o -> o.getLine().getName()).setHeader("Linie").setAutoWidth(true);
         grid.addColumn(o -> {
             try {
-                return o.getWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
-            } catch (NullPointerException nullPointerException) {
-                return o.getPlannedWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
-            }
-        }).setHeader("Wann").setAutoWidth(true);
-        grid.addColumn(o -> {
-            try {
                 return o.getPlannedWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
             } catch (NullPointerException nullPointerException) {
                 return o.getWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
             }
         }).setHeader("Geplant").setAutoWidth(true);
+
+        grid.addColumn(o -> {
+            try {
+                return o.getWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
+            } catch (NullPointerException nullPointerException) {
+                return o.getPlannedWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
+            }
+        }).setHeader("Wann").setAutoWidth(true);
 
         grid.addColumn(o -> {
             try {
@@ -110,7 +111,7 @@ public class TripHistoryDialog extends GeneralRailInsightsDialog {
             if (trips.getDelay() == null || trips.getDelay() == 0 || trips.getDelay() <= 360) {
                 span.setText("Pünktlich");
                 span.getElement().getThemeList().add("badge success primary");
-            } else if(trips.getDelay() > 360 && trips.getDelay() <= 600) {
+            } else if (trips.getDelay() > 360 && trips.getDelay() <= 600) {
                 span.setText("Leichte Verspätung");
                 span.getElement().getThemeList().add("badge warn primary");
             } else {
@@ -119,6 +120,8 @@ public class TripHistoryDialog extends GeneralRailInsightsDialog {
             }
             return span;
         }).setHeader("Status").setFlexGrow(0).setWidth("12%");
+
+        // order by plannedWhen
 
         grid.setItems(trip);
 

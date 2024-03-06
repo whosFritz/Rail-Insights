@@ -67,13 +67,7 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
         grid.addColumn(Trip::getTripId).setHeader("Fahrt ID");
         grid.addColumn(o -> o.getLine().getName()).setHeader("Linie").setAutoWidth(true);
         grid.addColumn(Trip::getDirection).setHeader("Richtung").setAutoWidth(true);
-        grid.addColumn(o -> {
-            try {
-                return o.getWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
-            } catch (NullPointerException nullPointerException) {
-                return o.getPlannedWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
-            }
-        }).setHeader("Wann").setAutoWidth(true);
+
         grid.addColumn(o -> {
             try {
                 return o.getPlannedWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
@@ -81,6 +75,14 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
                 return o.getWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
             }
         }).setHeader("Geplant").setAutoWidth(true);
+
+        grid.addColumn(o -> {
+            try {
+                return o.getWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
+            } catch (NullPointerException nullPointerException) {
+                return o.getPlannedWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
+            }
+        }).setHeader("Wann").setAutoWidth(true);
 
         grid.addColumn(o -> {
             try {
@@ -133,7 +135,7 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
             if (trip.getDelay() == null || trip.getDelay() == 0 || trip.getDelay() <= 360) {
                 span.setText("Pünktlich");
                 span.getElement().getThemeList().add("badge success primary");
-            } else if(trip.getDelay() > 360 && trip.getDelay() <= 600) {
+            } else if (trip.getDelay() > 360 && trip.getDelay() <= 600) {
                 span.setText("Leichte Verspätung");
                 span.getElement().getThemeList().add("badge warn primary");
             } else {
@@ -150,7 +152,7 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
                 // if trip is at least a national trip (not a local trip) we can show the trip history
                 if (trip.get().getLine().getProduct().contains("national")) {
                     TripService tripService = VaadinService.getCurrent().getInstantiator().getOrCreate(TripService.class);
-                    Result<List<Trip>, JPAError> result = tripService.findAllByTripId(trip.get().getTripId());
+                    Result<List<Trip>, JPAError> result = tripService.findAllByLineNameAndTripIdContains(trip.get().getLine().getName(), TripUtil.getPartOfTripIdByLocalDate(trip.get().getPlannedWhen().toLocalDate()));
                     if (result.isSuccess()) {
                         List<Trip> trips = result.getData();
                         trips = TripUtil.removeDuplicates(trips);

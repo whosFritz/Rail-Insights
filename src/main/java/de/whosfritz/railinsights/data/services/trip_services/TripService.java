@@ -310,7 +310,7 @@ public class TripService {
                 Hibernate.initialize(t.getRemarks());
             }
 
-            List<Trip> cleanedTrips = TripUtil.removeDuplicates(trips.get());
+            List<Trip> cleanedTrips = TripUtil.removeDuplicatesForMultipleLines(trips.get());
             trips = Optional.of(cleanedTrips);
 
             return trips.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
@@ -372,6 +372,22 @@ public class TripService {
         } catch (Exception e) {
             log.error("Error while finding trip by leg: " + e.getMessage() + " " + e.getCause());
             log.error("Stop: " + leg.toString());
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
+    }
+
+    @Transactional
+    public Result<List<Trip>, JPAError> findAllByLineNameAndTripIdContains(String lineName, String tripId) {
+        try {
+            Optional<List<Trip>> trips = tripsRepository.findAllByLineNameAndTripIdContains(lineName, tripId);
+            for (Trip t : trips.get()) {
+                Hibernate.initialize(t.getRemarks());
+            }
+            return trips.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
+        } catch (Exception e) {
+            log.error("Error while finding trip by line name and trip id contains: " + e.getMessage() + " " + e.getCause());
+            log.error("Line name: " + lineName);
+            log.error("Trip id: " + tripId);
             return Result.error(new JPAError(JPAErrors.UNKNOWN));
         }
     }
