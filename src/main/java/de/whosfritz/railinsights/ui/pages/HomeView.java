@@ -51,8 +51,9 @@ public class HomeView extends VerticalLayout {
         );
 
         Remark remark = dataProviderService.getRandomRemark();
+        int index = dataProviderService.getTop10RemarksFromToday().indexOf(remark) + 1;
 
-        railInsightsInfoBoard.add(new HighlightSmall("Tagesaktuelle Meldung: ", remark.getText()));
+        railInsightsInfoBoard.add(new HighlightSmall("Tagesaktuelle Meldungen (" + index + "/10):", remark.getText()));
 
         railInsightsInfoBoard.addRow(
                 createStoppsOverTimeChart(),

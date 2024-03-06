@@ -60,7 +60,7 @@ import java.util.Locale;
 
 
 @Route(value = "bahnhöfe", layout = MainView.class)
-public class StationView extends VerticalLayout implements BeforeEnterListener {
+public class StationView extends VerticalLayout {
     private final Map map = new Map();
 
     private final OrderedList cardList;
@@ -411,15 +411,5 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
             featureLayer.addFeature(feature);
         });
         updateCardList();
-    }
-
-    @Override
-    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        // inform the user that mobile devices are currently not supported if he is using one
-        if (UI.getCurrent().getSession().getBrowser().isAndroid() || UI.getCurrent().getSession().getBrowser().isIPhone()) {
-            Notification mobileDeviceNotification = NotificationFactory.createNotification(NotificationTypes.CRITICAL,
-                    "Mobile Geräte werden aktuell nicht unterstützt. Es kommt zu Darstellungsproblemen. Bitte benutze einen Desktop-Browser.");
-            mobileDeviceNotification.open();
-        }
     }
 }
