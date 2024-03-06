@@ -81,19 +81,6 @@ public class TripHistoryDialog extends GeneralRailInsightsDialog {
             }
         }).setHeader("Geplantes Gleis").setAutoWidth(true);
 
-
-        grid.addComponentColumn(o -> {
-            try {
-                if (Boolean.TRUE.equals(o.getCancelled())) {
-                    return new Text("Ja");
-                } else {
-                    return new Text("");
-                }
-            } catch (NullPointerException nullPointerException) {
-                return new Text("");
-            }
-        }).setHeader("Ausgefallen").setAutoWidth(true);
-
         grid.addComponentColumn(o -> {
             if (o.getRemarks() != null && !o.getRemarks().isEmpty()) {
                 Icon icon = new Icon(VaadinIcon.INFO_CIRCLE);
@@ -109,8 +96,17 @@ public class TripHistoryDialog extends GeneralRailInsightsDialog {
             }
         }).setHeader("Meldungen").setAutoWidth(true);
 
+        // ensure that the status has the width that is needed
         grid.addComponentColumn(trips -> {
             Span span = new Span();
+            try {
+                if (Boolean.TRUE.equals(trips.getCancelled())) {
+                    span.setText("Ausgefallen");
+                    span.getElement().getThemeList().add("badge primary");
+                    return span;
+                }
+            } catch (NullPointerException ignored) {
+            }
             if (trips.getDelay() == null || trips.getDelay() == 0 || trips.getDelay() <= 360) {
                 span.setText("Pünktlich");
                 span.getElement().getThemeList().add("badge success primary");
@@ -122,7 +118,7 @@ public class TripHistoryDialog extends GeneralRailInsightsDialog {
                 span.getElement().getThemeList().add("badge primary");
             }
             return span;
-        }).setHeader("Status").setAutoWidth(true);
+        }).setHeader("Status").setFlexGrow(0).setWidth("12%");
 
         grid.setItems(trip);
 
