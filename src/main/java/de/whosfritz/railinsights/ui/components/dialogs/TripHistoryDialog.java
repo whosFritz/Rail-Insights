@@ -3,6 +3,7 @@ package de.whosfritz.railinsights.ui.components.dialogs;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
@@ -107,6 +108,21 @@ public class TripHistoryDialog extends GeneralRailInsightsDialog {
                 return new Text("");
             }
         }).setHeader("Meldungen").setAutoWidth(true);
+
+        grid.addComponentColumn(trips -> {
+            Span span = new Span();
+            if (trips.getDelay() == null || trips.getDelay() == 0 || trips.getDelay() <= 360) {
+                span.setText("Pünktlich");
+                span.getElement().getThemeList().add("badge success primary");
+            } else if(trips.getDelay() > 360 && trips.getDelay() <= 600) {
+                span.setText("Leichte Verspätung");
+                span.getElement().getThemeList().add("badge warn primary");
+            } else {
+                span.setText("Hohe Verspätung");
+                span.getElement().getThemeList().add("badge primary");
+            }
+            return span;
+        }).setHeader("Status").setAutoWidth(true);
 
         grid.setItems(trip);
 

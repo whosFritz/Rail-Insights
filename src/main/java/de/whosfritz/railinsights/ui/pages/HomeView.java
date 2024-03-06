@@ -4,13 +4,17 @@ import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.style.SolidColor;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+import de.olech2412.adapter.dbadapter.model.trip.sub.Remark;
 import de.whosfritz.railinsights.ui.color_scheme.ColorScheme;
 import de.whosfritz.railinsights.ui.components.InfoPanel;
 import de.whosfritz.railinsights.ui.components.boards.RailInsightsInfoBoard;
 import de.whosfritz.railinsights.ui.components.boards.board_components.Highlight;
+import de.whosfritz.railinsights.ui.components.boards.board_components.HighlightSmall;
 import de.whosfritz.railinsights.ui.components.charts.CancelledDelayedOnPointPieChart;
 import de.whosfritz.railinsights.ui.components.charts.StoppsOverTimeChart;
 import de.whosfritz.railinsights.ui.layout.MainView;
@@ -45,6 +49,10 @@ public class HomeView extends VerticalLayout {
                 new Highlight("Erfasste Haltepunkte insgesamt (Regional- und Fernverkehrshaltepunkte): ", String.valueOf(dataProviderService.getTotalStops())),
                 new Highlight("Haltepunkte für die Stopps erfasst werden (Fernverkehrshaltepunkte): ", String.valueOf(dataProviderService.getNationalStops()))
         );
+
+        Remark remark = dataProviderService.getRandomRemark();
+
+        railInsightsInfoBoard.add(new HighlightSmall("Tagesaktuelle Meldung: ", remark.getText()));
 
         railInsightsInfoBoard.addRow(
                 createStoppsOverTimeChart(),

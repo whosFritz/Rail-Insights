@@ -4,9 +4,11 @@ import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.style.SolidColor;
 import de.olech2412.adapter.dbadapter.model.stop.Stop;
+import de.olech2412.adapter.dbadapter.model.trip.sub.Remark;
 import de.whosfritz.railinsights.data.dto.StopDto;
 import de.whosfritz.railinsights.data.repositories.stop_repositories.StopRepository;
 import de.whosfritz.railinsights.data.repositories.trip_repositories.TripsRepository;
+import de.whosfritz.railinsights.data.repositories.trip_repositories.sub.RemarkRepository;
 import de.whosfritz.railinsights.ui.color_scheme.ColorScheme;
 import de.whosfritz.railinsights.utils.PercentageUtil;
 import jakarta.transaction.Transactional;
@@ -63,11 +65,16 @@ public class DataProviderService {
 
     int nationalStops;
 
+    List<Remark> top10RemarksFromToday;
+
     @Autowired
     private TripsRepository tripsRepository;
 
     @Autowired
     private StopRepository stopRepository;
+
+    @Autowired
+    private RemarkRepository remarkRepository;
 
     public DataProviderService() {
     }
@@ -124,6 +131,8 @@ public class DataProviderService {
         totalTripsToday = dailyTripCounts.getOrDefault(LocalDate.now(), 0);
         nationalStops = longDistanceStops.size();
 
+        top10RemarksFromToday = remarkRepository.findTop10RemarksFromToday();
+
         log.info("Data calculation finished...");
         state = DataProviderServiceState.READY; // Set the state to ready
     }
@@ -141,6 +150,16 @@ public class DataProviderService {
                         stop.getLocation().getLatitude(),
                         stop.getLocation().getLongitude(),
                         stop.getStation())).toList();
+    }
+
+    public Remark getRandomRemark() {
+        if (top10RemarksFromToday == null || top10RemarksFromToday.isEmpty()) {
+            Remark remark = new Remark();
+            remark.setText("Keine Meldungen vorhanden.");
+            return remark;
+        }
+        int randomIndex = (int) (Math.random() * top10RemarksFromToday.size());
+        return top10RemarksFromToday.get(randomIndex);
     }
 
 }

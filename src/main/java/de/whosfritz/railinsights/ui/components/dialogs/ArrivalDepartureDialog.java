@@ -5,6 +5,8 @@ import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -17,6 +19,7 @@ import com.vaadin.flow.server.VaadinService;
 import de.olech2412.adapter.dbadapter.exception.Result;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.olech2412.adapter.dbadapter.model.trip.sub.Remark;
+import de.whosfritz.railinsights.data.PrognoseStateEnum;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
 import de.whosfritz.railinsights.exception.JPAError;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
@@ -36,10 +39,12 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
 
     public ArrivalDepartureDialog(String stopName, TextField searchField, DateTimePicker whenAfter, DateTimePicker whenBefore) {
         VerticalLayout content = new VerticalLayout();
+        Paragraph infoParagraph = new Paragraph("Hier findest du alle Ankünfte bzw. Abfahrten für den eingestellten " +
+                "Zeitraum. Durch rechtsklick (auf mobilen Geräten durch langes drücken) kannst du den Fahrtverlauf des Zuges aufrufen.");
         HorizontalLayout searchLayout = new HorizontalLayout(searchField, whenAfter, whenBefore);
         searchLayout.setWidth("100%");
         searchLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
-        content.add(searchLayout);
+        content.add(infoParagraph, searchLayout);
         content.setWidth("100%");
         content.setHeight("100%");
 
@@ -84,7 +89,7 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
             } catch (NullPointerException e) {
                 return 0;
             }
-        }).setHeader("Verspätung (in Minuten)").setAutoWidth(true);
+        }).setHeader("Verspätung (min)").setAutoWidth(true);
 
         grid.addColumn(o -> {
             try {
@@ -129,6 +134,20 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
                 return new Text("");
             }
         }).setHeader("Meldungen").setAutoWidth(true);
+        grid.addComponentColumn(trip -> {
+            Span span = new Span();
+            if (trip.getDelay() == null || trip.getDelay() == 0 || trip.getDelay() <= 360) {
+                span.setText("Pünktlich");
+                span.getElement().getThemeList().add("badge success primary");
+            } else if(trip.getDelay() > 360 && trip.getDelay() <= 600) {
+                span.setText("Leichte Verspätung");
+                span.getElement().getThemeList().add("badge warn primary");
+            } else {
+                span.setText("Hohe Verspätung");
+                span.getElement().getThemeList().add("badge primary");
+            }
+            return span;
+        }).setHeader("Status").setAutoWidth(true);
 
         GridContextMenu<Trip> contextMenu = grid.addContextMenu();
         contextMenu.addItem("Fahrtverlauf", e -> {
@@ -157,6 +176,7 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
         });
 
         setHeaderTitle("Ankünfte und Abfahrten für " + stopName);
+
         content.add(grid);
 
 

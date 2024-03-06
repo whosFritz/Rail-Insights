@@ -196,7 +196,9 @@ public class MainView extends AppLayout {
         subSideNav.addItem(
                 createNavItem("About", "https://github.com/whosFritz/Rail-Insights", LineAwesomeIcon.GITHUB.create(), LumoUtility.FontSize.XSMALL),
                 createNavItem("Impressum", "/impressum", LineAwesomeIcon.INFO_CIRCLE_SOLID.create(), LumoUtility.FontSize.XSMALL),
-                createNavItem("Datenschutzerklärung", "/datenschutzerklaerung", LineAwesomeIcon.SHIELD_ALT_SOLID.create(), LumoUtility.FontSize.XSMALL)
+                createNavItem("Datenschutzerklärung", "/datenschutzerklaerung", LineAwesomeIcon.SHIELD_ALT_SOLID.create(), LumoUtility.FontSize.XSMALL),
+                createNavItem("Security-Policy", "https://github.com/whosFritz/Rail-Insights/blob/master/SECURITY.md", LineAwesomeIcon.LOCK_SOLID.create(), LumoUtility.FontSize.XSMALL),
+                createNavItem("API-Dokumentation", "https://github.com/whosFritz/Rail-Insights/tree/master/RailInsights-API-Documentation", LineAwesomeIcon.CODE_SOLID.create(), LumoUtility.FontSize.XSMALL)
         );
         return subSideNav;
     }
