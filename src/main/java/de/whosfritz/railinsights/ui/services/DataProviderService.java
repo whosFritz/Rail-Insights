@@ -152,4 +152,14 @@ public class DataProviderService {
                         stop.getStation())).toList();
     }
 
+    public Remark getRandomRemark() {
+        if (top10RemarksFromToday.isEmpty()) {
+            Remark remark = new Remark();
+            remark.setText("Keine Meldungen vorhanden.");
+            return remark;
+        }
+        int randomIndex = (int) (Math.random() * top10RemarksFromToday.size());
+        return top10RemarksFromToday.get(randomIndex);
+    }
+
 }
