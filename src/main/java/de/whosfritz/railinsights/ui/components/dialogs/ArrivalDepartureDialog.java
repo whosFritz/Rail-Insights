@@ -19,7 +19,6 @@ import com.vaadin.flow.server.VaadinService;
 import de.olech2412.adapter.dbadapter.exception.Result;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.olech2412.adapter.dbadapter.model.trip.sub.Remark;
-import de.whosfritz.railinsights.data.PrognoseStateEnum;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
 import de.whosfritz.railinsights.exception.JPAError;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
@@ -107,19 +106,6 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
             }
         }).setHeader("Geplantes Gleis").setAutoWidth(true);
 
-
-        grid.addComponentColumn(o -> {
-            try {
-                if (Boolean.TRUE.equals(o.getCancelled())) {
-                    return new Text("Ja");
-                } else {
-                    return new Text("");
-                }
-            } catch (NullPointerException nullPointerException) {
-                return new Text("");
-            }
-        }).setHeader("Ausgefallen").setAutoWidth(true);
-
         grid.addComponentColumn(o -> {
             if (o.getRemarks() != null && !o.getRemarks().isEmpty()) {
                 Icon icon = new Icon(VaadinIcon.INFO_CIRCLE);
@@ -136,6 +122,14 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
         }).setHeader("Meldungen").setAutoWidth(true);
         grid.addComponentColumn(trip -> {
             Span span = new Span();
+            try {
+                if (Boolean.TRUE.equals(trip.getCancelled())) {
+                    span.setText("Ausgefallen");
+                    span.getElement().getThemeList().add("badge primary");
+                    return span;
+                }
+            } catch (NullPointerException ignored) {
+            }
             if (trip.getDelay() == null || trip.getDelay() == 0 || trip.getDelay() <= 360) {
                 span.setText("Pünktlich");
                 span.getElement().getThemeList().add("badge success primary");
@@ -147,7 +141,7 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
                 span.getElement().getThemeList().add("badge primary");
             }
             return span;
-        }).setHeader("Status").setAutoWidth(true);
+        }).setHeader("Status").setFlexGrow(0).setWidth("12%");
 
         GridContextMenu<Trip> contextMenu = grid.addContextMenu();
         contextMenu.addItem("Fahrtverlauf", e -> {
