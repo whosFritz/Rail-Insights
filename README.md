@@ -12,8 +12,8 @@
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white) ![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white) ![Apache](https://img.shields.io/badge/apache-%23D42029.svg?style=for-the-badge&logo=apache&logoColor=white) ![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
 Rail Insights ist ein Softwareprojekt auf GitHub, das sich auf die Auswertung und statistische Darstellung von Zügen der
-Deutschen Bahn konzentriert. Die zugehörige Webanwendung ermöglicht es Benutzern, in Echtzeit zu erfahren, welche Züge
-wo fahren und welche Verspätungen diese haben.
+Deutschen Bahn konzentriert. Die zugehörige Webanwendung ermöglicht den Benutzern einblick in Statistiken zu Zügen,
+Bahnhöfen und globale Verspätungen.
 Zusätzlich bietet die Anwendung eine Prognosefunktion für zukünftige Fahrten.
 
 ## Funktionalitäten
@@ -55,7 +55,7 @@ Wir begrüßen Beiträge und Feedback von der Community.
 
 ## Lizenz
 
-Dieses Projekt ist unter der [GNU General Public License](LICENSE) lizenziert - siehe die Datei LICENSE für weitere
+Dieses Projekt ist unter der [Apache License Version 2.0](LICENSE) lizenziert - siehe die Datei LICENSE für weitere
 Details.
 
 ---
