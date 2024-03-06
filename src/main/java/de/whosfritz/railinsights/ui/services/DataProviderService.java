@@ -153,7 +153,7 @@ public class DataProviderService {
     }
 
     public Remark getRandomRemark() {
-        if (top10RemarksFromToday.isEmpty()) {
+        if (top10RemarksFromToday == null || top10RemarksFromToday.isEmpty()) {
             Remark remark = new Remark();
             remark.setText("Keine Meldungen vorhanden.");
             return remark;
