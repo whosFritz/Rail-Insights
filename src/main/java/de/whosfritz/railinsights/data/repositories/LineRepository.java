@@ -1,7 +1,9 @@
 package de.whosfritz.railinsights.data.repositories;
 
 import de.olech2412.adapter.dbadapter.model.stop.sub.Line;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,16 +15,9 @@ import java.util.Optional;
 @Repository
 public interface LineRepository extends ListCrudRepository<Line, Long> {
 
-    Optional<Line> findByLineId(String lineId);
-
-    // find Lines By Product and Group by productname
-    Optional<List<Line>> findLinesByProduct(String product);
-
-    // find Lines By Product and Group by product where productname contains "national"
-    Optional<List<Line>> findLinesByProductContains(String product);
-
-    Optional<List<Line>> findLinesByProductName(String productName);
-
     Optional<Line> findByLineIdAndFahrtNr(String lineId, String fahrtNr);
+
+    @Query("SELECT l FROM Line l WHERE l.product IN :products order by l.productName asc")
+    Optional<List<Line>> findLinesByProducts(@Param("products") List<String> products);
 
 }

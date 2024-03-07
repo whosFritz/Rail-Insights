@@ -14,6 +14,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import de.whosfritz.railinsights.data.services.csv_export_service.CSVExporterService;
+import de.whosfritz.railinsights.ui.components.dialogs.ButtonFactory;
 import de.whosfritz.railinsights.ui.components.dialogs.GeneralRailInsightsDialog;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
@@ -113,7 +114,7 @@ public class CsvExportView extends VerticalLayout {
         Paragraph infoParagraph2 = new Paragraph("Die Tabelle 'Fahrten (Stops)' benötigt zusätzlich ein Startdatum, um die Daten zu filtern. " +
                 "Wähle dazu ein Datum aus und klicke auf den Download-Button. Daten werden dann ab diesem Datum bis 3 Tage in die Zukunft exportiert. z.B. 02.02.2024 00:00:00 bis 06.02.2024 00:00:00.");
 
-        Button infoButton = new Button("Informationen");
+        Button infoButton = ButtonFactory.createInfoButton("Informationen", infoParagraph, infoParagraph2);
         infoButton.setIcon(new Icon(VaadinIcon.INFO_CIRCLE));
         infoButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SMALL);
         infoButton.setTooltipText("Klicke hier für mehr Informationen zu dieser Seite.");

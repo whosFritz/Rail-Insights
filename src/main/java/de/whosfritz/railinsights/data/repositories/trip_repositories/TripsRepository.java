@@ -1,6 +1,7 @@
 package de.whosfritz.railinsights.data.repositories.trip_repositories;
 
 import de.olech2412.adapter.dbadapter.model.stop.Stop;
+import de.olech2412.adapter.dbadapter.model.stop.sub.Line;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,6 +57,13 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
             LocalDateTime plannedWhenAfter,
             LocalDateTime plannedWhenBefore,
             String name);
+
+    @Query("SELECT t FROM Trip t WHERE t.plannedWhen > :plannedWhenAfter AND t.plannedWhen < :plannedWhenBefore AND t.line IN :lines AND t.delay >= :delay")
+    Optional<List<Trip>> findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(
+            @Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
+            @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore,
+            @Param("lines") List<Line> lines,
+            @Param("delay") int delay);
 
     Optional<List<Trip>> findAllByPlannedWhenAfterAndPlannedWhenBefore(LocalDateTime whenAfter, LocalDateTime whenBefore);
 

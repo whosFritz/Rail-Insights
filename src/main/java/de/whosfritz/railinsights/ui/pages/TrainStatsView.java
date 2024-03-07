@@ -2,7 +2,6 @@ package de.whosfritz.railinsights.ui.pages;
 
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.board.Board;
 import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.button.Button;
@@ -12,8 +11,6 @@ import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -26,7 +23,7 @@ import de.whosfritz.railinsights.data.LoadFactor;
 import de.whosfritz.railinsights.data.dto.TripStatistics;
 import de.whosfritz.railinsights.data.services.LineService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
-import de.whosfritz.railinsights.ui.components.dialogs.GeneralRailInsightsDialog;
+import de.whosfritz.railinsights.ui.components.dialogs.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
@@ -65,29 +62,15 @@ public class TrainStatsView extends VerticalLayout {
 
 
         HorizontalLayout inputsLayout = new HorizontalLayout();
-        inputsLayout.addClassNames(LumoUtility.Margin.MEDIUM);
         inputsLayout.setAlignItems(Alignment.BASELINE);
 
         Paragraph infoParagraph = new Paragraph("Hier kannst du dir die Statistiken zu Zügen anzeigen lassen.");
         Paragraph infoCalcParagraph = new Paragraph("Wähle aus der Liste einen Fernverkehrszug aus und gib den Zeitraum an, für den du die Statistiken sehen möchtest. z.B. 2.3.2024 - 4.3.2024 wird dir die Daten von 2.3.2024 0 Uhr bis zum 5.3.2024 0 Uhr anzeigen, ergo den vollen ausgewählten Endtag.");
 
 
-        Button infoButton = new Button("Informationen");
-        infoButton.setIcon(new Icon(VaadinIcon.INFO_CIRCLE));
-        infoButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SMALL);
-        infoButton.setAriaLabel("Informationen");
-        infoButton.addClickListener(e -> {
-            HorizontalLayout infoLayout = new HorizontalLayout(new VerticalLayout(infoParagraph, infoCalcParagraph));
-            infoLayout.setWidth(100f, Unit.PERCENTAGE);
-            infoLayout.setMaxWidth(100f, Unit.PERCENTAGE);
+        Button infoButton = ButtonFactory.createInfoButton("Informationen", infoParagraph, infoCalcParagraph);
 
-            GeneralRailInsightsDialog dialog = new GeneralRailInsightsDialog();
-            dialog.setHeaderTitle("Informationen zur Seite");
-            dialog.add(infoLayout);
-            dialog.open();
-        });
-
-        fernVerkehrLinesCombobox.setItems(lineService.getLinesNationalOrNationalExpress().getData());
+        fernVerkehrLinesCombobox.setItems(lineService.getLinesByProducts(List.of("national", "nationalexpress")).getData());
         fernVerkehrLinesCombobox.setItemLabelGenerator(Line::getName);
         fernVerkehrLinesCombobox.setLabel("Fernverkehrszug");
         fernVerkehrLinesCombobox.addClassNames(LumoUtility.Margin.Top.MEDIUM);
@@ -139,7 +122,7 @@ public class TrainStatsView extends VerticalLayout {
             return;
         }
 
-        List<Trip> tripsCorrespondingToLine = tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_FahrtNr(from, to, comboboxValue.getName()).getData();
+        List<Trip> tripsCorrespondingToLine = tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLine_Name(from, to, comboboxValue.getName()).getData();
         // when null notifcation
         if (tripsCorrespondingToLine.isEmpty()) {
             NotificationFactory.createNotification(NotificationTypes.WARNING, "Der Zeitraum ist zu kurz gewählt. Es wurden keine Daten gefunden").open();
