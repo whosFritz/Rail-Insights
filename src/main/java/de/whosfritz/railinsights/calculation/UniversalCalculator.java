@@ -152,10 +152,11 @@ public class UniversalCalculator {
             // Get the plannedWhen date and the delay
             LocalDate date = trip.getPlannedWhen().toLocalDate();
             Integer delay = trip.getDelay();
+            Boolean cancelled = trip.getCancelled();
 
             // If the delay is greater than or equal to 360, add the delay to the corresponding date in the map
             // If the delay is less than 360, add 0 to the corresponding date in the map
-            if (delay != null) {
+            if (cancelled != null && !cancelled) {
                 delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(delay >= 360 ? delay : 0);
             }
         }
@@ -172,7 +173,7 @@ public class UniversalCalculator {
             double averageDelay = delays.stream().mapToInt(Integer::intValue).average().orElse(0);
 
             // Create a DataSeriesItem with the date and the average delay
-            DataSeriesItem item = new DataSeriesItem(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant(), averageDelay);
+            DataSeriesItem item = new DataSeriesItem(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant(), PercentageUtil.convertToTwoDecimalPlaces(averageDelay / 60));
 
             // Add the DataSeriesItem to the DataSeries
             dailyDelaySeries.add(item);
@@ -377,7 +378,7 @@ public class UniversalCalculator {
     }
 
     public TripCounts countTrips(List<Trip> trips) {
-        // for everyday count the trips
+        // for every day count the trips
         HashMap<LocalDate, Integer> dailyTripCounts = new HashMap<>();
         trips.forEach(trip -> {
             // If the trip is cancelled, skip this iteration
