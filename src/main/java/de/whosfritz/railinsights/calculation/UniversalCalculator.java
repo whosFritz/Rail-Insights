@@ -356,7 +356,7 @@ public class UniversalCalculator {
             }
         }
 
-        for(LocalDateTime date : hourlyTripCounts.keySet()) {
+        for (LocalDateTime date : hourlyTripCounts.keySet()) {
             if (!hourlyTripLongDistanceCounts.containsKey(date)) {
                 hourlyTripLongDistanceCounts.put(date, 0);
             }

@@ -17,7 +17,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterListener;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.WebBrowser;
@@ -263,12 +262,13 @@ public class MainView extends AppLayout implements BeforeEnterObserver {
 
     /**
      * Notify the user if its an mobile device that the application is not optimized for mobile devices.
+     *
      * @param beforeEnterEvent The event before the user enters the view.
      */
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         WebBrowser webBrowser = UI.getCurrent().getSession().getBrowser();
-        if (webBrowser.isIPhone() || webBrowser.isAndroid() || webBrowser.isWindowsPhone()){
+        if (webBrowser.isIPhone() || webBrowser.isAndroid() || webBrowser.isWindowsPhone()) {
             Notification notification = NotificationFactory.createNotification(NotificationTypes.WARNING, "Die " +
                     "Anwendung ist nicht für mobile Geräte optimiert. " +
                     "Es wird empfohlen die Anwendung auf einem Desktop-Gerät zu verwenden.");

@@ -1,7 +1,6 @@
 package de.whosfritz.railinsights.ui.pages;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -27,8 +26,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterListener;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -50,6 +47,7 @@ import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
+import de.whosfritz.railinsights.utils.TripUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -273,6 +271,7 @@ public class StationView extends VerticalLayout {
         Stop fullStop = stopService.findStopByStopId(Long.valueOf(stop.getStopId())).getData();
 
         List<Trip> tripsToEvaluate = tripService.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(fullStop, from, to).getData();
+        tripsToEvaluate = TripUtil.removeDuplicatesForMultipleLines(tripsToEvaluate);
 
         TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripsToEvaluate);
 

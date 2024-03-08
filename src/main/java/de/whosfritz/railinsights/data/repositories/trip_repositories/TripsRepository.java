@@ -59,6 +59,8 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
 
     Optional<List<Trip>> findAllByPlannedWhenAfterAndPlannedWhenBefore(LocalDateTime whenAfter, LocalDateTime whenBefore);
 
+    Optional<List<Trip>> findAllByLineNameAndTripIdContains(String lineName, String tripId);
+
     int countAllByStopAndPlannedWhenAfterAndWhenBefore(Stop stop, LocalDateTime whenAfter, LocalDateTime whenBefore);
 
 }
