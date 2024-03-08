@@ -22,6 +22,29 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
     @Query(value = "SELECT DATE(trip_planned_when) AS trip_date, COUNT(*) AS trip_count FROM trips GROUP BY DATE(trip_planned_when) ORDER BY trip_date", nativeQuery = true)
     List<Object[]> countTripsByDate();
 
+    @Query(value = "SELECT\n" +
+            "    trip_date,\n" +
+            "    ROUND((cancelled_trips / total_trips) * 100, 2) AS cancelled_percentage,\n" +
+            "    ROUND((on_time_trips / total_trips) * 100, 2) AS on_time_percentage,\n" +
+            "    ROUND((delayed_trips / total_trips) * 100, 2) AS delayed_percentage\n" +
+            "FROM\n" +
+            "    (\n" +
+            "        SELECT\n" +
+            "            DATE(trip_planned_when) AS trip_date,\n" +
+            "            SUM(CASE WHEN trip_cancelled = 1 THEN 1 ELSE 0 END) AS cancelled_trips,\n" +
+            "            SUM(CASE WHEN trip_delay <= 360 OR trip_delay IS NULL AND trip_cancelled IS NULL THEN 1 ELSE 0 END) AS on_time_trips,\n" +
+            "            SUM(CASE WHEN trip_delay > 360 THEN 1 ELSE 0 END) AS delayed_trips,\n" +
+            "            COUNT(*) AS total_trips\n" +
+            "        FROM\n" +
+            "            trips\n" +
+            "        GROUP BY\n" +
+            "            trip_date\n" +
+            "    ) AS subquery\n" +
+            "ORDER BY\n" +
+            "    trip_date DESC;", nativeQuery = true)
+    List<Object[]> getTripPercentages();
+
+
     int countAllByCancelled(boolean cancelled);
 
     int countAllByDelayIsGreaterThanEqual(int delay);

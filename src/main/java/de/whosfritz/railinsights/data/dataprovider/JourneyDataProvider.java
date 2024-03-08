@@ -66,7 +66,7 @@ public class JourneyDataProvider {
 
                 List<LocalDate> localDates = trips.parallelStream().map(trip -> trip.getPlannedWhen().toLocalDate()).distinct().toList();
                 List<Trip> uniqueTrips = new ArrayList<>();
-                for (LocalDate localDate : localDates){
+                for (LocalDate localDate : localDates) {
                     List<Trip> tripsForLocalDate = trips.parallelStream().filter(trip -> trip.getPlannedWhen().toLocalDate().equals(localDate)).toList();
                     uniqueTrips.addAll(TripUtil.removeDuplicates(tripsForLocalDate));
                 }

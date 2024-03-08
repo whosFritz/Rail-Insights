@@ -3,12 +3,16 @@ package de.whosfritz.railinsights.ui.services;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.style.SolidColor;
+import de.olech2412.adapter.dbadapter.exception.Result;
 import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.trip.sub.Remark;
 import de.whosfritz.railinsights.data.dto.StopDto;
+import de.whosfritz.railinsights.data.dto.TripPercentageDTO;
 import de.whosfritz.railinsights.data.repositories.stop_repositories.StopRepository;
 import de.whosfritz.railinsights.data.repositories.trip_repositories.TripsRepository;
 import de.whosfritz.railinsights.data.repositories.trip_repositories.sub.RemarkRepository;
+import de.whosfritz.railinsights.data.services.trip_services.TripService;
+import de.whosfritz.railinsights.exception.JPAError;
 import de.whosfritz.railinsights.ui.color_scheme.ColorScheme;
 import de.whosfritz.railinsights.utils.PercentageUtil;
 import jakarta.transaction.Transactional;
@@ -23,12 +27,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,6 +59,12 @@ public class DataProviderService {
 
     DataSeries stoppsOverTimeDataSeries;
 
+    DataSeries percentageOnTimeDataSeries;
+
+    DataSeries percentageCancelledDataSeries;
+
+    DataSeries percentageDelayedDataSeries;
+
     int totalTrips;
 
     int totalStops;
@@ -75,6 +83,9 @@ public class DataProviderService {
 
     @Autowired
     private RemarkRepository remarkRepository;
+
+    @Autowired
+    private TripService tripService;
 
     public DataProviderService() {
     }
@@ -132,6 +143,39 @@ public class DataProviderService {
         nationalStops = longDistanceStops.size();
 
         top10RemarksFromToday = remarkRepository.findTop10RemarksFromToday();
+
+        Result<List<TripPercentageDTO>, JPAError> tripPercentageDTOS = tripService.getPercentages();
+        if (tripPercentageDTOS.isSuccess()) {
+            // order after tripDate
+            tripPercentageDTOS.getData().sort(Comparator.comparing(TripPercentageDTO::getTripDate));
+            // create the DataSeries containing the percentage values for each day
+            DataSeries onTimeSeries = new DataSeries();
+            onTimeSeries.setName("Pünktlichkeit");
+
+            DataSeries delayedSeries = new DataSeries();
+            delayedSeries.setName("Verspätung");
+
+            DataSeries cancelledSeries = new DataSeries();
+            cancelledSeries.setName("Ausfall");
+            for (TripPercentageDTO tripPercentageDTO : tripPercentageDTOS.getData()) {
+                Instant instant = tripPercentageDTO.getTripDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
+                DataSeriesItem dataSeriesItem = new DataSeriesItem(instant, tripPercentageDTO.getOnTimePercentage());
+                dataSeriesItem.setColor(new SolidColor(ColorScheme.SUCCESS.getColor()));
+                onTimeSeries.add(dataSeriesItem);
+
+                DataSeriesItem dataSeriesItemDelayed = new DataSeriesItem(instant, tripPercentageDTO.getDelayedPercentage());
+                dataSeriesItemDelayed.setColor(new SolidColor(ColorScheme.WARNING_SOFT.getColor()));
+                delayedSeries.add(dataSeriesItemDelayed);
+
+                DataSeriesItem dataSeriesItemCancelled = new DataSeriesItem(instant, tripPercentageDTO.getCancelledPercentage());
+                dataSeriesItemCancelled.setColor(new SolidColor(ColorScheme.ERROR.getColor()));
+                cancelledSeries.add(dataSeriesItemCancelled);
+            }
+
+            percentageOnTimeDataSeries = onTimeSeries;
+            percentageDelayedDataSeries = delayedSeries;
+            percentageCancelledDataSeries = cancelledSeries;
+        }
 
         log.info("Data calculation finished...");
         state = DataProviderServiceState.READY; // Set the state to ready

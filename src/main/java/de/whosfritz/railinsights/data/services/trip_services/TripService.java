@@ -10,6 +10,7 @@ import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.stop.sub.Line;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.olech2412.adapter.dbadapter.model.trip.sub.Remark;
+import de.whosfritz.railinsights.data.dto.TripPercentageDTO;
 import de.whosfritz.railinsights.data.repositories.trip_repositories.TripsRepository;
 import de.whosfritz.railinsights.data.services.LineService;
 import de.whosfritz.railinsights.data.services.station_services.StationService;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -390,5 +392,20 @@ public class TripService {
             log.error("Trip id: " + tripId);
             return Result.error(new JPAError(JPAErrors.UNKNOWN));
         }
+    }
+
+    public Result<List<TripPercentageDTO>, JPAError> getPercentages() {
+        List<Object[]> percentages = tripsRepository.getTripPercentages();
+        List<TripPercentageDTO> tripPercentageDTOS = new ArrayList<>();
+        for (Object[] percentage : percentages) {
+            TripPercentageDTO tripPercentageDTO = new TripPercentageDTO();
+            // cast the java.sql.Date to java.time.LocalDate
+            tripPercentageDTO.setTripDate(((java.sql.Date) percentage[0]).toLocalDate());
+            tripPercentageDTO.setCancelledPercentage((BigDecimal) percentage[1]);
+            tripPercentageDTO.setOnTimePercentage((BigDecimal) percentage[2]);
+            tripPercentageDTO.setDelayedPercentage((BigDecimal) percentage[3]);
+            tripPercentageDTOS.add(tripPercentageDTO);
+        }
+        return Result.success(tripPercentageDTOS);
     }
 }

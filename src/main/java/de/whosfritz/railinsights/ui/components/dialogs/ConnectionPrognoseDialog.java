@@ -16,9 +16,7 @@ import de.whosfritz.railinsights.data.PrognoseStateEnum;
 import de.whosfritz.railinsights.data.dataprovider.JourneyDataProvider;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
-import de.whosfritz.railinsights.utils.TripUtil;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

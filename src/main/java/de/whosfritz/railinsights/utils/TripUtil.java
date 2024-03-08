@@ -45,6 +45,7 @@ public class TripUtil {
 
         // if there are no doubled trips, return the list
         if (doubledTrips.isEmpty()) {
+            trips = trips.stream().sorted(Comparator.comparing(Trip::getPlannedWhen)).toList();
             return trips;
         }
 
@@ -66,7 +67,7 @@ public class TripUtil {
         }
 
         // order the list by plannedWhen
-        trips.sort(Comparator.comparing(Trip::getPlannedWhen));
+        trips = trips.stream().sorted(Comparator.comparing(Trip::getPlannedWhen)).toList();
 
         return trips;
     }
@@ -90,6 +91,9 @@ public class TripUtil {
         trips = new ArrayList<>(trips); // Create a mutable copy important for removing elements because the list is unmodifiable
         if (!doubledTrips.isEmpty()) {
             trips.removeAll(doubledTrips);
+        } else {
+            trips = trips.stream().sorted(Comparator.comparing(Trip::getPlannedWhen)).toList();
+            return trips;
         }
         for (Trip trip : trips) {
             long stopId = trip.getStop().getStopId();
@@ -112,7 +116,7 @@ public class TripUtil {
         }
 
         // order the list by plannedWhen
-        trips.sort(Comparator.comparing(Trip::getPlannedWhen));
+        trips = trips.stream().sorted(Comparator.comparing(Trip::getPlannedWhen)).toList();
 
         return trips;
     }
