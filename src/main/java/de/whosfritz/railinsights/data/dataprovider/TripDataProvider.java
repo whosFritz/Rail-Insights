@@ -67,9 +67,7 @@ public class TripDataProvider extends AbstractBackEndDataProvider<Trip, TripFilt
         }
 
         // Sorting
-        if (!query.getSortOrders().isEmpty()) {
-            stream = stream.sorted(sortComparator(query.getSortOrders()));
-        }
+        stream = stream.sorted(Comparator.comparing(Trip::getPlannedWhen));
 
         // Pagination
         return stream.skip(query.getOffset()).limit(query.getLimit());

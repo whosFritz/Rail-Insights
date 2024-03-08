@@ -63,7 +63,8 @@ public class TripUtil {
             }
         }
 
-        // replace the doubled trips with the new doubled trips
+        // order the list by plannedWhen
+        trips.sort(Comparator.comparing(Trip::getPlannedWhen));
 
         return trips;
     }
@@ -103,6 +104,9 @@ public class TripUtil {
                 trips.set(trips.indexOf(trip), tripWithHighestDelay);
             }
         }
+
+        // order the list by plannedWhen
+        trips.sort(Comparator.comparing(Trip::getPlannedWhen));
 
         return trips;
     }
