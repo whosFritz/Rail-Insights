@@ -359,7 +359,7 @@ public class UniversalCalculator {
     }
 
     public TripCounts countTrips(List<Trip> trips) {
-        // for everyday count the trips
+        // for every day count the trips
         HashMap<LocalDate, Integer> dailyTripCounts = new HashMap<>();
         trips.forEach(trip -> {
             // If the trip is cancelled, skip this iteration
