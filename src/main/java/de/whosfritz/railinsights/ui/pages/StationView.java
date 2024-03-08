@@ -313,7 +313,7 @@ public class StationView extends VerticalLayout {
         Stop fullStop = stopService.findStopByStopId(Long.valueOf(stop.getStopId())).getData();
 
         TripFilter tripFilter = new TripFilter();
-        TripDataProvider dataProvider = new TripDataProvider(fullStop, LocalDateTime.now(), LocalDateTime.now().plusMinutes(30));
+        TripDataProvider dataProvider = new TripDataProvider(fullStop, LocalDateTime.now(), LocalDateTime.now().plusMinutes(60));
         ConfigurableFilterDataProvider<Trip, Void, TripFilter> filterDataProvider = dataProvider
                 .withConfigurableFilter();
 

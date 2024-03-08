@@ -1,6 +1,7 @@
 package de.whosfritz.railinsights.utils;
 
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.List;
  * Make your life easier with {@link TripUtil}
  * it provides some common tasks for trips
  */
+@Slf4j
 public class TripUtil {
 
     public static LocalDateTime getDateFromTrip(Trip trip) {
@@ -54,7 +56,7 @@ public class TripUtil {
             List<Trip> tripsFromDoubledTrips = doubledTrips.stream().filter(t -> t.getStop().getStopId() == stopId).toList();
             if (!tripsFromDoubledTrips.isEmpty()) {
                 // search the trip with the highest delay
-                Trip tripWithHighestDelay = tripsFromDoubledTrips.stream().max(Comparator.comparingInt(Trip::getDelay)).get();
+                Trip tripWithHighestDelay = tripsFromDoubledTrips.stream().max(Comparator.comparingInt(t -> t.getDelay() == null ? 0 : t.getDelay())).get();
                 tripWithHighestDelay.setTripId(tripWithHighestDelay.getTripId());
                 tripWithHighestDelay.setPlannedWhen(trip.getPlannedWhen());
 
@@ -89,14 +91,18 @@ public class TripUtil {
         if (!doubledTrips.isEmpty()) {
             trips.removeAll(doubledTrips);
         }
-
         for (Trip trip : trips) {
             long stopId = trip.getStop().getStopId();
             String lineId = trip.getLine().getLineId();
-            List<Trip> tripsFromDoubledTrips = doubledTrips.stream().filter(t -> t.getStop().getStopId() == stopId && t.getLine().getLineId().equals(lineId)).toList();
+            String tripIdPart = TripUtil.getPartOfTripIdByLocalDate(trip.getPlannedWhen().toLocalDate());
+            List<Trip> tripsFromDoubledTrips = doubledTrips.stream().filter(t -> t.getStop().getStopId() == stopId
+                    && t.getLine().getLineId().equals(lineId)
+                    && t.getTripId().contains(tripIdPart)
+            ).toList();
+
             if (!tripsFromDoubledTrips.isEmpty()) {
-                // search the trip with the highest delay
-                Trip tripWithHighestDelay = tripsFromDoubledTrips.stream().max(Comparator.comparingInt(Trip::getDelay)).get();
+                // search the trip with the highest delay if delay is null, make it 0
+                Trip tripWithHighestDelay = tripsFromDoubledTrips.stream().max(Comparator.comparingInt(t -> t.getDelay() == null ? 0 : t.getDelay())).get();
                 tripWithHighestDelay.setTripId(tripWithHighestDelay.getTripId());
                 tripWithHighestDelay.setPlannedWhen(trip.getPlannedWhen());
 
