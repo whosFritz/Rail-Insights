@@ -5,9 +5,11 @@ import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.server.VaadinService;
+import de.olech2412.adapter.dbadapter.exception.Result;
 import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
+import de.whosfritz.railinsights.exception.JPAError;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -59,7 +61,14 @@ public class TripDataProvider extends AbstractBackEndDataProvider<Trip, TripFilt
 
     @Override
     protected Stream<Trip> fetchFromBackEnd(Query<Trip, TripFilter> query) {
-        Stream<Trip> stream = tripService.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(currentStop, whenAfter, whenBefore).getData().stream();
+        Result<List<Trip>, JPAError> result = tripService.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(currentStop, whenAfter, whenBefore);
+
+        Stream<Trip> stream;
+        if (result.isSuccess()) {
+            stream = result.getData().stream();
+        } else {
+            stream = Stream.empty();
+        }
 
         // Filtering
         if (query.getFilter().isPresent()) {
@@ -67,9 +76,7 @@ public class TripDataProvider extends AbstractBackEndDataProvider<Trip, TripFilt
         }
 
         // Sorting
-        if (!query.getSortOrders().isEmpty()) {
-            stream = stream.sorted(sortComparator(query.getSortOrders()));
-        }
+        stream = stream.sorted(Comparator.comparing(Trip::getPlannedWhen));
 
         // Pagination
         return stream.skip(query.getOffset()).limit(query.getLimit());

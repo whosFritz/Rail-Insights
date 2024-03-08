@@ -152,13 +152,11 @@ public class UniversalCalculator {
             // Get the plannedWhen date and the delay
             LocalDate date = trip.getPlannedWhen().toLocalDate();
             Integer delay = trip.getDelay();
-            Boolean cancelled = trip.getCancelled();
 
-            // If the delay is greater than or equal to 360, add the delay to the corresponding date in the map
-            // If the delay is less than 360, add 0 to the corresponding date in the map
-            if (cancelled != null && !cancelled) {
-                delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(delay >= 360 ? delay : 0);
+            if (trip.getCancelled() != null) {
+                continue;
             }
+            delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(delay >= 360 ? delay : 0);
         }
 
         DataSeries dailyDelaySeries = new DataSeries();
