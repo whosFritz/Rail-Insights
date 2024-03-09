@@ -106,6 +106,7 @@ public class TrainStatsView extends VerticalLayout {
         calculateStatsButton.addClickListener(e -> createStats());
 
         Button clearButton = new Button("Zurücksetzen");
+        clearButton.addClassNames(LumoUtility.TextColor.PRIMARY);
         clearButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         clearButton.addClickListener(e -> {
             tripStatsLayout.removeAll();
