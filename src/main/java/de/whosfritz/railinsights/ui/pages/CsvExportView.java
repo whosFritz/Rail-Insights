@@ -3,7 +3,6 @@ package de.whosfritz.railinsights.ui.pages;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -14,7 +13,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import de.whosfritz.railinsights.data.services.csv_export_service.CSVExporterService;
-import de.whosfritz.railinsights.ui.components.dialogs.GeneralRailInsightsDialog;
+import de.whosfritz.railinsights.ui.factories.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
@@ -113,22 +112,7 @@ public class CsvExportView extends VerticalLayout {
         Paragraph infoParagraph2 = new Paragraph("Die Tabelle 'Fahrten (Stops)' benötigt zusätzlich ein Startdatum, um die Daten zu filtern. " +
                 "Wähle dazu ein Datum aus und klicke auf den Download-Button. Daten werden dann ab diesem Datum bis 3 Tage in die Zukunft exportiert. z.B. 02.02.2024 00:00:00 bis 06.02.2024 00:00:00.");
 
-        Button infoButton = new Button("Informationen");
-        infoButton.setIcon(new Icon(VaadinIcon.INFO_CIRCLE));
-        infoButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SMALL);
-        infoButton.setTooltipText("Klicke hier für mehr Informationen zu dieser Seite.");
-        infoButton.setAriaLabel("Informationen");
-        infoButton.addClickListener(e -> {
-            HorizontalLayout infoLayout = new HorizontalLayout(new VerticalLayout(infoParagraph, infoParagraph2));
-            infoLayout.setWidth(100f, Unit.PERCENTAGE);
-            infoLayout.setMaxWidth(100f, Unit.PERCENTAGE);
-
-            GeneralRailInsightsDialog dialog = new GeneralRailInsightsDialog();
-            dialog.setHeaderTitle("Informationen zur Seite");
-            dialog.add(infoLayout);
-            dialog.add();
-            dialog.open();
-        });
+        Button infoButton = ButtonFactory.createInfoButton("Informationen", infoParagraph, infoParagraph2);
 
         wrapper.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
         tableToDownloadComboBox.setWidth(30f, Unit.PERCENTAGE);
