@@ -29,7 +29,7 @@ public class CsvExportView extends VerticalLayout {
 
     public CsvExportView(CSVExporterService csvExporterService) {
 
-        HorizontalLayout wrapper = new HorizontalLayout();
+        VerticalLayout wrapper = new VerticalLayout();
 
         ComboBox<String> tableToDownloadComboBox = new ComboBox<>("Tabellen");
         tableToDownloadComboBox.setItems(
@@ -68,7 +68,8 @@ public class CsvExportView extends VerticalLayout {
             createCsv(csvExporterService, comboBoxSelectedValue, startValue, writer);
         });
 
-        dynamicFileDownloader.setDisableOnClick(true);
+        dynamicFileDownloader.setEnabled(false);
+        dynamicFileDownloader.setText("Download");
         dynamicFileDownloader.addDownloadFinishedListener(e -> {
                     new Thread(() -> {
                         try {
@@ -79,7 +80,7 @@ public class CsvExportView extends VerticalLayout {
                     }
                     ).start();
                     UI.getCurrent().access(() -> {
-                        NotificationFactory.createNotification(NotificationTypes.SUCCESS, "Download finished").open();
+                        NotificationFactory.createNotification(NotificationTypes.SUCCESS, "Download abgeschlossen").open();
                         tableToDownloadComboBox.setEnabled(true);
                     });
                 }
@@ -88,21 +89,26 @@ public class CsvExportView extends VerticalLayout {
 
         UI.getCurrent().setPollInterval(500);
 
-        dynamicFileDownloader.setEnabled(false);
         dynamicFileDownloader.asButton();
         dynamicFileDownloader.getButton().setIcon(new Icon(VaadinIcon.DOWNLOAD));
         dynamicFileDownloader.getButton().addClickListener(e -> {
-            NotificationFactory.createNotification(NotificationTypes.WARNING, "Download gestartet...").open();
-            tableToDownloadComboBox.setEnabled(false);
+            String message = "Verarbeitung gestartet...";
+            if(tableToDownloadComboBox.getValue() != null && tableToDownloadComboBox.getValue().equals("Fahrten (Stops)")) {
+                message = "Verarbeitung gestartet... gib uns einen Moment, die Daten zu finden! Das kann ein paar Sekunden dauern...";
+            }
+            NotificationFactory.createNotification(NotificationTypes.WARNING, message).open();
+            dynamicFileDownloader.setEnabled(false);
         });
 
         tableToDownloadComboBox.addValueChangeListener(event -> {
-            String selectedTable = event.getValue();
+            if (event.getValue() != null && !event.getValue().isEmpty() && !event.getValue().isBlank()) {
+                dynamicFileDownloader.setEnabled(true);
+                String selectedTable = event.getValue();
+                dynamicFileDownloader.setFileName(LocalDateTime.now() + "_" + selectedTable + ".csv");
+                dynamicFileDownloader.setEnabled(event.getValue() != null);
 
-            dynamicFileDownloader.setFileName(LocalDateTime.now() + "_" + selectedTable + ".csv");
-            dynamicFileDownloader.setEnabled(event.getValue() != null);
-
-            startDateTimePicker.setVisible(selectedTable != null && !selectedTable.isBlank() && !selectedTable.isEmpty() && event.getValue().equals("Fahrten (Stops)"));
+                startDateTimePicker.setVisible(selectedTable != null && !selectedTable.isBlank() && !selectedTable.isEmpty() && event.getValue().equals("Fahrten (Stops)"));
+            }
         });
 
 
@@ -112,12 +118,14 @@ public class CsvExportView extends VerticalLayout {
         Paragraph infoParagraph2 = new Paragraph("Die Tabelle 'Fahrten (Stops)' benötigt zusätzlich ein Startdatum, um die Daten zu filtern. " +
                 "Wähle dazu ein Datum aus und klicke auf den Download-Button. Daten werden dann ab diesem Datum bis 3 Tage in die Zukunft exportiert. z.B. 02.02.2024 00:00:00 bis 06.02.2024 00:00:00.");
 
-        Button infoButton = ButtonFactory.createInfoButton("Informationen", infoParagraph, infoParagraph2);
+        VerticalLayout infoLayout = new VerticalLayout(infoParagraph, infoParagraph2);
 
-        wrapper.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
         tableToDownloadComboBox.setWidth(30f, Unit.PERCENTAGE);
         wrapper.setWidthFull();
-        wrapper.add(infoButton, tableToDownloadComboBox, startDateTimePicker, dynamicFileDownloader);
+        HorizontalLayout chooseLayout = new HorizontalLayout(tableToDownloadComboBox, startDateTimePicker, dynamicFileDownloader);
+        chooseLayout.setWidthFull();
+        chooseLayout.setAlignItems(Alignment.BASELINE);
+        wrapper.add(infoLayout, chooseLayout);
         add(wrapper);
     }
 
