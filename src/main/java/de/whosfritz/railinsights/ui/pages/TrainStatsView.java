@@ -105,6 +105,7 @@ public class TrainStatsView extends VerticalLayout {
         calculateStatsButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         calculateStatsButton.addClickListener(e -> createStats());
 
+
         Button clearButton = new Button("Zurücksetzen");
         clearButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         clearButton.addClickListener(e -> {
@@ -126,7 +127,10 @@ public class TrainStatsView extends VerticalLayout {
 
     private void createStats() {
         Line comboboxValue = fernVerkehrLinesCombobox.getValue();
-        if (fernVerkehrLinesCombobox.getValue() == null) return;
+        if (fernVerkehrLinesCombobox.getValue() == null) {
+            NotificationFactory.createNotification(NotificationTypes.ERROR, "Bitte einen Zug auswählen").open();
+            return;
+        }
         tripStatsLayout.getElement().removeAllChildren();
 
         LocalDateTime from = startDatePicker.getValue().atStartOfDay();
