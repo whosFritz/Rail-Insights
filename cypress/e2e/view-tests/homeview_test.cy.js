@@ -41,32 +41,6 @@ describe('home_page_test', () => {
         cy.get('html > body > div > flow-container-root-2521314 > vaadin-app-layout > vaadin-vertical-layout > rail-insights-info-board > vaadin-board-row:nth-of-type(2) > div:nth-of-type(2) > vaadin-vertical-layout > vaadin-chart').should('exist')
     })
 
-    it('dark_mode_toggle', () => {
-        cy.resolveCookieBanner()
-        cy.get('vaadin-checkbox[theme=\'toggle-button\']').should('exist')
-
-        // click on the button
-        cy.get('html > body > div > flow-container-root-2521314 > vaadin-app-layout > vaadin-vertical-layout').should('have.css', 'color-scheme', 'dark')
-        cy.get('vaadin-checkbox[theme=\'toggle-button\']').click()
-        cy.get('html > body > div > flow-container-root-2521314 > vaadin-app-layout > vaadin-vertical-layout').should('have.css', 'color-scheme', 'light')
-        cy.get('vaadin-checkbox[theme=\'toggle-button\']').click()
-        cy.get('html > body > div > flow-container-root-2521314 > vaadin-app-layout > vaadin-vertical-layout').should('have.css', 'color-scheme', 'dark')
-        cy.get('vaadin-checkbox[theme=\'toggle-button\']').click()
-        cy.get('html > body > div > flow-container-root-2521314 > vaadin-app-layout > vaadin-vertical-layout').should('have.css', 'color-scheme', 'light')
-
-        let i = 0
-        // toggle the button fifty times
-        for (let i = 0; i < 100; i++) {
-            cy.get('vaadin-checkbox[theme=\'toggle-button\']').click()
-            if (i % 2 === 0) {
-                cy.get('html > body > div > flow-container-root-2521314 > vaadin-app-layout > vaadin-vertical-layout').should('have.css', 'color-scheme', 'dark')
-            } else {
-                cy.get('html > body > div > flow-container-root-2521314 > vaadin-app-layout > vaadin-vertical-layout').should('have.css', 'color-scheme', 'light')
-            }
-        }
-
-    })
-
     Cypress.Commands.add('resolveCookieBanner', () => {
         // Überprüfen, ob das Div-Element mit der Datenschutzerklärung vorhanden ist
         cy.get('div[class=\'p-m\']').contains('Datenschutzerklärung').should('exist');

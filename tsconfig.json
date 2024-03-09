@@ -6,7 +6,7 @@
 {
   "_version": "9",
   "compilerOptions": {
-    "sourceMap": true,
+
     "jsx": "react-jsx",
     "inlineSources": true,
     "module": "esNext",
