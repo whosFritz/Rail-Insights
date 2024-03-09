@@ -156,6 +156,9 @@ public class UniversalCalculator {
             if (trip.getCancelled() != null) {
                 continue;
             }
+            if (delay == null) {
+                delay = 0;
+            }
             delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(delay >= 360 ? delay : 0);
         }
 
