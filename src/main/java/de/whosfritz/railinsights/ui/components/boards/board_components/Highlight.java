@@ -57,9 +57,6 @@ public class Highlight extends VerticalLayout {
 
         Span badge = new Span(i, new Span(prefix + percentage + " " + unit + " - " + explanation));
         badge.getElement().getThemeList().add(theme);
-        badge.getStyle().setBorderRadius("var(--lumo-border-radius-m)");
-        badge.getStyle().setBackgroundColor("rgba(255, 0, 0, 0.2)");
-        badge.getStyle().setColor("rgba(255, 0, 0, 1)");
 
         add(h2, span, badge);
         addClassNames(LumoUtility.Padding.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10);
