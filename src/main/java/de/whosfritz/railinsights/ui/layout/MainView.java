@@ -126,9 +126,9 @@ public class MainView extends AppLayout implements BeforeEnterObserver {
 
     private String getLogoSrc(ThemeVariant themeVariant) {
         if (themeVariant == ThemeVariant.DARK) {
-            return "images/lightmode.png";
+            return "images/darkmode.png";
         }
-        return "images/darkmode.png";
+        return "images/lightmode.png";
     }
 
     /**

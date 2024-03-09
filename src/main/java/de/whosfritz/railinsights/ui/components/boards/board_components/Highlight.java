@@ -62,7 +62,6 @@ public class Highlight extends VerticalLayout {
         addClassNames(LumoUtility.Padding.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10);
         setPadding(false);
         setSpacing(false);
-        addClassNames(LumoUtility.BorderRadius.MEDIUM);
     }
 
     public Highlight(String title, String value) {
