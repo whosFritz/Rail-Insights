@@ -3,7 +3,6 @@ package de.whosfritz.railinsights.ui.pages;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
@@ -43,6 +42,7 @@ import de.whosfritz.railinsights.ui.components.boards.StationViewDashboard;
 import de.whosfritz.railinsights.ui.components.dialogs.ArrivalDepartureDialog;
 import de.whosfritz.railinsights.ui.components.dialogs.GeneralRailInsightsDialog;
 import de.whosfritz.railinsights.ui.components.dialogs.StopInfoDialog;
+import de.whosfritz.railinsights.ui.factories.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
@@ -105,22 +105,7 @@ public class StationView extends VerticalLayout {
                 " dass Bahnhöfe auftauchen, die nicht vom Fernverkehr bedient werden, jedoch zu einer Betriebsstelle gehören," +
                 " die vom Fernverkehr bedient wird (z.B. Leipzig Hbf (tief)). Für diese Fälle steht die Funktion 'Weitere Informationen' nicht Verfügung.");
 
-        Button infoButton = new Button("Informationen");
-        infoButton.setIcon(new Icon(VaadinIcon.INFO_CIRCLE));
-        infoButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SMALL);
-        infoButton.setTooltipText("Klicke hier für mehr Informationen zu dieser Seite.");
-        infoButton.setAriaLabel("Informationen");
-        infoButton.addClickListener(e -> {
-            HorizontalLayout infoLayout = new HorizontalLayout(new VerticalLayout(infoParagraph, infoCalcParagraph));
-            infoLayout.setWidth(100f, Unit.PERCENTAGE);
-            infoLayout.setMaxWidth(100f, Unit.PERCENTAGE);
-
-            GeneralRailInsightsDialog dialog = new GeneralRailInsightsDialog();
-            dialog.setHeaderTitle("Informationen zur Seite");
-            dialog.add(infoLayout);
-            dialog.add();
-            dialog.open();
-        });
+        Button infoButton = ButtonFactory.createInfoButton("Informationen", infoParagraph, infoCalcParagraph);
 
         DateTimePicker whenAfter = new DateTimePicker();
         whenAfter.setLocale(new Locale("de", "DE"));
