@@ -99,7 +99,7 @@ public class DataProviderService {
     public void calculateData() {
         state = DataProviderServiceState.PENDING; // Set the state to pending
         log.info("Data calculation started...");
-        longDistanceStops = stopRepository.findByProducts_National(true);
+        longDistanceStops = stopRepository.findByProducts_NationalOrAndProductsNationalExpress(true, true);
         totalStops = (int) stopRepository.count();
         totalTrips = (int) tripsRepository.count();
 

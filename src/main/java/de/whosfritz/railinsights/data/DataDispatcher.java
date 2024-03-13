@@ -50,7 +50,7 @@ public class DataDispatcher {
     public void fetchData() {
         log.info("---- Fetching departures ----");
 
-        List<Stop> stops = stopService.findByProducts_National(true);
+        List<Stop> stops = stopService.findByProducts_National(true , true);
 
         if (!stops.isEmpty()) {
             log.info("Stops found: " + stops.size());
