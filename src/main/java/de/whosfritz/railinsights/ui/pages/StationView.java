@@ -1,7 +1,6 @@
 package de.whosfritz.railinsights.ui.pages;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.model.DataSeries;
@@ -26,8 +25,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterListener;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -46,10 +43,12 @@ import de.whosfritz.railinsights.ui.components.dialogs.ArrivalDepartureDialog;
 import de.whosfritz.railinsights.ui.components.dialogs.ButtonFactory;
 import de.whosfritz.railinsights.ui.components.dialogs.GeneralRailInsightsDialog;
 import de.whosfritz.railinsights.ui.components.dialogs.StopInfoDialog;
+import de.whosfritz.railinsights.ui.factories.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
+import de.whosfritz.railinsights.utils.TripUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -60,7 +59,7 @@ import java.util.Locale;
 
 
 @Route(value = "bahnhöfe", layout = MainView.class)
-public class StationView extends VerticalLayout implements BeforeEnterListener {
+public class StationView extends VerticalLayout {
     private final Map map = new Map();
 
     private final OrderedList cardList;
@@ -258,6 +257,7 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         Stop fullStop = stopService.findStopByStopId(Long.valueOf(stop.getStopId())).getData();
 
         List<Trip> tripsToEvaluate = tripService.findAllByStopAndPlannedWhenAfterAndPlannedWhenBefore(fullStop, from, to).getData();
+        tripsToEvaluate = TripUtil.removeDuplicatesForMultipleLines(tripsToEvaluate);
 
         TripStatistics tripStatistics = universalCalculator.calculateTripStatistics(tripsToEvaluate);
 
@@ -299,7 +299,7 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
         Stop fullStop = stopService.findStopByStopId(Long.valueOf(stop.getStopId())).getData();
 
         TripFilter tripFilter = new TripFilter();
-        TripDataProvider dataProvider = new TripDataProvider(fullStop, LocalDateTime.now(), LocalDateTime.now().plusMinutes(30));
+        TripDataProvider dataProvider = new TripDataProvider(fullStop, LocalDateTime.now(), LocalDateTime.now().plusMinutes(60));
         ConfigurableFilterDataProvider<Trip, Void, TripFilter> filterDataProvider = dataProvider
                 .withConfigurableFilter();
 
@@ -396,15 +396,5 @@ public class StationView extends VerticalLayout implements BeforeEnterListener {
             featureLayer.addFeature(feature);
         });
         updateCardList();
-    }
-
-    @Override
-    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        // inform the user that mobile devices are currently not supported if he is using one
-        if (UI.getCurrent().getSession().getBrowser().isAndroid() || UI.getCurrent().getSession().getBrowser().isIPhone()) {
-            Notification mobileDeviceNotification = NotificationFactory.createNotification(NotificationTypes.CRITICAL,
-                    "Mobile Geräte werden aktuell nicht unterstützt. Es kommt zu Darstellungsproblemen. Bitte benutze einen Desktop-Browser.");
-            mobileDeviceNotification.open();
-        }
     }
 }

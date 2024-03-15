@@ -7,11 +7,14 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import de.olech2412.adapter.dbadapter.model.trip.sub.Remark;
 import de.whosfritz.railinsights.ui.color_scheme.ColorScheme;
 import de.whosfritz.railinsights.ui.components.InfoPanel;
 import de.whosfritz.railinsights.ui.components.boards.RailInsightsInfoBoard;
 import de.whosfritz.railinsights.ui.components.boards.board_components.Highlight;
+import de.whosfritz.railinsights.ui.components.boards.board_components.HighlightSmall;
 import de.whosfritz.railinsights.ui.components.charts.CancelledDelayedOnPointPieChart;
+import de.whosfritz.railinsights.ui.components.charts.PercentageTimeChart;
 import de.whosfritz.railinsights.ui.components.charts.StoppsOverTimeChart;
 import de.whosfritz.railinsights.ui.layout.MainView;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
@@ -46,9 +49,18 @@ public class HomeView extends VerticalLayout {
                 new Highlight("Haltepunkte für die Stopps erfasst werden (Fernverkehrshaltepunkte): ", String.valueOf(dataProviderService.getNationalStops()))
         );
 
+        Remark remark = dataProviderService.getRandomRemark();
+        int index = dataProviderService.getTop10RemarksFromToday().indexOf(remark) + 1;
+
+        railInsightsInfoBoard.add(new HighlightSmall("Tagesaktuelle Meldungen (" + index + "/10):", remark.getText()));
+
         railInsightsInfoBoard.addRow(
                 createStoppsOverTimeChart(),
                 createCancelledDelayedOnPointPieChart()
+        );
+
+        railInsightsInfoBoard.addRow(
+                createPercentageTimeChart()
         );
 
         return railInsightsInfoBoard;
@@ -68,5 +80,13 @@ public class HomeView extends VerticalLayout {
         dataSeries.add(onTime);
 
         return new CancelledDelayedOnPointPieChart(dataSeries);
+    }
+
+    private PercentageTimeChart createPercentageTimeChart() {
+        DataSeries onTimeSeries = dataProviderService.getPercentageOnTimeDataSeries();
+        DataSeries delayedSeries = dataProviderService.getPercentageDelayedDataSeries();
+        DataSeries cancelledSeries = dataProviderService.getPercentageCancelledDataSeries();
+
+        return new PercentageTimeChart(onTimeSeries, delayedSeries, cancelledSeries);
     }
 }

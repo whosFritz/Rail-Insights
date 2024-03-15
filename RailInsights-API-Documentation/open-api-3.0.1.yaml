@@ -1,0 +1,551 @@
+openapi: 3.0.1
+info:
+  title: RailInsights API
+  description: API for RailInsights
+  contact:
+    name: RailInsights
+    url: https://railinsights.de
+  license:
+    name: License
+    url: https://www.apache.org/licenses/LICENSE-2.0.txt
+  version: v1.0
+servers:
+  - url: https://railinsights.de
+    description: Production Server
+paths:
+  /api/trips:
+    get:
+      tags:
+        - trip-controller
+      operationId: findTripsByTripIdAndStop
+      parameters:
+        - name: tripId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trip'
+  /api/trips/stopId/when:
+    get:
+      tags:
+        - trip-controller
+      operationId: findTripsWhenAfter
+      parameters:
+        - name: stopId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: when
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trip'
+  /api/trips/line-productName:
+    get:
+      tags:
+        - trip-controller
+      operationId: findTripsByLineProductName
+      parameters:
+        - name: lineName
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PageListTrip'
+  /api/stops:
+    get:
+      tags:
+        - stop-controller
+      operationId: findStopsByName
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stop'
+  /api/stops/{stopId}:
+    get:
+      tags:
+        - stop-controller
+      operationId: getStopById
+      parameters:
+        - name: stopId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Stop'
+  /api/stations:
+    get:
+      tags:
+        - station-controller
+      operationId: findStationsByName
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Station'
+  /api/stations/{stationId}:
+    get:
+      tags:
+        - station-controller
+      operationId: getStationById
+      parameters:
+        - name: stationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Station'
+components:
+  schemas:
+    Address:
+      type: object
+      properties:
+        city:
+          type: string
+        zipcode:
+          type: string
+        street:
+          type: string
+    GeographicCoordinates:
+      type: object
+      properties:
+        type:
+          type: string
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+    Line:
+      type: object
+      properties:
+        operator:
+          $ref: '#/components/schemas/Operator'
+        type:
+          type: string
+        fahrtNr:
+          type: string
+        name:
+          type: string
+        linePublic:
+          type: boolean
+        productName:
+          type: string
+        lineId:
+          type: string
+        product:
+          type: string
+        mode:
+          type: string
+          enum:
+            - BUS
+            - TAXI
+            - WATERCRAFT
+            - TRAIN
+        createdAt:
+          type: string
+          format: date-time
+    Operator:
+      type: object
+      properties:
+        type:
+          type: string
+        operatorId:
+          type: string
+        name:
+          type: string
+    ProductLine:
+      type: object
+      properties:
+        productLine:
+          type: string
+        segment:
+          type: string
+    Products:
+      type: object
+      properties:
+        nationalExpress:
+          type: boolean
+        national:
+          type: boolean
+        regionalExp:
+          type: boolean
+        regional:
+          type: boolean
+        suburban:
+          type: boolean
+        bus:
+          type: boolean
+        ferry:
+          type: boolean
+        subway:
+          type: boolean
+        tram:
+          type: boolean
+        taxi:
+          type: boolean
+    Regionalbereich:
+      type: object
+      properties:
+        number:
+          type: integer
+          format: int32
+        name:
+          type: string
+        shortName:
+          type: string
+    Remark:
+      type: object
+      properties:
+        type:
+          type: string
+        code:
+          type: string
+        text:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    Ril100Identifier:
+      type: object
+      properties:
+        rilIdentifier:
+          type: string
+        hasSteamPermission:
+          type: boolean
+        geographicCoordinates:
+          $ref: '#/components/schemas/GeographicCoordinates'
+        main:
+          type: boolean
+    Station:
+      type: object
+      properties:
+        address:
+          $ref: '#/components/schemas/Address'
+        location:
+          $ref: '#/components/schemas/StationLocation'
+        operator:
+          $ref: '#/components/schemas/Operator'
+        timeTableOffice:
+          $ref: '#/components/schemas/TimeTableOffice'
+        regionalbereich:
+          $ref: '#/components/schemas/Regionalbereich'
+        stationManagement:
+          $ref: '#/components/schemas/StationManagement'
+        szentrale:
+          $ref: '#/components/schemas/Szentrale'
+        stationId:
+          type: integer
+          format: int64
+        relevance:
+          type: number
+          format: float
+        score:
+          type: number
+          format: float
+        weight:
+          type: number
+          format: float
+        type:
+          type: string
+        ril100:
+          type: string
+        nr:
+          type: number
+          format: float
+        name:
+          type: string
+        category:
+          type: number
+          format: float
+        priceCategory:
+          type: number
+          format: float
+        hasParking:
+          type: boolean
+        hasBicycleParking:
+          type: boolean
+        hasLocalPublicTransport:
+          type: boolean
+        hasPublicFacilities:
+          type: boolean
+        hasLockerSystem:
+          type: boolean
+        hasTaxiRank:
+          type: boolean
+        hasTravelNecessities:
+          type: boolean
+        hasSteplessAccess:
+          type: string
+        hasMobilityService:
+          type: string
+        hasWiFi:
+          type: boolean
+        hasTravelCenter:
+          type: boolean
+        hasRailwayMission:
+          type: boolean
+        hasDBLounge:
+          type: boolean
+        hasLostAndFound:
+          type: boolean
+        hasCarRental:
+          type: boolean
+        federalState:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        ril100Identifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ril100Identifier'
+        productLine:
+          $ref: '#/components/schemas/ProductLine'
+    StationLocation:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+    StationManagement:
+      type: object
+      properties:
+        number:
+          type: integer
+          format: int32
+        name:
+          type: string
+    Stop:
+      type: object
+      properties:
+        type:
+          type: string
+        stopId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        location:
+          $ref: '#/components/schemas/StopLocation'
+        products:
+          $ref: '#/components/schemas/Products'
+        createdAt:
+          type: string
+          format: date-time
+        station:
+          $ref: '#/components/schemas/Station'
+    StopLocation:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+    Szentrale:
+      type: object
+      properties:
+        number:
+          type: integer
+          format: int32
+        publicPhoneNumber:
+          type: string
+        name:
+          type: string
+    TimeTableOffice:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+    Trip:
+      type: object
+      properties:
+        tripId:
+          type: string
+        stop:
+          $ref: '#/components/schemas/Stop'
+        when:
+          type: string
+          format: date-time
+        plannedWhen:
+          type: string
+          format: date-time
+        prognosedWhen:
+          type: string
+          format: date-time
+        delay:
+          type: integer
+          format: int32
+        platform:
+          type: string
+        plannedPlatform:
+          type: string
+        prognosedPlatform:
+          type: string
+        prognosisType:
+          type: string
+        direction:
+          type: string
+        provenance:
+          type: string
+        line:
+          $ref: '#/components/schemas/Line'
+        origin:
+          $ref: '#/components/schemas/Stop'
+        destination:
+          $ref: '#/components/schemas/Stop'
+        cancelled:
+          type: boolean
+        loadFactor:
+          type: string
+        remarks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Remark'
+        createdAt:
+          type: string
+          format: date-time
+    PageListTrip:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/Trip'
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        numberOfElements:
+          type: integer
+          format: int32
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/SortObject'
+    SortObject:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean

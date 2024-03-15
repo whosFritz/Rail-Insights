@@ -11,8 +11,10 @@ import de.whosfritz.railinsights.data.services.trip_services.TripService;
 import de.whosfritz.railinsights.exception.JPAError;
 import de.whosfritz.railinsights.utils.TripUtil;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -61,8 +63,14 @@ public class JourneyDataProvider {
                     return tripDeparture.getDayOfWeek() != legPlannedDeparture.getDayOfWeek();
                 });
 
-                trips = TripUtil.removeDuplicates(trips);
 
+                List<LocalDate> localDates = trips.parallelStream().map(trip -> trip.getPlannedWhen().toLocalDate()).distinct().toList();
+                List<Trip> uniqueTrips = new ArrayList<>();
+                for (LocalDate localDate : localDates) {
+                    List<Trip> tripsForLocalDate = trips.parallelStream().filter(trip -> trip.getPlannedWhen().toLocalDate().equals(localDate)).toList();
+                    uniqueTrips.addAll(TripUtil.removeDuplicates(tripsForLocalDate));
+                }
+                trips = uniqueTrips;
 
                 oldTrips.put(count, trips);
             }

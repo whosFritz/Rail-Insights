@@ -58,24 +58,26 @@ public class ConnectionPrognoseDialog extends GeneralRailInsightsDialog {
 
         Grid<PrognoseDTO> grid = new Grid<>(PrognoseDTO.class);
         grid.setItems(createPrognose(tripsByJourney, ticket));
+        grid.addClassName("prognose-grid");
         grid.setColumns("line", "stop", "calculatedDelayInMinutes");
-        grid.getColumnByKey("line").setHeader("Linie");
-        grid.getColumnByKey("stop").setHeader("Haltestelle");
+        grid.getColumnByKey("line").setHeader("Linie").setAutoWidth(true);
+        grid.getColumnByKey("stop").setHeader("Haltestelle").setAutoWidth(true);
         grid.addColumn(o -> {
             try {
                 return o.getPlannedTime().format(DateTimeFormatter.ofPattern(dateTimePattern));
             } catch (NullPointerException nullPointerException) {
                 return "";
             }
-        }).setHeader("Geplante Abfahrt");
+        }).setHeader("Geplante Abfahrt").setAutoWidth(true);
         grid.addColumn(o -> {
             try {
                 return o.getPredictedTime().format(DateTimeFormatter.ofPattern(dateTimePattern));
             } catch (NullPointerException nullPointerException) {
                 return "";
             }
-        }).setHeader("Voraussichtliche Abfahrt");
-        grid.getColumnByKey("calculatedDelayInMinutes").setHeader("Prognostizierte Verspätung");
+        }).setHeader("Voraussichtliche Abfahrt").setAutoWidth(true);
+        grid.getColumnByKey("calculatedDelayInMinutes").setHeader("Prognostizierte Verspätung")
+                .setAutoWidth(true).setFlexGrow(0);
         grid.addComponentColumn(prognoseDTO -> {
             Span span = new Span();
             if (prognoseDTO.getState().equals(PrognoseStateEnum.DELAYED)) {
@@ -89,13 +91,13 @@ public class ConnectionPrognoseDialog extends GeneralRailInsightsDialog {
                 span.getElement().getThemeList().add("badge primary");
             } else if (prognoseDTO.getState().equals(PrognoseStateEnum.LOW_TRANSFER_TIME)) {
                 span.setText("Kurze Umsteigezeit");
-                span.getElement().getThemeList().add("badge warning primary");
+                span.getElement().getThemeList().add("badge contrast primary");
             } else if (prognoseDTO.getState().equals(PrognoseStateEnum.OK_TRANSFER_TIME)) {
                 span.setText("Ausreichende Umsteigezeit");
                 span.getElement().getThemeList().add("badge success primary");
             }
             return span;
-        }).setHeader("Status");
+        }).setHeader("Status").setAutoWidth(true);
 
         grid.setPartNameGenerator(prognoseDTO -> {
             if (prognoseDTO.getLine().equals("Umstieg")) {
@@ -130,7 +132,6 @@ public class ConnectionPrognoseDialog extends GeneralRailInsightsDialog {
         infoLayout.add(infoParagraph, infoParagraph2, infoParagraph3);
 
         add(infoLayout, grid);
-        open();
 
     }
 

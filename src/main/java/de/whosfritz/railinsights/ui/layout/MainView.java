@@ -16,7 +16,10 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import de.whosfritz.railinsights.ui.color_scheme.ThemeUtil;
 import de.whosfritz.railinsights.ui.color_scheme.ThemeVariant;
@@ -31,7 +34,7 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
  * MainView class extends AppLayout and represents the main layout of the application.
  * It includes the navigation bar, cookie consent banner, and other UI components.
  */
-public class MainView extends AppLayout {
+public class MainView extends AppLayout implements BeforeEnterObserver {
     Notification cookieNotification = new Notification();
 
     public MainView() {
@@ -123,9 +126,9 @@ public class MainView extends AppLayout {
 
     private String getLogoSrc(ThemeVariant themeVariant) {
         if (themeVariant == ThemeVariant.DARK) {
-            return "images/lightmode.png";
+            return "images/darkmode.png";
         }
-        return "images/darkmode.png";
+        return "images/lightmode.png";
     }
 
     /**
@@ -196,7 +199,9 @@ public class MainView extends AppLayout {
         subSideNav.addItem(
                 createNavItem("About", "https://github.com/whosFritz/Rail-Insights", LineAwesomeIcon.GITHUB.create(), LumoUtility.FontSize.XSMALL),
                 createNavItem("Impressum", "/impressum", LineAwesomeIcon.INFO_CIRCLE_SOLID.create(), LumoUtility.FontSize.XSMALL),
-                createNavItem("Datenschutzerklärung", "/datenschutzerklaerung", LineAwesomeIcon.SHIELD_ALT_SOLID.create(), LumoUtility.FontSize.XSMALL)
+                createNavItem("Datenschutzerklärung", "/datenschutzerklaerung", LineAwesomeIcon.SHIELD_ALT_SOLID.create(), LumoUtility.FontSize.XSMALL),
+                createNavItem("Security-Policy", "https://github.com/whosFritz/Rail-Insights/blob/master/SECURITY.md", LineAwesomeIcon.LOCK_SOLID.create(), LumoUtility.FontSize.XSMALL),
+                createNavItem("API-Dokumentation", "https://github.com/whosFritz/Rail-Insights/tree/master/RailInsights-API-Documentation", LineAwesomeIcon.CODE_SOLID.create(), LumoUtility.FontSize.XSMALL)
         );
         return subSideNav;
     }
@@ -255,4 +260,20 @@ public class MainView extends AppLayout {
         return item;
     }
 
+    /**
+     * Notify the user if its an mobile device that the application is not optimized for mobile devices.
+     *
+     * @param beforeEnterEvent The event before the user enters the view.
+     */
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        WebBrowser webBrowser = UI.getCurrent().getSession().getBrowser();
+        if (webBrowser.isIPhone() || webBrowser.isAndroid() || webBrowser.isWindowsPhone()) {
+            Notification notification = NotificationFactory.createNotification(NotificationTypes.WARNING, "Die " +
+                    "Anwendung ist nicht für mobile Geräte optimiert. " +
+                    "Es wird empfohlen die Anwendung auf einem Desktop-Gerät zu verwenden.");
+            notification.open();
+        }
+
+    }
 }

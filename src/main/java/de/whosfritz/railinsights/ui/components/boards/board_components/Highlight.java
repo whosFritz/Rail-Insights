@@ -37,7 +37,8 @@ public class Highlight extends VerticalLayout {
             }
             icon = VaadinIcon.ARROW_UP;
         } else if (percentage < 0) {
-            if (inverted) {
+            // if its inverted, it means that the lower the value, the better it is if its not inverted, the higher the value, the better it is
+            if (!inverted) {
                 theme += " success";
             } else {
                 theme += " error";

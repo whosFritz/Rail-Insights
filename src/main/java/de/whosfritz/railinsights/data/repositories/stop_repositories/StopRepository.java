@@ -17,7 +17,7 @@ public interface StopRepository extends ListCrudRepository<Stop, Long> {
 
     Optional<Stop> findByStopId(Long stopId);
 
-    List<Stop> findByProducts_National(Boolean national);
+    List<Stop> findByProducts_NationalOrAndProductsNationalExpress(Boolean national, Boolean nationalExpress);
 
     List<Stop> findByName(String name);
 

@@ -5,6 +5,8 @@ import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -36,10 +38,12 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
 
     public ArrivalDepartureDialog(String stopName, TextField searchField, DateTimePicker whenAfter, DateTimePicker whenBefore) {
         VerticalLayout content = new VerticalLayout();
+        Paragraph infoParagraph = new Paragraph("Hier findest du alle Ankünfte bzw. Abfahrten für den eingestellten " +
+                "Zeitraum. Durch rechtsklick (auf mobilen Geräten durch langes drücken) kannst du den Fahrtverlauf des Zuges aufrufen.");
         HorizontalLayout searchLayout = new HorizontalLayout(searchField, whenAfter, whenBefore);
         searchLayout.setWidth("100%");
         searchLayout.setAlignItems(FlexComponent.Alignment.BASELINE);
-        content.add(searchLayout);
+        content.add(infoParagraph, searchLayout);
         content.setWidth("100%");
         content.setHeight("100%");
 
@@ -63,13 +67,7 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
         grid.addColumn(Trip::getTripId).setHeader("Fahrt ID");
         grid.addColumn(o -> o.getLine().getName()).setHeader("Linie").setAutoWidth(true);
         grid.addColumn(Trip::getDirection).setHeader("Richtung").setAutoWidth(true);
-        grid.addColumn(o -> {
-            try {
-                return o.getWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
-            } catch (NullPointerException nullPointerException) {
-                return o.getPlannedWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
-            }
-        }).setHeader("Wann").setAutoWidth(true);
+
         grid.addColumn(o -> {
             try {
                 return o.getPlannedWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
@@ -80,11 +78,19 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
 
         grid.addColumn(o -> {
             try {
+                return o.getWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
+            } catch (NullPointerException nullPointerException) {
+                return o.getPlannedWhen().format(DateTimeFormatter.ofPattern(dateTimePattern));
+            }
+        }).setHeader("Wann").setAutoWidth(true);
+
+        grid.addColumn(o -> {
+            try {
                 return o.getDelay() / 60;
             } catch (NullPointerException e) {
                 return 0;
             }
-        }).setHeader("Verspätung (in Minuten)").setAutoWidth(true);
+        }).setHeader("Verspätung (min)").setAutoWidth(true);
 
         grid.addColumn(o -> {
             try {
@@ -102,19 +108,6 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
             }
         }).setHeader("Geplantes Gleis").setAutoWidth(true);
 
-
-        grid.addComponentColumn(o -> {
-            try {
-                if (Boolean.TRUE.equals(o.getCancelled())) {
-                    return new Text("Ja");
-                } else {
-                    return new Text("");
-                }
-            } catch (NullPointerException nullPointerException) {
-                return new Text("");
-            }
-        }).setHeader("Ausgefallen").setAutoWidth(true);
-
         grid.addComponentColumn(o -> {
             if (o.getRemarks() != null && !o.getRemarks().isEmpty()) {
                 Icon icon = new Icon(VaadinIcon.INFO_CIRCLE);
@@ -129,6 +122,28 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
                 return new Text("");
             }
         }).setHeader("Meldungen").setAutoWidth(true);
+        grid.addComponentColumn(trip -> {
+            Span span = new Span();
+            try {
+                if (Boolean.TRUE.equals(trip.getCancelled())) {
+                    span.setText("Ausgefallen");
+                    span.getElement().getThemeList().add("badge primary");
+                    return span;
+                }
+            } catch (NullPointerException ignored) {
+            }
+            if (trip.getDelay() == null || trip.getDelay() == 0 || trip.getDelay() <= 360) {
+                span.setText("Pünktlich");
+                span.getElement().getThemeList().add("badge success primary");
+            } else if (trip.getDelay() > 360 && trip.getDelay() <= 600) {
+                span.setText("Leichte Verspätung");
+                span.getElement().getThemeList().add("badge warn primary");
+            } else {
+                span.setText("Hohe Verspätung");
+                span.getElement().getThemeList().add("badge primary");
+            }
+            return span;
+        }).setHeader("Status").setFlexGrow(0).setWidth("12%");
 
         GridContextMenu<Trip> contextMenu = grid.addContextMenu();
         contextMenu.addItem("Fahrtverlauf", e -> {
@@ -137,7 +152,7 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
                 // if trip is at least a national trip (not a local trip) we can show the trip history
                 if (trip.get().getLine().getProduct().contains("national")) {
                     TripService tripService = VaadinService.getCurrent().getInstantiator().getOrCreate(TripService.class);
-                    Result<List<Trip>, JPAError> result = tripService.findAllByTripId(trip.get().getTripId());
+                    Result<List<Trip>, JPAError> result = tripService.findAllByLineNameAndTripIdContains(trip.get().getLine().getName(), TripUtil.getPartOfTripIdByLocalDate(trip.get().getPlannedWhen().toLocalDate()));
                     if (result.isSuccess()) {
                         List<Trip> trips = result.getData();
                         trips = TripUtil.removeDuplicates(trips);
@@ -157,6 +172,7 @@ public class ArrivalDepartureDialog extends GeneralRailInsightsDialog {
         });
 
         setHeaderTitle("Ankünfte und Abfahrten für " + stopName);
+
         content.add(grid);
 
 

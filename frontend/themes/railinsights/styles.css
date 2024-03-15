@@ -16,7 +16,7 @@ html {
     --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
     --lumo-error-text-color: #ffffff;
     --lumo-error-color-50pct: #740009;
-    --lumo-error-color-10pct: #740009;
+    --lumo-error-color-10pct: #ff0012;
     --lumo-success-text-color: rgb(64, 131, 53);
     --lumo-success-color-50pct: rgba(64, 131, 53, 0.5);
     --lumo-success-color-10pct: rgba(64, 131, 53, 0.1);
@@ -45,43 +45,25 @@ html {
     --lumo-warning-color-50pct: rgba(255, 162, 0, 0.5);
     --lumo-warning-color-10pct: rgba(255, 162, 0, 0.1);
 
-    vaadin-grid.styling::part(validTransfer) {
-        background-color: var(--lumo-success-text-color);
-    }
-
-    vaadin-grid.styling::part(invalidTransfer) {
-        background-color: var(--lumo-error-color-10pct);
-    }
-
-    .highcharts-contextmenu {
-        background-color: #0B1323;
-    }
-
-    .highcharts-menu {
-        background: #0B1323;
-    }
-
-    .highcharts-button-normal {
-        fill: #0B1323;
-    }
-
-    .highcharts-button-normal:hover {
-        fill: #0B1323;
-        stroke: #0B1323;
-    }
-
-    vaadin-grid.styling::part(lowTransfer) {
+    vaadin-grid.prognose-grid::part(lowTransfer) {
         background-color: var(--lumo-warning-color);
     }
 
-    vaadin-grid.styling::part(loading-row-cell) {
+    vaadin-grid.prognose-grid::part(validTransfer) {
+        background-color: var(--lumo-success-text-color);
+    }
+
+    vaadin-grid.prognose-grid::part(invalidTransfer) {
+        background-color: var(--lumo-error-color);
+    }
+
+    vaadin-grid.prognose-grid::part(loading-row-cell) {
         background-color: var(--lumo-base-color);
     }
 
-    vaadin-grid.styling::part(font-weight-bold) {
+    vaadin-grid.prognose-grid::part(font-weight-bold) {
         font-weight: bold;
     }
-}
 
     [theme~="dark"] {
 
@@ -98,7 +80,7 @@ html {
         --lumo-primary-text-color: rgb(255, 255, 255);
         --lumo-primary-color-50pct: rgba(236, 0, 22, 0.5);
         --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
-        --lumo-error-text-color: rgb(255, 255, 255);
+        --lumo-error-text-color: rgba(242, 33, 33, 1);
         --lumo-error-color-50pct: rgba(255, 56, 103, 0.5);
         --lumo-error-color-10pct: rgba(255, 56, 103, 0.1);
         --lumo-success-text-color: rgb(99, 166, 21);
@@ -131,5 +113,46 @@ html {
         --lumo-warning-text-color: rgb(255, 162, 0);
         --lumo-warning-color-50pct: rgba(255, 162, 0, 0.5);
         --lumo-warning-color-10pct: rgba(255, 162, 0, 0.1);
+
+
+        vaadin-grid.prognose-grid::part(lowTransfer) {
+            background-color: var(--lumo-warning-color);
+            color: white;
+        }
+
+        vaadin-grid.prognose-grid::part(validTransfer) {
+            background-color: var(--lumo-success-text-color);
+            color: white;
+        }
+
+        vaadin-grid.prognose-grid::part(invalidTransfer) {
+            background-color: var(--lumo-error-color);
+            color: white;
+        }
+
+        vaadin-grid.prognose-grid::part(loading-row-cell) {
+            background-color: var(--lumo-base-color);
+        }
+
+        vaadin-grid.prognose-grid::part(font-weight-bold) {
+            font-weight: bold;
+        }
+
+        .highcharts-contextmenu {
+            background-color: #0B1323;
+        }
+
+        .highcharts-menu {
+            background: #0B1323;
+        }
+
+        .highcharts-button-normal {
+            fill: #0B1323;
+        }
+
+        .highcharts-button-normal:hover {
+            fill: #0B1323;
+            stroke: #0B1323;
+        }
     }
 }

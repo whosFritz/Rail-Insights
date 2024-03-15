@@ -3,9 +3,11 @@ package de.whosfritz.railinsights.rest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -29,13 +31,13 @@ public class RateLimitInterceptor implements HandlerInterceptor {
      * @return true if the request should be allowed, false otherwise
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
         String clientIpAddress = getClientIpAddress(request);
         long currentTimestamp = System.currentTimeMillis();
 
         long requestCount = requestCounts.entrySet().stream()
                 .filter(entry -> currentTimestamp - entry.getKey().getTimestamp() < ONE_MINUTE_MILLIS)
-                .mapToLong(entry -> entry.getValue())
+                .mapToLong(Map.Entry::getValue)
                 .sum();
         log.info("Request count for {}: {}", clientIpAddress, requestCount);
         if (requestCount >= MAX_REQUESTS_PER_MINUTE) {

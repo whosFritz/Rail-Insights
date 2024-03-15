@@ -162,8 +162,8 @@ public class StopService {
         }
     }
 
-    public List<Stop> findByProducts_National(boolean national) {
-        return stopRepository.findByProducts_National(national);
+    public List<Stop> findByProducts_National(boolean national , boolean nationalExpress) {
+        return stopRepository.findByProducts_NationalOrAndProductsNationalExpress(national, nationalExpress);
     }
 
     public List<Stop> findByName(String name) {

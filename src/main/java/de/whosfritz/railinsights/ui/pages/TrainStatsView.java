@@ -23,7 +23,7 @@ import de.whosfritz.railinsights.data.LoadFactor;
 import de.whosfritz.railinsights.data.dto.TripStatistics;
 import de.whosfritz.railinsights.data.services.LineService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
-import de.whosfritz.railinsights.ui.components.dialogs.ButtonFactory;
+import de.whosfritz.railinsights.ui.factories.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
@@ -36,10 +36,7 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static de.whosfritz.railinsights.ui.components.boards.StationViewDashboard.createHighlight;
 
@@ -62,6 +59,7 @@ public class TrainStatsView extends VerticalLayout {
 
 
         HorizontalLayout inputsLayout = new HorizontalLayout();
+        inputsLayout.addClassNames(LumoUtility.Margin.MEDIUM);
         inputsLayout.setAlignItems(Alignment.BASELINE);
 
         Paragraph infoParagraph = new Paragraph("Hier kannst du dir die Statistiken zu Zügen anzeigen lassen.");
@@ -70,7 +68,7 @@ public class TrainStatsView extends VerticalLayout {
 
         Button infoButton = ButtonFactory.createInfoButton("Informationen", infoParagraph, infoCalcParagraph);
 
-        fernVerkehrLinesCombobox.setItems(lineService.getLinesByProducts(List.of("national", "nationalexpress")).getData());
+        fernVerkehrLinesCombobox.setItems(lineService.getLinesNationalOrNationalExpress().getData());
         fernVerkehrLinesCombobox.setItemLabelGenerator(Line::getName);
         fernVerkehrLinesCombobox.setLabel("Fernverkehrszug");
         fernVerkehrLinesCombobox.addClassNames(LumoUtility.Margin.Top.MEDIUM);
@@ -91,7 +89,9 @@ public class TrainStatsView extends VerticalLayout {
         calculateStatsButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         calculateStatsButton.addClickListener(e -> createStats());
 
+
         Button clearButton = new Button("Zurücksetzen");
+        clearButton.addClassNames(LumoUtility.TextColor.PRIMARY);
         clearButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         clearButton.addClickListener(e -> {
             tripStatsLayout.removeAll();
@@ -112,7 +112,10 @@ public class TrainStatsView extends VerticalLayout {
 
     private void createStats() {
         Line comboboxValue = fernVerkehrLinesCombobox.getValue();
-        if (fernVerkehrLinesCombobox.getValue() == null) return;
+        if (fernVerkehrLinesCombobox.getValue() == null) {
+            NotificationFactory.createNotification(NotificationTypes.ERROR, "Bitte einen Zug auswählen").open();
+            return;
+        }
         tripStatsLayout.getElement().removeAllChildren();
 
         LocalDateTime from = startDatePicker.getValue().atStartOfDay();
@@ -128,7 +131,16 @@ public class TrainStatsView extends VerticalLayout {
             NotificationFactory.createNotification(NotificationTypes.WARNING, "Der Zeitraum ist zu kurz gewählt. Es wurden keine Daten gefunden").open();
             return;
         }
-        tripsCorrespondingToLine = TripUtil.removeDuplicates(tripsCorrespondingToLine);
+
+        // fetch out the different local dates
+        List<LocalDate> localDates = tripsCorrespondingToLine.parallelStream().map(trip -> trip.getPlannedWhen().toLocalDate()).distinct().toList();
+
+        List<Trip> uniqueTrips = new ArrayList<>();
+        for (LocalDate localDate : localDates) {
+            List<Trip> tripsForLocalDate = tripsCorrespondingToLine.parallelStream().filter(trip -> trip.getPlannedWhen().toLocalDate().equals(localDate)).toList();
+            uniqueTrips.addAll(TripUtil.removeDuplicates(tripsForLocalDate));
+        }
+        tripsCorrespondingToLine = uniqueTrips;
         tripsCorrespondingToLine.sort(Comparator.comparing(Trip::getPlannedWhen));
 
         int fahrtenCount = tripsCorrespondingToLine.stream().filter(trip -> trip.getDirection() == null && trip.getCancelled() == null).mapToInt(trip -> 1).sum();

@@ -10,6 +10,7 @@ import de.olech2412.adapter.dbadapter.model.stop.Stop;
 import de.olech2412.adapter.dbadapter.model.stop.sub.Line;
 import de.olech2412.adapter.dbadapter.model.trip.Trip;
 import de.olech2412.adapter.dbadapter.model.trip.sub.Remark;
+import de.whosfritz.railinsights.data.dto.TripPercentageDTO;
 import de.whosfritz.railinsights.data.repositories.trip_repositories.TripsRepository;
 import de.whosfritz.railinsights.data.services.LineService;
 import de.whosfritz.railinsights.data.services.station_services.StationService;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -310,7 +312,7 @@ public class TripService {
                 Hibernate.initialize(t.getRemarks());
             }
 
-            List<Trip> cleanedTrips = TripUtil.removeDuplicates(trips.get());
+            List<Trip> cleanedTrips = TripUtil.removeDuplicatesForMultipleLines(trips.get());
             trips = Optional.of(cleanedTrips);
 
             return trips.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
@@ -396,5 +398,36 @@ public class TripService {
             log.error("Stop: " + leg.toString());
             return Result.error(new JPAError(JPAErrors.UNKNOWN));
         }
+    }
+
+    @Transactional
+    public Result<List<Trip>, JPAError> findAllByLineNameAndTripIdContains(String lineName, String tripId) {
+        try {
+            Optional<List<Trip>> trips = tripsRepository.findAllByLineNameAndTripIdContains(lineName, tripId);
+            for (Trip t : trips.get()) {
+                Hibernate.initialize(t.getRemarks());
+            }
+            return trips.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
+        } catch (Exception e) {
+            log.error("Error while finding trip by line name and trip id contains: " + e.getMessage() + " " + e.getCause());
+            log.error("Line name: " + lineName);
+            log.error("Trip id: " + tripId);
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
+    }
+
+    public Result<List<TripPercentageDTO>, JPAError> getPercentages() {
+        List<Object[]> percentages = tripsRepository.getTripPercentages();
+        List<TripPercentageDTO> tripPercentageDTOS = new ArrayList<>();
+        for (Object[] percentage : percentages) {
+            TripPercentageDTO tripPercentageDTO = new TripPercentageDTO();
+            // cast the java.sql.Date to java.time.LocalDate
+            tripPercentageDTO.setTripDate(((java.sql.Date) percentage[0]).toLocalDate());
+            tripPercentageDTO.setCancelledPercentage((BigDecimal) percentage[1]);
+            tripPercentageDTO.setOnTimePercentage((BigDecimal) percentage[2]);
+            tripPercentageDTO.setDelayedPercentage((BigDecimal) percentage[3]);
+            tripPercentageDTOS.add(tripPercentageDTO);
+        }
+        return Result.success(tripPercentageDTOS);
     }
 }

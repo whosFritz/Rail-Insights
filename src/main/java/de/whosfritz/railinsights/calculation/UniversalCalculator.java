@@ -153,11 +153,13 @@ public class UniversalCalculator {
             LocalDate date = trip.getPlannedWhen().toLocalDate();
             Integer delay = trip.getDelay();
 
-            // If the delay is greater than or equal to 360, add the delay to the corresponding date in the map
-            // If the delay is less than 360, add 0 to the corresponding date in the map
-            if (delay != null) {
-                delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(delay >= 360 ? delay : 0);
+            if (trip.getCancelled() != null) {
+                continue;
             }
+            if (delay == null) {
+                delay = 0;
+            }
+            delayByDay.computeIfAbsent(date, k -> new ArrayList<>()).add(delay >= 360 ? delay : 0);
         }
 
         DataSeries dailyDelaySeries = new DataSeries();
@@ -172,7 +174,7 @@ public class UniversalCalculator {
             double averageDelay = delays.stream().mapToInt(Integer::intValue).average().orElse(0);
 
             // Create a DataSeriesItem with the date and the average delay
-            DataSeriesItem item = new DataSeriesItem(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant(), averageDelay);
+            DataSeriesItem item = new DataSeriesItem(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant(), PercentageUtil.convertToTwoDecimalPlaces(averageDelay / 60));
 
             // Add the DataSeriesItem to the DataSeries
             dailyDelaySeries.add(item);
@@ -289,13 +291,13 @@ public class UniversalCalculator {
      * @return the trip counts for the specific time period
      */
     public TripCounts countTrips(List<Trip> trips, LocalDateTime from, LocalDateTime to) {
-        HashMap<LocalDate, Integer> dailyTripCounts = new HashMap<>();
-        HashMap<LocalDate, Integer> dailyTripLongDistanceCounts = new HashMap<>();
-        HashMap<LocalDate, Integer> dailyTripRegionalCounts = new HashMap<>();
+        TreeMap<LocalDate, Integer> dailyTripCounts = new TreeMap<>();
+        TreeMap<LocalDate, Integer> dailyTripLongDistanceCounts = new TreeMap<>();
+        TreeMap<LocalDate, Integer> dailyTripRegionalCounts = new TreeMap<>();
 
-        HashMap<LocalDateTime, Integer> hourlyTripCounts = new HashMap<>();
-        HashMap<LocalDateTime, Integer> hourlyTripLongDistanceCounts = new HashMap<>();
-        HashMap<LocalDateTime, Integer> hourlyTripRegionalCounts = new HashMap<>();
+        TreeMap<LocalDateTime, Integer> hourlyTripCounts = new TreeMap<>();
+        TreeMap<LocalDateTime, Integer> hourlyTripLongDistanceCounts = new TreeMap<>();
+        TreeMap<LocalDateTime, Integer> hourlyTripRegionalCounts = new TreeMap<>();
 
         for (Trip trip : trips) {
             LocalDateTime date;
@@ -346,19 +348,38 @@ public class UniversalCalculator {
             }
         }
 
+        //run through dailytripcounts if a date does not exist in longdistancecounts or regionalcounts fill up with 0 values
+        for (LocalDate date : dailyTripCounts.keySet()) {
+            if (!dailyTripLongDistanceCounts.containsKey(date)) {
+                dailyTripLongDistanceCounts.put(date, 0);
+            }
+            if (!dailyTripRegionalCounts.containsKey(date)) {
+                dailyTripRegionalCounts.put(date, 0);
+            }
+        }
+
+        for (LocalDateTime date : hourlyTripCounts.keySet()) {
+            if (!hourlyTripLongDistanceCounts.containsKey(date)) {
+                hourlyTripLongDistanceCounts.put(date, 0);
+            }
+            if (!hourlyTripRegionalCounts.containsKey(date)) {
+                hourlyTripRegionalCounts.put(date, 0);
+            }
+        }
+
         TripCounts tripCounts = new TripCounts();
-        tripCounts.setDailyTripCounts(new HashMap<>(dailyTripCounts));
-        tripCounts.setDailyTripLongDistanceCounts(new HashMap<>(dailyTripLongDistanceCounts));
-        tripCounts.setDailyTripRegionalCounts(new HashMap<>(dailyTripRegionalCounts));
-        tripCounts.setHourlyTripCounts(new HashMap<>(hourlyTripCounts));
-        tripCounts.setHourlyTripLongDistanceCounts(new HashMap<>(hourlyTripLongDistanceCounts));
-        tripCounts.setHourlyTripRegionalCounts(new HashMap<>(hourlyTripRegionalCounts));
+        tripCounts.setDailyTripCounts(dailyTripCounts);
+        tripCounts.setDailyTripLongDistanceCounts(dailyTripLongDistanceCounts);
+        tripCounts.setDailyTripRegionalCounts(dailyTripRegionalCounts);
+        tripCounts.setHourlyTripCounts(hourlyTripCounts);
+        tripCounts.setHourlyTripLongDistanceCounts(hourlyTripLongDistanceCounts);
+        tripCounts.setHourlyTripRegionalCounts(hourlyTripRegionalCounts);
 
         return tripCounts;
     }
 
     public TripCounts countTrips(List<Trip> trips) {
-        // for everyday count the trips
+        // for every day count the trips
         HashMap<LocalDate, Integer> dailyTripCounts = new HashMap<>();
         trips.forEach(trip -> {
             // If the trip is cancelled, skip this iteration
