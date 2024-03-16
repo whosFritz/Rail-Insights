@@ -12,7 +12,6 @@ import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
-import de.whosfritz.railinsights.ui.components.dialogs.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
@@ -21,6 +20,7 @@ import de.whosfritz.railinsights.utils.PercentageUtil;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 import static de.whosfritz.railinsights.ui.components.boards.StationViewDashboard.createHighlight;
@@ -40,13 +40,15 @@ public class DelayedView extends VerticalLayout {
 
         Button createStatsButton = new Button("Statistik erstellen");
 
-        Paragraph p1 = new Paragraph("This page shows the delays of the trains.");
-        Paragraph p2 = new Paragraph("You can select a time period and a start and end date to create the stats.");
-        Button infoButton = ButtonFactory.createInfoButton("Informationen", p1, p2);
+        Paragraph p1 = new Paragraph("Hier können Sie sich Statistiken zu Verspätungen und Ausfällen von Zügen anzeigen lassen.");
+        Paragraph p2 = new Paragraph("Wählen Sie dazu ein Start- und Enddatum und den Verkehrstyp aus.");
+
+        add(p1, p2);
+        // Button infoButton = ButtonFactory.createInfoButton("Informationen", p1, p2);
 
         RadioButtonGroup<String> radioButtonGroup = new RadioButtonGroup<>();
         radioButtonGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-        radioButtonGroup.setLabel("Select a time period");
+        radioButtonGroup.setLabel("Verkehrstyp wählen");
         radioButtonGroup.setItems("Nahverkehr", "Fernverkehr", "Alles");
         radioButtonGroup.setRequired(true);
         radioButtonGroup.setRequiredIndicatorVisible(true);
@@ -57,16 +59,19 @@ public class DelayedView extends VerticalLayout {
         startDatePicker.setRequired(true);
         startDatePicker.setRequiredIndicatorVisible(true);
         startDatePicker.setValue(LocalDate.now().minusMonths(1));
+        startDatePicker.setLocale(new Locale("de", "DE"));
+
 
         DatePicker endDatePicker = new DatePicker();
         endDatePicker.setLabel("Enddatum");
         endDatePicker.setRequired(true);
         endDatePicker.setRequiredIndicatorVisible(true);
         endDatePicker.setValue(LocalDate.now());
+        endDatePicker.setLocale(new Locale("de", "DE"));
 
         createStatsButton.addClickListener(event -> createStats(startDatePicker.getValue(), endDatePicker.getValue(), radioButtonGroup.getValue()));
 
-        controls.add(infoButton, startDatePicker, endDatePicker, radioButtonGroup, createStatsButton);
+        controls.add(startDatePicker, endDatePicker, radioButtonGroup, createStatsButton);
 
         add(controls, stats);
     }
@@ -81,7 +86,7 @@ public class DelayedView extends VerticalLayout {
             return;
         }
         if (trafficType == null) {
-            NotificationFactory.createNotification(NotificationTypes.ERROR, "Bitte einen Zugtyp auswählen.").open();
+            NotificationFactory.createNotification(NotificationTypes.ERROR, "Bitte einen Verkehrstyp auswählen.").open();
             return;
         }
         stats.removeAll();
