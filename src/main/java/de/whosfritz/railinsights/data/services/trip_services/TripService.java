@@ -339,26 +339,32 @@ public class TripService {
         }
     }
 
-    @Transactional
-    public Result<List<Trip>, JPAError> findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(
+    public int findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(
             LocalDateTime plannedWhenAfter,
             LocalDateTime plannedWhenBefore,
-            List<Line> lines,
+            List<String> products,
             int delay) {
-        try {
-            Optional<List<Trip>> trip = tripsRepository.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(
-                    plannedWhenAfter,
-                    plannedWhenBefore,
-                    lines,
-                    delay);
-            return trip.<Result<List<Trip>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
-        } catch (Exception e) {
-            log.error("Error while finding trip by planned when is after and planned when is before and lines: " + e.getMessage() + " " + e.getCause());
-            log.error("Planned when after: " + plannedWhenAfter.toString());
-            log.error("Planned when before: " + plannedWhenBefore.toString());
-            log.error("Lines: " + lines.toString());
-            return Result.error(new JPAError(JPAErrors.UNKNOWN));
-        }
+        return tripsRepository.countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(
+                plannedWhenAfter,
+                plannedWhenBefore,
+                products,
+                delay
+        );
+    }
+
+    public int findAllAusgefallene(
+            LocalDateTime plannedWhenAfter,
+            LocalDateTime plannedWhenBefore,
+            List<String> products) {
+        return tripsRepository.countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndCancelled(
+                plannedWhenAfter,
+                plannedWhenBefore,
+                products,
+                true);
+    }
+
+    public int findAllStopsInThisTimeRange(LocalDateTime start, LocalDateTime end, List<String> lines) {
+        return tripsRepository.countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLines(start, end, lines);
     }
 
     @Transactional

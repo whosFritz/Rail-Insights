@@ -43,7 +43,6 @@ import de.whosfritz.railinsights.ui.components.dialogs.ArrivalDepartureDialog;
 import de.whosfritz.railinsights.ui.components.dialogs.ButtonFactory;
 import de.whosfritz.railinsights.ui.components.dialogs.GeneralRailInsightsDialog;
 import de.whosfritz.railinsights.ui.components.dialogs.StopInfoDialog;
-import de.whosfritz.railinsights.ui.factories.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;

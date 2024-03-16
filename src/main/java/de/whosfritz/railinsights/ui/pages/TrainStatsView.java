@@ -68,7 +68,7 @@ public class TrainStatsView extends VerticalLayout {
 
         Button infoButton = ButtonFactory.createInfoButton("Informationen", infoParagraph, infoCalcParagraph);
 
-        fernVerkehrLinesCombobox.setItems(lineService.getLinesNationalOrNationalExpress().getData());
+        fernVerkehrLinesCombobox.setItems(lineService.getLinesByProducts(List.of("national", "nationalExpress")).getData());
         fernVerkehrLinesCombobox.setItemLabelGenerator(Line::getName);
         fernVerkehrLinesCombobox.setLabel("Fernverkehrszug");
         fernVerkehrLinesCombobox.addClassNames(LumoUtility.Margin.Top.MEDIUM);
