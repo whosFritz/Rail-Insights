@@ -96,7 +96,7 @@ public class DelayedView extends VerticalLayout {
         if (trafficType.equals("Nahverkehr")) {
             lines = List.of("regional", "suburban", "regionalExpress");
         } else if (trafficType.equals("Fernverkehr")) {
-            lines = List.of("national", "nationalexpress");
+            lines = List.of("national", "nationalExpress");
         } else {
             lines = List.of("regional", "suburban", "regionalExpress", "national", "nationalexpress");
         }
