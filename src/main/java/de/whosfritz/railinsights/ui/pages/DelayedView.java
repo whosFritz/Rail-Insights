@@ -118,6 +118,7 @@ public class DelayedView extends VerticalLayout {
         CompletableFuture<Integer> futureStopsDelayed30min = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 1800));
         CompletableFuture<Integer> futureStopsDelayed60min = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 3600));
         CompletableFuture<Integer> futureStopsCancelled = CompletableFuture.supplyAsync(() -> tripService.findAllAusgefallene(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines));
+        CompletableFuture<List<Object[]>> futureResults = CompletableFuture.supplyAsync(() -> tripService.getAverageDelayByDate(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines).getData());
 
         int allStopsInTimeRange = futureAllStops.join();
         double stopsDelayed = futureStopsDelayed.join();
@@ -152,7 +153,7 @@ public class DelayedView extends VerticalLayout {
         double avgDelayInSeconds = tripService.sumOfTripsDelayedMoreThanSixMinutes(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 360) / stopsDelayed;
 
 
-        List<Object[]> results = tripService.getAverageDelayByDate(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines).getData();
+        List<Object[]> results = futureResults.join();
         TreeMap<LocalDate, Double> tripsCorrespondingToProducts = new TreeMap<>();
         for (Object[] result : results) {
             LocalDate tripDate = ((Date) result[0]).toLocalDate();
