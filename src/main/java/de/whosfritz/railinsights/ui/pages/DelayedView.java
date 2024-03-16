@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static de.whosfritz.railinsights.ui.components.boards.StationViewDashboard.createHighlight;
 
-@Route(value = "verspätungen", layout = MainView.class)
+@Route(value = "delays", layout = MainView.class)
 public class DelayedView extends VerticalLayout {
 
     private final DataProviderService dataProviderService = VaadinService.getCurrent().getInstantiator().getOrCreate(DataProviderService.class);
