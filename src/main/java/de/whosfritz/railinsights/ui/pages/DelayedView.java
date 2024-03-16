@@ -3,6 +3,7 @@ package de.whosfritz.railinsights.ui.pages;
 
 import com.vaadin.flow.component.board.Board;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -12,6 +13,7 @@ import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
+import de.whosfritz.railinsights.ui.factories.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
@@ -39,12 +41,12 @@ public class DelayedView extends VerticalLayout {
         controls.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
 
         Button createStatsButton = new Button("Statistik erstellen");
+        createStatsButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Paragraph p1 = new Paragraph("Hier können Sie sich Statistiken zu Verspätungen und Ausfällen von Zügen anzeigen lassen.");
         Paragraph p2 = new Paragraph("Wählen Sie dazu ein Start- und Enddatum und den Verkehrstyp aus.");
 
-        add(p1, p2);
-        // Button infoButton = ButtonFactory.createInfoButton("Informationen", p1, p2);
+        Button infoButton = ButtonFactory.createInfoButton("Informationen", p1, p2);
 
         RadioButtonGroup<String> radioButtonGroup = new RadioButtonGroup<>();
         radioButtonGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
@@ -71,7 +73,7 @@ public class DelayedView extends VerticalLayout {
 
         createStatsButton.addClickListener(event -> createStats(startDatePicker.getValue(), endDatePicker.getValue(), radioButtonGroup.getValue()));
 
-        controls.add(startDatePicker, endDatePicker, radioButtonGroup, createStatsButton);
+        controls.add(infoButton, startDatePicker, endDatePicker, radioButtonGroup, createStatsButton);
 
         add(controls, stats);
     }
@@ -143,14 +145,14 @@ public class DelayedView extends VerticalLayout {
         Board board = new Board();
         board.addRow(
                 createHighlight("Anzahl aller Halte in dem Zeitraum", String.valueOf(allStopsInTimeRange)),
-                createHighlight("Anzahl aller Halte die pünktlich waren", String.valueOf(percentageStopsOnTime), onTimeGlobalDifferencePercentage, "Pünktlichkeit im deutschlandweiten Vergleich", true),
-                createHighlight("Anteil aller Halte mit Verspätung", percentageStopsDelayed + "%", delayedGlobalDifferencePercentage, "Verspätungen im deutschlandweiten Vergleich", false),
-                createHighlight("Anteil aller Halte die ausgefallen sind", percentageCancelled + "%", cancelledGlobalDifferencePercentage, "Ausfälle im deutschlandweiten Vergleich", false)
+                createHighlight("Pünktlichen Halte", percentageStopsOnTime + "%", onTimeGlobalDifferencePercentage, "Pünktlichkeit im deutschlandweiten Vergleich", true),
+                createHighlight("Halte mit Verspätung", percentageStopsDelayed + "%", delayedGlobalDifferencePercentage, "Verspätungen im deutschlandweiten Vergleich", false),
+                createHighlight("Ausgefallene Halte", percentageCancelled + "%", cancelledGlobalDifferencePercentage, "Ausfälle im deutschlandweiten Vergleich", false)
         );
         board.addRow(
-                createHighlight("Anteil aller Halte mit mehr als 15 Minuten Verspätung", percentageStopsDelayed15min + "%", delayedMoreThan15minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false),
-                createHighlight("Anteil aller Halte mit mehr als 30 Minuten Verspätung", percentageStopsDelayed30min + "%", delayedMoreThan30minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false),
-                createHighlight("Anteil aller Halte mit mehr als 60 Minuten Verspätung", percentageStopsDelayed60min + "%", delayedMoreThan60minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false)
+                createHighlight("Halte mit mehr als 15 Minuten Verspätung", percentageStopsDelayed15min + "%", delayedMoreThan15minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false),
+                createHighlight("Halte mit mehr als 30 Minuten Verspätung", percentageStopsDelayed30min + "%", delayedMoreThan30minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false),
+                createHighlight("Halte mit mehr als 60 Minuten Verspätung", percentageStopsDelayed60min + "%", delayedMoreThan60minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false)
         );
         stats.add(board);
     }
