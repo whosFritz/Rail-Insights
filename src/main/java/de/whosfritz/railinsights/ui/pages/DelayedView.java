@@ -11,7 +11,6 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinService;
-import de.whosfritz.railinsights.data.services.LineService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
 import de.whosfritz.railinsights.ui.components.dialogs.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
@@ -29,14 +28,12 @@ import static de.whosfritz.railinsights.ui.components.boards.StationViewDashboar
 @Route(value = "verspätungen", layout = MainView.class)
 public class DelayedView extends VerticalLayout {
 
-    private final LineService lineService;
-    private final TripService tripService;
     private final DataProviderService dataProviderService = VaadinService.getCurrent().getInstantiator().getOrCreate(DataProviderService.class);
+    private final TripService tripService;
     VerticalLayout stats = new VerticalLayout();
 
 
-    public DelayedView(LineService lineService, TripService tripService) {
-        this.lineService = lineService;
+    public DelayedView(TripService tripService) {
         this.tripService = tripService;
         HorizontalLayout controls = new HorizontalLayout();
         controls.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
@@ -67,9 +64,7 @@ public class DelayedView extends VerticalLayout {
         endDatePicker.setRequiredIndicatorVisible(true);
         endDatePicker.setValue(LocalDate.now());
 
-        createStatsButton.addClickListener(event -> {
-            createStats(startDatePicker.getValue(), endDatePicker.getValue(), radioButtonGroup.getValue());
-        });
+        createStatsButton.addClickListener(event -> createStats(startDatePicker.getValue(), endDatePicker.getValue(), radioButtonGroup.getValue()));
 
         controls.add(infoButton, startDatePicker, endDatePicker, radioButtonGroup, createStatsButton);
 
@@ -91,7 +86,7 @@ public class DelayedView extends VerticalLayout {
         }
         stats.removeAll();
 
-        List<String> lines = null;
+        List<String> lines;
 
         if (trafficType.equals("Nahverkehr")) {
             lines = List.of("regional", "suburban", "regionalExpress");
@@ -102,28 +97,28 @@ public class DelayedView extends VerticalLayout {
         }
         List<String> finalLines = lines;
         CompletableFuture<Integer> futureAllStops = CompletableFuture.supplyAsync(() -> tripService.findAllStopsInThisTimeRange(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines));
-        CompletableFuture<Integer> futureStopsmitallgVerspaetung = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 360));
-        CompletableFuture<Integer> futureStopsmitmehrals15minverspoetung = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 900));
-        CompletableFuture<Integer> futureStopsmitmehrals30minverspoetung = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 1800));
-        CompletableFuture<Integer> futureStopsmitmehrals60minverspoetung = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 3600));
-        CompletableFuture<Integer> futureStopsausgefallen = CompletableFuture.supplyAsync(() -> tripService.findAllAusgefallene(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines));
+        CompletableFuture<Integer> futureStopsDelayed = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 360));
+        CompletableFuture<Integer> futureStopsDelayed15min = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 900));
+        CompletableFuture<Integer> futureStopsDelayed30min = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 1800));
+        CompletableFuture<Integer> futureStopsDelayed60min = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 3600));
+        CompletableFuture<Integer> futureStopsCancelled = CompletableFuture.supplyAsync(() -> tripService.findAllAusgefallene(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines));
 
 // Then you can get the results with the join method (this method waits for the computation to complete if necessary)
-        int alleStopsInDemZeitraum = futureAllStops.join();
-        double stopsmitallgVerspaetung = futureStopsmitallgVerspaetung.join();
-        double stopsmitmehrals15minverspoetung = futureStopsmitmehrals15minverspoetung.join();
-        double stopsmitmehrals30minverspoetung = futureStopsmitmehrals30minverspoetung.join();
-        double stopsmitmehrals60minverspoetung = futureStopsmitmehrals60minverspoetung.join();
-        double stopsausgefallen = futureStopsausgefallen.join();
+        int allStopsInTimeRange = futureAllStops.join();
+        double stopsDelayed = futureStopsDelayed.join();
+        double stopsDelayed15min = futureStopsDelayed15min.join();
+        double stopsDelayed30min = futureStopsDelayed30min.join();
+        double stopsDelayed60min = futureStopsDelayed60min.join();
+        double stopsCancelled = futureStopsCancelled.join();
 
-        double stopsOnTime = alleStopsInDemZeitraum - stopsmitallgVerspaetung - stopsausgefallen;
+        double stopsOnTime = allStopsInTimeRange - stopsDelayed - stopsCancelled;
 
-        double percentageStopsOnTime = PercentageUtil.convertToTwoDecimalPlaces(stopsOnTime / alleStopsInDemZeitraum * 100);
-        double percentageStopsmitallgVerspaetung = PercentageUtil.convertToTwoDecimalPlaces(stopsmitallgVerspaetung / alleStopsInDemZeitraum * 100);
-        double percentageStopsmitmehrals15minverspoetung = PercentageUtil.convertToTwoDecimalPlaces(stopsmitmehrals15minverspoetung / alleStopsInDemZeitraum * 100);
-        double percentageStopsmitmehrals30minverspoetung = PercentageUtil.convertToTwoDecimalPlaces(stopsmitmehrals30minverspoetung / alleStopsInDemZeitraum * 100);
-        double percentageStopsmitmehrals60minverspoetung = PercentageUtil.convertToTwoDecimalPlaces(stopsmitmehrals60minverspoetung / alleStopsInDemZeitraum * 100);
-        double percentageStopsausgefallen = PercentageUtil.convertToTwoDecimalPlaces(stopsausgefallen / alleStopsInDemZeitraum * 100);
+        double percentageStopsOnTime = PercentageUtil.convertToTwoDecimalPlaces(stopsOnTime / allStopsInTimeRange * 100);
+        double percentageStopsDelayed = PercentageUtil.convertToTwoDecimalPlaces(stopsDelayed / allStopsInTimeRange * 100);
+        double percentageStopsDelayed15min = PercentageUtil.convertToTwoDecimalPlaces(stopsDelayed15min / allStopsInTimeRange * 100);
+        double percentageStopsDelayed30min = PercentageUtil.convertToTwoDecimalPlaces(stopsDelayed30min / allStopsInTimeRange * 100);
+        double percentageStopsDelayed60min = PercentageUtil.convertToTwoDecimalPlaces(stopsDelayed60min / allStopsInTimeRange * 100);
+        double percentageCancelled = PercentageUtil.convertToTwoDecimalPlaces(stopsCancelled / allStopsInTimeRange * 100);
 
         double globalStopsOnTime = dataProviderService.getStopsPercentageOnTime() != null ? dataProviderService.getStopsPercentageOnTime() : 0;
         double globalStopsDelayed = dataProviderService.getStopsPercentageDelayed() != null ? dataProviderService.getStopsPercentageDelayed() : 0;
@@ -133,24 +128,24 @@ public class DelayedView extends VerticalLayout {
         double globalStopsCancelled = dataProviderService.getStopsPercentageCancelled() != null ? dataProviderService.getStopsPercentageCancelled() : 0;
 
         double onTimeGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsOnTime - globalStopsOnTime);
-        double delayedGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsmitallgVerspaetung - globalStopsDelayed);
-        double delayedMoreThan15minGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsmitmehrals15minverspoetung - globalStopsDelayedMoreThan15min);
-        double delayedMoreThan30minGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsmitmehrals30minverspoetung - globalStopsDelayedMoreThan30min);
-        double delayedMoreThan60minGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsmitmehrals60minverspoetung - globalStopsDelayedMoreThan60min);
-        double cancelledGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsausgefallen - globalStopsCancelled);
+        double delayedGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsDelayed - globalStopsDelayed);
+        double delayedMoreThan15minGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsDelayed15min - globalStopsDelayedMoreThan15min);
+        double delayedMoreThan30minGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsDelayed30min - globalStopsDelayedMoreThan30min);
+        double delayedMoreThan60minGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsDelayed60min - globalStopsDelayedMoreThan60min);
+        double cancelledGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageCancelled - globalStopsCancelled);
 
 
         Board board = new Board();
         board.addRow(
-                createHighlight("Anzahl aller Halte in dem Zeitraum", String.valueOf(alleStopsInDemZeitraum)),
+                createHighlight("Anzahl aller Halte in dem Zeitraum", String.valueOf(allStopsInTimeRange)),
                 createHighlight("Anzahl aller Halte die pünktlich waren", String.valueOf(percentageStopsOnTime), onTimeGlobalDifferencePercentage, "Pünktlichkeit im deutschlandweiten Vergleich", true),
-                createHighlight("Anteil aller Halte mit Verspätung", percentageStopsmitallgVerspaetung + "%", delayedGlobalDifferencePercentage, "Verspätungen im deutschlandweiten Vergleich", false),
-                createHighlight("Anteil aller Halte die ausgefallen sind", percentageStopsausgefallen + "%", cancelledGlobalDifferencePercentage, "Ausfälle im deutschlandweiten Vergleich", false)
+                createHighlight("Anteil aller Halte mit Verspätung", percentageStopsDelayed + "%", delayedGlobalDifferencePercentage, "Verspätungen im deutschlandweiten Vergleich", false),
+                createHighlight("Anteil aller Halte die ausgefallen sind", percentageCancelled + "%", cancelledGlobalDifferencePercentage, "Ausfälle im deutschlandweiten Vergleich", false)
         );
         board.addRow(
-                createHighlight("Anteil aller Halte mit mehr als 15 Minuten Verspätung", percentageStopsmitmehrals15minverspoetung + "%", delayedMoreThan15minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false),
-                createHighlight("Anteil aller Halte mit mehr als 30 Minuten Verspätung", percentageStopsmitmehrals30minverspoetung + "%", delayedMoreThan30minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false),
-                createHighlight("Anteil aller Halte mit mehr als 60 Minuten Verspätung", percentageStopsmitmehrals60minverspoetung + "%", delayedMoreThan60minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false)
+                createHighlight("Anteil aller Halte mit mehr als 15 Minuten Verspätung", percentageStopsDelayed15min + "%", delayedMoreThan15minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false),
+                createHighlight("Anteil aller Halte mit mehr als 30 Minuten Verspätung", percentageStopsDelayed30min + "%", delayedMoreThan30minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false),
+                createHighlight("Anteil aller Halte mit mehr als 60 Minuten Verspätung", percentageStopsDelayed60min + "%", delayedMoreThan60minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false)
         );
         stats.add(board);
     }
