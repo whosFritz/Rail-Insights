@@ -363,6 +363,10 @@ public class TripService {
                 true);
     }
 
+    public int sumOfTripsDelayedMoreThanSixMinutes(LocalDateTime startDate, LocalDateTime endDate, List<String> products, int delay) {
+        return tripsRepository.sumOfTripsDelayedMoreThanSixMinutes(startDate, endDate, products, delay);
+    }
+
     public int findAllStopsInThisTimeRange(LocalDateTime start, LocalDateTime end, List<String> lines) {
         return tripsRepository.countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLines(start, end, lines);
     }

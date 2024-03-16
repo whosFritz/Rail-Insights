@@ -119,7 +119,6 @@ public class DelayedView extends VerticalLayout {
         CompletableFuture<Integer> futureStopsDelayed60min = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 3600));
         CompletableFuture<Integer> futureStopsCancelled = CompletableFuture.supplyAsync(() -> tripService.findAllAusgefallene(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines));
 
-// Then you can get the results with the join method (this method waits for the computation to complete if necessary)
         int allStopsInTimeRange = futureAllStops.join();
         double stopsDelayed = futureStopsDelayed.join();
         double stopsDelayed15min = futureStopsDelayed15min.join();
@@ -150,6 +149,9 @@ public class DelayedView extends VerticalLayout {
         double delayedMoreThan60minGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsDelayed60min - globalStopsDelayedMoreThan60min);
         double cancelledGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageCancelled - globalStopsCancelled);
 
+        double avgDelayInSeconds = tripService.sumOfTripsDelayedMoreThanSixMinutes(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 360) / stopsDelayed;
+
+
         List<Object[]> results = tripService.getAverageDelayByDate(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines).getData();
         TreeMap<LocalDate, Double> tripsCorrespondingToProducts = new TreeMap<>();
         for (Object[] result : results) {
@@ -165,17 +167,16 @@ public class DelayedView extends VerticalLayout {
         board.addRow(
                 createHighlight("Anzahl aller Halte in dem Zeitraum", String.valueOf(allStopsInTimeRange)),
                 createHighlight("Pünktlichen Halte", percentageStopsOnTime + "%", onTimeGlobalDifferencePercentage, "Pünktlichkeit im deutschlandweiten Vergleich", true),
-                createHighlight("Halte mit Verspätung", percentageStopsDelayed + "%", delayedGlobalDifferencePercentage, "Verspätungen im deutschlandweiten Vergleich", false),
-                createHighlight("Ausgefallene Halte", percentageCancelled + "%", cancelledGlobalDifferencePercentage, "Ausfälle im deutschlandweiten Vergleich", false)
+                createHighlight("Ausgefallene Halte", percentageCancelled + "%", cancelledGlobalDifferencePercentage, "Ausfälle im deutschlandweiten Vergleich", false),
+                createHighlight("Durchschnittliche Verspätung", UniversalCalculator.secondsToHoursMinutesAndSeconds(avgDelayInSeconds))
         );
         board.addRow(
+                createHighlight("Halte mit Verspätung", percentageStopsDelayed + "%", delayedGlobalDifferencePercentage, "Verspätungen im deutschlandweiten Vergleich", false),
                 createHighlight("Halte mit mehr als 15 Minuten Verspätung", percentageStopsDelayed15min + "%", delayedMoreThan15minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false),
                 createHighlight("Halte mit mehr als 30 Minuten Verspätung", percentageStopsDelayed30min + "%", delayedMoreThan30minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false),
                 createHighlight("Halte mit mehr als 60 Minuten Verspätung", percentageStopsDelayed60min + "%", delayedMoreThan60minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false)
         );
         board.addRow(new DailyDelayChart(dailyDelaySeries));
         stats.add(board);
-
-        System.out.println("Stats created");
     }
 }

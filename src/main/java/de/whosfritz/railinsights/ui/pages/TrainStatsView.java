@@ -191,7 +191,7 @@ public class TrainStatsView extends VerticalLayout {
         );
         board.addRow(
                 createHighlight("Richtung", zielBahnhof),
-                createHighlight("Durchschnittliche Verspätung", UniversalCalculator.minutesToHoursAndMinutesAndSeconds(avgDelayInSeconds / 60.0))
+                createHighlight("Durchschnittliche Verspätung", UniversalCalculator.secondsToHoursMinutesAndSeconds(avgDelayInSeconds))
         );
         Row abfahrtenStats1 = new Row();
         abfahrtenStats1.add(createHighlight("Pünktliche Stopps", percentageOnTime + " %", onTimeGlobalComparison, "Pünktlichkeit im deutschlandweiten Vergleich", true));
