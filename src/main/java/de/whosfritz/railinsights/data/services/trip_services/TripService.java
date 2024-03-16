@@ -339,6 +339,34 @@ public class TripService {
         }
     }
 
+    public int findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(
+            LocalDateTime plannedWhenAfter,
+            LocalDateTime plannedWhenBefore,
+            List<String> products,
+            int delay) {
+        return tripsRepository.countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(
+                plannedWhenAfter,
+                plannedWhenBefore,
+                products,
+                delay
+        );
+    }
+
+    public int findAllAusgefallene(
+            LocalDateTime plannedWhenAfter,
+            LocalDateTime plannedWhenBefore,
+            List<String> products) {
+        return tripsRepository.countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndCancelled(
+                plannedWhenAfter,
+                plannedWhenBefore,
+                products,
+                true);
+    }
+
+    public int findAllStopsInThisTimeRange(LocalDateTime start, LocalDateTime end, List<String> lines) {
+        return tripsRepository.countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLines(start, end, lines);
+    }
+
     @Transactional
     public Result<List<Trip>, JPAError> findAllByStop(Stop stop) {
         try {
@@ -407,5 +435,18 @@ public class TripService {
             tripPercentageDTOS.add(tripPercentageDTO);
         }
         return Result.success(tripPercentageDTOS);
+    }
+
+    public Result<List<Object[]>, JPAError> getAverageDelayByDate(LocalDateTime startDate, LocalDateTime endDate, List<String> products) {
+        try {
+            List<Object[]> averageDelayByDate = tripsRepository.getAverageDelayByDate(startDate, endDate, products);
+            return Result.success(averageDelayByDate);
+        } catch (Exception e) {
+            log.error("Error while finding average delay by date: " + e.getMessage() + " " + e.getCause());
+            log.error("Start date: " + startDate.toString());
+            log.error("End date: " + endDate.toString());
+            log.error("Products: " + products.toString());
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
     }
 }

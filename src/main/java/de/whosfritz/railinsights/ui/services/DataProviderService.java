@@ -55,6 +55,8 @@ public class DataProviderService {
 
     Double stopsPercentageDelayedMoreThan15min;
 
+    Double stopsPercentageDelayedMoreThan30min;
+
     Double stopsPercentageDelayedMoreThan60min;
 
     DataSeries stoppsOverTimeDataSeries;
@@ -121,6 +123,7 @@ public class DataProviderService {
         int countAllByDelayIsGreaterThanEqual = tripsRepository.countAllByDelayIsGreaterThanEqual(360);
         int countOnTime = totalTrips - countAllByCancelled - countAllByDelayIsGreaterThanEqual;
         int countDelayedMoreThan15min = tripsRepository.countAllByDelayIsGreaterThanEqual(900);
+        int countDelayedMoreThan30min = tripsRepository.countAllByDelayIsGreaterThanEqual(1800);
         int countDelayedMoreThan60min = tripsRepository.countAllByDelayIsGreaterThanEqual(3600);
 
         stopsPercentageOnTime = PercentageUtil.convertToTwoDecimalPlaces((double) countOnTime / totalTrips * 100);
@@ -128,6 +131,7 @@ public class DataProviderService {
         stopsPercentageCancelled = PercentageUtil.convertToTwoDecimalPlaces((double) countAllByCancelled / totalTrips * 100);
         stopsPercentageDelayedMoreThan6min = stopsPercentageDelayed;
         stopsPercentageDelayedMoreThan15min = PercentageUtil.convertToTwoDecimalPlaces((double) countDelayedMoreThan15min / totalTrips * 100);
+        stopsPercentageDelayedMoreThan30min = PercentageUtil.convertToTwoDecimalPlaces((double) countDelayedMoreThan30min / totalTrips * 100);
         stopsPercentageDelayedMoreThan60min = Math.round((double) countDelayedMoreThan60min / totalTrips * 1000.0) / 1000.0 * 100;
 
         DataSeries dataSeries = new DataSeries();

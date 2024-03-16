@@ -23,12 +23,12 @@ import de.whosfritz.railinsights.data.LoadFactor;
 import de.whosfritz.railinsights.data.dto.TripStatistics;
 import de.whosfritz.railinsights.data.services.LineService;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
+import de.whosfritz.railinsights.ui.components.charts.DailyDelayChart;
 import de.whosfritz.railinsights.ui.factories.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
-import de.whosfritz.railinsights.utils.DateTimeLabelFormatsUtil;
 import de.whosfritz.railinsights.utils.PercentageUtil;
 import de.whosfritz.railinsights.utils.TripUtil;
 import jakarta.transaction.Transactional;
@@ -68,7 +68,7 @@ public class TrainStatsView extends VerticalLayout {
 
         Button infoButton = ButtonFactory.createInfoButton("Informationen", infoParagraph, infoCalcParagraph);
 
-        fernVerkehrLinesCombobox.setItems(lineService.getLinesNationalOrNationalExpress().getData());
+        fernVerkehrLinesCombobox.setItems(lineService.getLinesByProducts(List.of("national", "nationalExpress")).getData());
         fernVerkehrLinesCombobox.setItemLabelGenerator(Line::getName);
         fernVerkehrLinesCombobox.setLabel("Fernverkehrszug");
         fernVerkehrLinesCombobox.addClassNames(LumoUtility.Margin.Top.MEDIUM);
@@ -207,8 +207,7 @@ public class TrainStatsView extends VerticalLayout {
         board.addRow(abfahrtenStats1);
         board.addRow(abfahrtenStats2);
         DataSeries dailyDelaySeries = UniversalCalculator.buildDailyDelaySeries(tripsCorrespondingToLine);
-        board.addRow(createDailyDelayChart(dailyDelaySeries));
-        // nicht median, sondern höchste und geringste auslastung
+        board.addRow(new DailyDelayChart(dailyDelaySeries));
         DataSeries dailyLowestLoadFactorSeries = UniversalCalculator.buildDailyLowestLoadFactorSeries(tripsCorrespondingToLine);
         DataSeries dailyHighestLoadFactorSeries = UniversalCalculator.buildDailyHighestLoadFactorSeries(tripsCorrespondingToLine);
         board.addRow(createDailyLoadFactorChart(List.of(dailyLowestLoadFactorSeries, dailyHighestLoadFactorSeries)));
@@ -218,42 +217,6 @@ public class TrainStatsView extends VerticalLayout {
         tripStatsLayout.add(board);
         tripStatsLayout.setVisible(true);
 
-    }
-
-    private Component createDailyDelayChart(DataSeries dailyDelaySeries) {
-        Chart chart = new Chart(ChartType.AREA);
-
-        chart.addClassNames(LumoUtility.Margin.Top.XLARGE, LumoUtility.Margin.Bottom.XLARGE);
-
-        Configuration conf = chart.getConfiguration();
-        conf.setTitle("Verspätung");
-        conf.setSubTitle("Durchschnittliche Verspätung pro Tag in Minuten");
-
-        conf.addSeries(dailyDelaySeries);
-        conf.getChart().setStyledMode(true);
-
-        conf.setLegend(new Legend(false));
-
-        Tooltip tooltip = chart.getConfiguration().getTooltip();
-        tooltip.setShared(true);
-        tooltip.setDateTimeLabelFormats(DateTimeLabelFormatsUtil.getCleanedDateTimeLabelFormat());
-
-        YAxis yAxis = chart.getConfiguration().getyAxis();
-        yAxis.setTitle(new AxisTitle());
-
-
-        XAxis xAxis = chart.getConfiguration().getxAxis();
-        xAxis.setType(AxisType.DATETIME);
-        xAxis.setStartOfWeek(1);
-        xAxis.setTitle(new AxisTitle());
-
-        PlotOptionsLine plotOptions = new PlotOptionsLine();
-        plotOptions.setEnableMouseTracking(true);
-        plotOptions.setDataLabels(new DataLabels(true));
-        plotOptions.setStacking(Stacking.NORMAL);
-        conf.setPlotOptions(plotOptions);
-
-        return chart;
     }
 
     public Component createDailyLoadFactorChart(List<DataSeries> dailyLoadFactorSeries) {

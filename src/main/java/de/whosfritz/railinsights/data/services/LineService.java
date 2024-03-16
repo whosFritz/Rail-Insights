@@ -11,7 +11,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,10 +45,9 @@ public class LineService {
         }
     }
 
-    public Result<List<Line>, JPAError> getLinesNationalOrNationalExpress() {
+    public Result<List<Line>, JPAError> getLinesByProducts(List<String> products) {
         try {
-            Optional<List<Line>> lines = lineRepository.findLinesByProductContains("national");
-            lines.ifPresent(l -> l.sort(Comparator.comparing(Line::getName)));
+            Optional<List<Line>> lines = lineRepository.findLinesByProducts(products);
             return lines.<Result<List<Line>, JPAError>>map(Result::success).orElseGet(() -> Result.error(new JPAError(JPAErrors.NOT_FOUND)));
         } catch (Exception e) {
             log.error("Error while getting lines by product: " + e.getMessage() + " " + e.getCause());

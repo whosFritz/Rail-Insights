@@ -44,6 +44,13 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
             "    trip_date DESC;", nativeQuery = true)
     List<Object[]> getTripPercentages();
 
+    @Query(value = "SELECT DATE(t.trip_planned_when) AS trip_date, AVG(t.trip_delay) AS avg_delay " +
+            "FROM trips t " +
+            "JOIN line l ON t.line_id = l.id " +
+            "WHERE t.trip_delay >= 360 AND t.trip_planned_when BETWEEN :startDate AND :endDate AND l.stop_line_product IN :products " +
+            "GROUP BY DATE(t.trip_planned_when) " +
+            "ORDER BY trip_date", nativeQuery = true)
+    List<Object[]> getAverageDelayByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("products") List<String> products);
 
     int countAllByCancelled(boolean cancelled);
 
@@ -79,6 +86,27 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
             LocalDateTime plannedWhenAfter,
             LocalDateTime plannedWhenBefore,
             String name);
+
+    @Query("SELECT COUNT(t) FROM Trip t WHERE t.plannedWhen > :plannedWhenAfter AND t.plannedWhen < :plannedWhenBefore AND t.line.product IN :products AND t.delay >= :delay")
+    int countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(
+            @Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
+            @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore,
+            @Param("products") List<String> products,
+            @Param("delay") int delay);
+
+    @Query("SELECT COUNT(t) FROM Trip t WHERE t.plannedWhen > :plannedWhenAfter AND t.plannedWhen < :plannedWhenBefore AND t.line.product IN :products")
+    int countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLines(
+            @Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
+            @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore,
+            @Param("products") List<String> products
+    );
+
+    @Query("SELECT COUNT(t) FROM Trip t WHERE t.plannedWhen > :plannedWhenAfter AND t.plannedWhen < :plannedWhenBefore AND t.line.product IN :products AND t.cancelled = :cancelled")
+    int countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndCancelled(
+            @Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
+            @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore,
+            @Param("products") List<String> products,
+            @Param("cancelled") boolean cancelled);
 
     Optional<List<Trip>> findAllByPlannedWhenAfterAndPlannedWhenBefore(LocalDateTime whenAfter, LocalDateTime whenBefore);
 
