@@ -187,7 +187,7 @@ public class TrainStatsView extends VerticalLayout {
         Board board = new Board();
         board.addRow(
                 createHighlight("Zug: ", comboboxValue.getName()),
-                createHighlight("Anzahl der Fahrten", String.valueOf(fahrtenCount))
+                createHighlight("Anzahl der Fahrten", fahrtenCount == 0 ? "N/A" : String.valueOf(fahrtenCount))
         );
         board.addRow(
                 createHighlight("Richtung", zielBahnhof),
