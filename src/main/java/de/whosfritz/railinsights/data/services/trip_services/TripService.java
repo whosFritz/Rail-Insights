@@ -436,4 +436,17 @@ public class TripService {
         }
         return Result.success(tripPercentageDTOS);
     }
+
+    public Result<List<Object[]>, JPAError> getAverageDelayByDate(LocalDateTime startDate, LocalDateTime endDate, List<String> products) {
+        try {
+            List<Object[]> averageDelayByDate = tripsRepository.getAverageDelayByDate(startDate, endDate, products);
+            return Result.success(averageDelayByDate);
+        } catch (Exception e) {
+            log.error("Error while finding average delay by date: " + e.getMessage() + " " + e.getCause());
+            log.error("Start date: " + startDate.toString());
+            log.error("End date: " + endDate.toString());
+            log.error("Products: " + products.toString());
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
+    }
 }

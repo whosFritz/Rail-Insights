@@ -4,6 +4,7 @@ package de.whosfritz.railinsights.ui.pages;
 import com.vaadin.flow.component.board.Board;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -12,7 +13,10 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+import de.whosfritz.railinsights.calculation.UniversalCalculator;
 import de.whosfritz.railinsights.data.services.trip_services.TripService;
+import de.whosfritz.railinsights.ui.components.charts.DailyDelayChart;
 import de.whosfritz.railinsights.ui.factories.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
@@ -20,9 +24,12 @@ import de.whosfritz.railinsights.ui.layout.MainView;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
 import de.whosfritz.railinsights.utils.PercentageUtil;
 
+import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 
 import static de.whosfritz.railinsights.ui.components.boards.StationViewDashboard.createHighlight;
@@ -38,7 +45,9 @@ public class DelayedView extends VerticalLayout {
     public DelayedView(TripService tripService) {
         this.tripService = tripService;
         HorizontalLayout controls = new HorizontalLayout();
-        controls.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
+        controls.setAlignItems(Alignment.BASELINE);
+        controls.addClassNames(LumoUtility.Margin.MEDIUM);
+
 
         Button createStatsButton = new Button("Statistik erstellen");
         createStatsButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -141,6 +150,16 @@ public class DelayedView extends VerticalLayout {
         double delayedMoreThan60minGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsDelayed60min - globalStopsDelayedMoreThan60min);
         double cancelledGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageCancelled - globalStopsCancelled);
 
+        List<Object[]> results = tripService.getAverageDelayByDate(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines).getData();
+        TreeMap<LocalDate, Double> tripsCorrespondingToProducts = new TreeMap<>();
+        for (Object[] result : results) {
+            LocalDate tripDate = ((Date) result[0]).toLocalDate();
+            BigDecimal avgDelayDecimal = (BigDecimal) result[1];
+            Double avgDelay = avgDelayDecimal.doubleValue();
+            tripsCorrespondingToProducts.put(tripDate, avgDelay);
+        }
+
+        DataSeries dailyDelaySeries = UniversalCalculator.createDailyDelaySeriesForInsight(tripsCorrespondingToProducts);
 
         Board board = new Board();
         board.addRow(
@@ -154,6 +173,9 @@ public class DelayedView extends VerticalLayout {
                 createHighlight("Halte mit mehr als 30 Minuten Verspätung", percentageStopsDelayed30min + "%", delayedMoreThan30minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false),
                 createHighlight("Halte mit mehr als 60 Minuten Verspätung", percentageStopsDelayed60min + "%", delayedMoreThan60minGlobalDifferencePercentage, "Im deutschlandweiten Vergleich", false)
         );
+        board.addRow(new DailyDelayChart(dailyDelaySeries));
         stats.add(board);
+
+        System.out.println("Stats created");
     }
 }

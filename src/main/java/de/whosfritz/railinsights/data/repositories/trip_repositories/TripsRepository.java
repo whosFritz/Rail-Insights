@@ -44,6 +44,13 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
             "    trip_date DESC;", nativeQuery = true)
     List<Object[]> getTripPercentages();
 
+    @Query(value = "SELECT DATE(t.trip_planned_when) AS trip_date, AVG(t.trip_delay) AS avg_delay " +
+            "FROM trips t " +
+            "JOIN line l ON t.line_id = l.id " +
+            "WHERE t.trip_delay >= 360 AND t.trip_planned_when BETWEEN :startDate AND :endDate AND l.stop_line_product IN :products " +
+            "GROUP BY DATE(t.trip_planned_when) " +
+            "ORDER BY trip_date", nativeQuery = true)
+    List<Object[]> getAverageDelayByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("products") List<String> products);
 
     int countAllByCancelled(boolean cancelled);
 

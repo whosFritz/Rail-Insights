@@ -183,6 +183,24 @@ public class UniversalCalculator {
         return dailyDelaySeries;
     }
 
+    public static DataSeries createDailyDelaySeriesForInsight(TreeMap<LocalDate, Double> tripsCorrespondingToProducts) {
+
+        DataSeries dailyDelaySeries = new DataSeries();
+        dailyDelaySeries.setName("Durchschnittliche Verspätung");
+
+        // Iterate over the map
+        for (Map.Entry<LocalDate, Double> entry : tripsCorrespondingToProducts.entrySet()) {
+            LocalDate date = entry.getKey();
+            Double averageDelay = entry.getValue();
+
+            DataSeriesItem item = new DataSeriesItem(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant(), PercentageUtil.convertToTwoDecimalPlaces(averageDelay / 60));
+
+            dailyDelaySeries.add(item);
+        }
+
+        return dailyDelaySeries;
+    }
+
     /**
      * Calculate the top delayed trips ordered by delay and remove double delayed trips.
      *
