@@ -442,6 +442,18 @@ public class TripService {
         return Result.success(tripPercentageDTOS);
     }
 
+    public Result<List<Object[]>, JPAError> getAverageDelayByDate(LocalDateTime startDate, LocalDateTime endDate) {
+        try {
+            List<Object[]> averageDelayByDate = tripsRepository.getAverageDelayByDate(startDate, endDate);
+            return Result.success(averageDelayByDate);
+        } catch (Exception e) {
+            log.error("Error while finding average delay by date: " + e.getMessage() + " " + e.getCause());
+            log.error("Start date: " + startDate.toString());
+            log.error("End date: " + endDate.toString());
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
+    }
+
     public Result<List<Object[]>, JPAError> getAverageDelayByDateNah(LocalDateTime startDate, LocalDateTime endDate) {
         try {
             List<Object[]> averageDelayByDate = tripsRepository.getAverageDelayByDateNah(startDate, endDate);
@@ -464,5 +476,21 @@ public class TripService {
             log.error("End date: " + endDate.toString());
             return Result.error(new JPAError(JPAErrors.UNKNOWN));
         }
+    }
+
+    public int countAlleStopsInDiesemZeitraum(LocalDateTime localDateTime, LocalDateTime localDateTime1) {
+        return tripsRepository.countAlleStopsInDiesemZeitraum(localDateTime, localDateTime1);
+    }
+
+    public double countDatumDazwischenDelay(LocalDateTime localDateTime, LocalDateTime localDateTime1, int i) {
+        return tripsRepository.countDatumDazwischenDelay(localDateTime, localDateTime1, i);
+    }
+
+    public double countAusfaelle(LocalDateTime localDateTime, LocalDateTime localDateTime1) {
+        return tripsRepository.countAusfaelle(localDateTime, localDateTime1);
+    }
+
+    public double sumOfTripsDelayedMoreThanSixMinutes(LocalDateTime localDateTime, LocalDateTime localDateTime1) {
+        return tripsRepository.sumOfTripsDelayedMoreThanSixMinutes(localDateTime, localDateTime1);
     }
 }
