@@ -46,7 +46,6 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
 
     @Query(value = "SELECT DATE(t.trip_planned_when) AS trip_date, AVG(t.trip_delay) AS avg_delay " +
             "FROM trips t " +
-            "JOIN line l ON t.line_id = l.id " +
             "WHERE t.trip_delay >= 360 AND t.trip_planned_when BETWEEN :startDate AND :endDate " +
             "GROUP BY DATE(t.trip_planned_when) " +
             "ORDER BY trip_date", nativeQuery = true)
@@ -70,7 +69,6 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
 
     @Query(value = "SELECT SUM(t.trip_delay) " +
             "FROM trips t " +
-            "JOIN line l ON t.line_id = l.id " +
             "WHERE t.trip_delay >= 360 AND t.trip_planned_when BETWEEN :startDate AND :endDate", nativeQuery = true)
     int sumOfTripsDelayedMoreThanSixMinutes(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
@@ -124,7 +122,6 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
 
     @Query(value = "SELECT COUNT(*) " +
             "FROM trips t " +
-            "JOIN line l ON t.line_id = l.id " +
             "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore", nativeQuery = true)
     int countDatumDazwischenDelay(
             LocalDateTime plannedWhenAfter,
@@ -151,7 +148,6 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
 
     @Query(value = "SELECT COUNT(*) " +
             "FROM trips t " +
-            "JOIN line l ON t.line_id = l.id " +
             "WHERE t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore", nativeQuery = true)
     int countAlleStopsInDiesemZeitraum(@Param("plannedWhenAfter") LocalDateTime plannedWhenAfter, @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore);
 
@@ -173,7 +169,6 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
 
     @Query(value = "SELECT COUNT(*) " +
             "FROM trips t " +
-            "JOIN line l ON t.line_id = l.id " +
             "WHERE t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore AND t.trip_cancelled = true", nativeQuery = true)
     int countAusfaelle(@Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
                        @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore);
