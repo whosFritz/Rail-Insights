@@ -30,7 +30,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
-import java.util.concurrent.CompletableFuture;
 
 import static de.whosfritz.railinsights.ui.components.boards.StationViewDashboard.createHighlight;
 
@@ -102,32 +101,40 @@ public class DelayedView extends VerticalLayout {
         }
         stats.removeAll();
 
-        List<String> lines;
+        int allStopsInTimeRange = 0;
+        double stopsDelayed = 0;
+        double stopsDelayed15min = 0;
+        double stopsDelayed30min = 0;
+        double stopsDelayed60min = 0;
+        double stopsCancelled = 0;
+        double stopsOnTime = 0;
+        double avgDelayInSeconds = 0; // = tripService.sumOfTripsDelayedMoreThanSixMinutes(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 360) / stopsDelayed;
+        List<Object[]> results = null;
 
         if (trafficType.equals("Nahverkehr")) {
-            lines = List.of("regional", "suburban", "regionalExpress");
+            allStopsInTimeRange = tripService.countAlleStopsInDiesemZeitraumNah(startDate.atStartOfDay(), endDate.atStartOfDay());
+            stopsDelayed = tripService.countDatumDazwischenDelayNah(startDate.atStartOfDay(), endDate.atStartOfDay(), 360);
+            stopsDelayed15min = tripService.countDatumDazwischenDelayNah(startDate.atStartOfDay(), endDate.atStartOfDay(), 900);
+            stopsDelayed30min = tripService.countDatumDazwischenDelayNah(startDate.atStartOfDay(), endDate.atStartOfDay(), 1800);
+            stopsDelayed60min = tripService.countDatumDazwischenDelayNah(startDate.atStartOfDay(), endDate.atStartOfDay(), 3600);
+            stopsCancelled = tripService.countAusfaelleNah(startDate.atStartOfDay(), endDate.atStartOfDay());
+            stopsOnTime = allStopsInTimeRange - stopsDelayed - stopsCancelled;
+            avgDelayInSeconds = tripService.sumOfTripsDelayedMoreThanSixMinutesNah(startDate.atStartOfDay(), endDate.atStartOfDay(), 360) / stopsDelayed;
+            results = tripService.getAverageDelayByDateNah(startDate.atStartOfDay(), endDate.atStartOfDay()).getData();
         } else if (trafficType.equals("Fernverkehr")) {
-            lines = List.of("national", "nationalExpress");
+            allStopsInTimeRange = tripService.countAlleStopsInDiesemZeitraumFern(startDate.atStartOfDay(), endDate.atStartOfDay());
+            stopsDelayed = tripService.countDatumDazwischenDelayFern(startDate.atStartOfDay(), endDate.atStartOfDay(), 360);
+            stopsDelayed15min = tripService.countDatumDazwischenDelayFern(startDate.atStartOfDay(), endDate.atStartOfDay(), 900);
+            stopsDelayed30min = tripService.countDatumDazwischenDelayFern(startDate.atStartOfDay(), endDate.atStartOfDay(), 1800);
+            stopsDelayed60min = tripService.countDatumDazwischenDelayFern(startDate.atStartOfDay(), endDate.atStartOfDay(), 3600);
+            stopsCancelled = tripService.countAusfaelleFern(startDate.atStartOfDay(), endDate.atStartOfDay());
+            stopsOnTime = allStopsInTimeRange - stopsDelayed - stopsCancelled;
+            avgDelayInSeconds = tripService.sumOfTripsDelayedMoreThanSixMinutesFern(startDate.atStartOfDay(), endDate.atStartOfDay(), 360) / stopsDelayed;
+            results = tripService.getAverageDelayByDateFern(startDate.atStartOfDay(), endDate.atStartOfDay()).getData();
+
         } else {
-            lines = List.of("regional", "suburban", "regionalExpress", "national", "nationalexpress");
         }
-        List<String> finalLines = lines;
-        CompletableFuture<Integer> futureAllStops = CompletableFuture.supplyAsync(() -> tripService.findAllStopsInThisTimeRange(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines));
-        CompletableFuture<Integer> futureStopsDelayed = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 360));
-        CompletableFuture<Integer> futureStopsDelayed15min = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 900));
-        CompletableFuture<Integer> futureStopsDelayed30min = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 1800));
-        CompletableFuture<Integer> futureStopsDelayed60min = CompletableFuture.supplyAsync(() -> tripService.findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 3600));
-        CompletableFuture<Integer> futureStopsCancelled = CompletableFuture.supplyAsync(() -> tripService.findAllAusgefallene(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines));
-        CompletableFuture<List<Object[]>> futureResults = CompletableFuture.supplyAsync(() -> tripService.getAverageDelayByDate(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines).getData());
 
-        int allStopsInTimeRange = futureAllStops.join();
-        double stopsDelayed = futureStopsDelayed.join();
-        double stopsDelayed15min = futureStopsDelayed15min.join();
-        double stopsDelayed30min = futureStopsDelayed30min.join();
-        double stopsDelayed60min = futureStopsDelayed60min.join();
-        double stopsCancelled = futureStopsCancelled.join();
-
-        double stopsOnTime = allStopsInTimeRange - stopsDelayed - stopsCancelled;
 
         double percentageStopsOnTime = PercentageUtil.convertToTwoDecimalPlaces(stopsOnTime / allStopsInTimeRange * 100);
         double percentageStopsDelayed = PercentageUtil.convertToTwoDecimalPlaces(stopsDelayed / allStopsInTimeRange * 100);
@@ -150,11 +157,9 @@ public class DelayedView extends VerticalLayout {
         double delayedMoreThan60minGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageStopsDelayed60min - globalStopsDelayedMoreThan60min);
         double cancelledGlobalDifferencePercentage = PercentageUtil.convertToTwoDecimalPlaces(percentageCancelled - globalStopsCancelled);
 
-        double avgDelayInSeconds = tripService.sumOfTripsDelayedMoreThanSixMinutes(startDate.atStartOfDay(), endDate.atStartOfDay(), finalLines, 360) / stopsDelayed;
 
-
-        List<Object[]> results = futureResults.join();
         TreeMap<LocalDate, Double> tripsCorrespondingToProducts = new TreeMap<>();
+        assert results != null;
         for (Object[] result : results) {
             LocalDate tripDate = ((Date) result[0]).toLocalDate();
             BigDecimal avgDelayDecimal = (BigDecimal) result[1];
