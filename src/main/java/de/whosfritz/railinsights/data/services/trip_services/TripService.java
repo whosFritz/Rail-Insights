@@ -339,37 +339,38 @@ public class TripService {
         }
     }
 
-    public int findAllByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(
-            LocalDateTime plannedWhenAfter,
-            LocalDateTime plannedWhenBefore,
-            List<String> products,
-            int delay) {
-        return tripsRepository.countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(
-                plannedWhenAfter,
-                plannedWhenBefore,
-                products,
-                delay
-        );
+    public int sumOfTripsDelayedMoreThanSixMinutesNah(LocalDateTime startDate, LocalDateTime endDate, int delay) {
+        return tripsRepository.sumOfTripsDelayedMoreThanSixMinutesNah(startDate, endDate, delay);
     }
 
-    public int findAllAusgefallene(
-            LocalDateTime plannedWhenAfter,
-            LocalDateTime plannedWhenBefore,
-            List<String> products) {
-        return tripsRepository.countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndCancelled(
-                plannedWhenAfter,
-                plannedWhenBefore,
-                products,
-                true);
+    public int sumOfTripsDelayedMoreThanSixMinutesFern(LocalDateTime startDate, LocalDateTime endDate, int delay) {
+        return tripsRepository.sumOfTripsDelayedMoreThanSixMinutesFern(startDate, endDate, delay);
     }
 
-    public int sumOfTripsDelayedMoreThanSixMinutes(LocalDateTime startDate, LocalDateTime endDate, List<String> products, int delay) {
-        return tripsRepository.sumOfTripsDelayedMoreThanSixMinutes(startDate, endDate, products, delay);
+    public int countAusfaelleNah(LocalDateTime startDate, LocalDateTime endDate) {
+        return tripsRepository.countAusfaelleNah(startDate, endDate);
     }
 
-    public int findAllStopsInThisTimeRange(LocalDateTime start, LocalDateTime end, List<String> lines) {
-        return tripsRepository.countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLines(start, end, lines);
+    public int countAusfaelleFern(LocalDateTime startDate, LocalDateTime endDate) {
+        return tripsRepository.countAusfaelleFern(startDate, endDate);
     }
+
+    public int countAlleStopsInDiesemZeitraumNah(LocalDateTime startDate, LocalDateTime endDate) {
+        return tripsRepository.countAlleStopsInDiesemZeitraumNah(startDate, endDate);
+    }
+
+    public int countAlleStopsInDiesemZeitraumFern(LocalDateTime startDate, LocalDateTime endDate) {
+        return tripsRepository.countAlleStopsInDiesemZeitraumFern(startDate, endDate);
+    }
+
+    public int countDatumDazwischenDelayNah(LocalDateTime startDate, LocalDateTime endDate, int delay) {
+        return tripsRepository.countDatumDazwischenDelayNah(startDate, endDate, delay);
+    }
+
+    public int countDatumDazwischenDelayFern(LocalDateTime startDate, LocalDateTime endDate, int delay) {
+        return tripsRepository.countDatumDazwischenDelayFern(startDate, endDate, delay);
+    }
+
 
     @Transactional
     public Result<List<Trip>, JPAError> findAllByStop(Stop stop) {
@@ -441,16 +442,55 @@ public class TripService {
         return Result.success(tripPercentageDTOS);
     }
 
-    public Result<List<Object[]>, JPAError> getAverageDelayByDate(LocalDateTime startDate, LocalDateTime endDate, List<String> products) {
+    public Result<List<Object[]>, JPAError> getAverageDelayByDate(LocalDateTime startDate, LocalDateTime endDate) {
         try {
-            List<Object[]> averageDelayByDate = tripsRepository.getAverageDelayByDate(startDate, endDate, products);
+            List<Object[]> averageDelayByDate = tripsRepository.getAverageDelayByDate(startDate, endDate);
             return Result.success(averageDelayByDate);
         } catch (Exception e) {
             log.error("Error while finding average delay by date: " + e.getMessage() + " " + e.getCause());
             log.error("Start date: " + startDate.toString());
             log.error("End date: " + endDate.toString());
-            log.error("Products: " + products.toString());
             return Result.error(new JPAError(JPAErrors.UNKNOWN));
         }
+    }
+
+    public Result<List<Object[]>, JPAError> getAverageDelayByDateNah(LocalDateTime startDate, LocalDateTime endDate) {
+        try {
+            List<Object[]> averageDelayByDate = tripsRepository.getAverageDelayByDateNah(startDate, endDate);
+            return Result.success(averageDelayByDate);
+        } catch (Exception e) {
+            log.error("Error while finding average delay by date: " + e.getMessage() + " " + e.getCause());
+            log.error("Start date: " + startDate.toString());
+            log.error("End date: " + endDate.toString());
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
+    }
+
+    public Result<List<Object[]>, JPAError> getAverageDelayByDateFern(LocalDateTime startDate, LocalDateTime endDate) {
+        try {
+            List<Object[]> averageDelayByDate = tripsRepository.getAverageDelayByDateFern(startDate, endDate);
+            return Result.success(averageDelayByDate);
+        } catch (Exception e) {
+            log.error("Error while finding average delay by date: " + e.getMessage() + " " + e.getCause());
+            log.error("Start date: " + startDate.toString());
+            log.error("End date: " + endDate.toString());
+            return Result.error(new JPAError(JPAErrors.UNKNOWN));
+        }
+    }
+
+    public int countAlleStopsInDiesemZeitraum(LocalDateTime localDateTime, LocalDateTime localDateTime1) {
+        return tripsRepository.countAlleStopsInDiesemZeitraum(localDateTime, localDateTime1);
+    }
+
+    public double countDatumDazwischenDelay(LocalDateTime localDateTime, LocalDateTime localDateTime1, int i) {
+        return tripsRepository.countDatumDazwischenDelay(localDateTime, localDateTime1, i);
+    }
+
+    public double countAusfaelle(LocalDateTime localDateTime, LocalDateTime localDateTime1) {
+        return tripsRepository.countAusfaelle(localDateTime, localDateTime1);
+    }
+
+    public double sumOfTripsDelayedMoreThanSixMinutes(LocalDateTime localDateTime, LocalDateTime localDateTime1) {
+        return tripsRepository.sumOfTripsDelayedMoreThanSixMinutes(localDateTime, localDateTime1);
     }
 }
