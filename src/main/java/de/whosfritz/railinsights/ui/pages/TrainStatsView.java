@@ -228,6 +228,8 @@ public class TrainStatsView extends VerticalLayout {
         conf.setTitle("Auslastung");
         conf.setSubTitle("Höchste und niedrigste Auslastung pro Tag");
 
+        conf.setExporting(true);
+
         dailyLoadFactorSeries.forEach(conf::addSeries);
         conf.getChart().setStyledMode(true);
 

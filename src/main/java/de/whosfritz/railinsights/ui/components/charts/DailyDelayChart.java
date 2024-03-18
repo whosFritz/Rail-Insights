@@ -17,6 +17,8 @@ public class DailyDelayChart extends Div {
         conf.setTitle("Verspätung");
         conf.setSubTitle("Durchschnittliche Verspätung pro Tag in Minuten");
 
+        conf.setExporting(true);
+
         conf.addSeries(dailyDelaySeries);
         conf.getChart().setStyledMode(true);
 
