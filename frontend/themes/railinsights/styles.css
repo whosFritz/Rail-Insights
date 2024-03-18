@@ -14,9 +14,10 @@ html {
     --lumo-primary-text-color: rgb(236, 0, 22);
     --lumo-primary-color-50pct: rgba(236, 0, 22, 0.5);
     --lumo-primary-color-10pct: rgba(236, 0, 22, 0.1);
-    --lumo-error-text-color: #ffffff;
-    --lumo-error-color-50pct: #740009;
+    /*--lumo-error-text-color: #ffffff;
     --lumo-error-color-10pct: #ff0012;
+     */
+    --lumo-error-color-50pct: #740009;
     --lumo-success-text-color: rgb(64, 131, 53);
     --lumo-success-color-50pct: rgba(64, 131, 53, 0.5);
     --lumo-success-color-10pct: rgba(64, 131, 53, 0.1);

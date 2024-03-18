@@ -52,6 +52,13 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
             "ORDER BY trip_date", nativeQuery = true)
     List<Object[]> getAverageDelayByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("products") List<String> products);
 
+    // sum of delay for trips that are delayed more than 6 minutes
+    @Query(value = "SELECT SUM(t.trip_delay) " +
+            "FROM trips t " +
+            "JOIN line l ON t.line_id = l.id " +
+            "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :startDate AND :endDate AND l.stop_line_product IN :products", nativeQuery = true)
+    int sumOfTripsDelayedMoreThanSixMinutes(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("products") List<String> products, @Param("delay") int delay);
+
     int countAllByCancelled(boolean cancelled);
 
     int countAllByDelayIsGreaterThanEqual(int delay);

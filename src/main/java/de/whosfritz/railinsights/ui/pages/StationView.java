@@ -57,7 +57,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-@Route(value = "bahnhöfe", layout = MainView.class)
+@Route(value = "stationsView", layout = MainView.class)
 public class StationView extends VerticalLayout {
     private final Map map = new Map();
 

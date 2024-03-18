@@ -36,16 +36,18 @@ public class UniversalCalculator {
         return percentage;
     }
 
-    public static String minutesToHoursAndMinutesAndSeconds(double totalMinutes) {
-        if (totalMinutes == 0.0) {
-            return "0 Minuten";
+    public static String secondsToHoursMinutesAndSeconds(double totalSeconds) {
+        if (totalSeconds == 0.0) {
+            return "0 Sekunden";
         }
 
-        int hours = (int) (totalMinutes / 60);
-        double remainingMinutes = totalMinutes % 60;
+        int hours = (int) (totalSeconds / 3600);
+        double remainingSeconds = totalSeconds % 3600;
 
-        int minutes = (int) remainingMinutes;
-        int seconds = (int) Math.round((remainingMinutes - minutes) * 60);
+        int minutes = (int) (remainingSeconds / 60);
+        remainingSeconds = remainingSeconds % 60;
+
+        int seconds = (int) Math.round(remainingSeconds);
 
         StringBuilder time = new StringBuilder();
         if (hours > 0) {
