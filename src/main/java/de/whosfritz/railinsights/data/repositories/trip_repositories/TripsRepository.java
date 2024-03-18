@@ -47,17 +47,32 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
     @Query(value = "SELECT DATE(t.trip_planned_when) AS trip_date, AVG(t.trip_delay) AS avg_delay " +
             "FROM trips t " +
             "JOIN line l ON t.line_id = l.id " +
-            "WHERE t.trip_delay >= 360 AND t.trip_planned_when BETWEEN :startDate AND :endDate AND l.stop_line_product IN :products " +
+            "WHERE t.trip_delay >= 360 AND t.trip_planned_when BETWEEN :startDate AND :endDate AND (l.stop_line_product = 'regional' or l.stop_line_product = 'suburban' or l.stop_line_product = 'regionalExpress')" +
             "GROUP BY DATE(t.trip_planned_when) " +
             "ORDER BY trip_date", nativeQuery = true)
-    List<Object[]> getAverageDelayByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("products") List<String> products);
+    List<Object[]> getAverageDelayByDateNah(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query(value = "SELECT DATE(t.trip_planned_when) AS trip_date, AVG(t.trip_delay) AS avg_delay " +
+            "FROM trips t " +
+            "JOIN line l ON t.line_id = l.id " +
+            "WHERE t.trip_delay >= 360 AND t.trip_planned_when BETWEEN :startDate AND :endDate AND (l.stop_line_product = 'national' or l.stop_line_product = 'nationalExpress')" +
+            "GROUP BY DATE(t.trip_planned_when) " +
+            "ORDER BY trip_date", nativeQuery = true)
+    List<Object[]> getAverageDelayByDateFern(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     // sum of delay for trips that are delayed more than 6 minutes
     @Query(value = "SELECT SUM(t.trip_delay) " +
             "FROM trips t " +
             "JOIN line l ON t.line_id = l.id " +
-            "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :startDate AND :endDate AND l.stop_line_product IN :products", nativeQuery = true)
-    int sumOfTripsDelayedMoreThanSixMinutes(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("products") List<String> products, @Param("delay") int delay);
+            "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :startDate AND :endDate AND l.stop_line_product = 'regional' or l.stop_line_product = 'suburban' or l.stop_line_product = 'regionalExpress'", nativeQuery = true)
+    int sumOfTripsDelayedMoreThanSixMinutesNah(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("delay") int delay);
+
+
+    @Query(value = "SELECT SUM(t.trip_delay) " +
+            "FROM trips t " +
+            "JOIN line l ON t.line_id = l.id " +
+            "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :startDate AND :endDate AND l.stop_line_product = 'national' or l.stop_line_product = 'nationalExpress'", nativeQuery = true)
+    int sumOfTripsDelayedMoreThanSixMinutesFern(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("delay") int delay);
 
     int countAllByCancelled(boolean cancelled);
 
@@ -94,26 +109,53 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
             LocalDateTime plannedWhenBefore,
             String name);
 
-    @Query("SELECT COUNT(t) FROM Trip t WHERE t.plannedWhen > :plannedWhenAfter AND t.plannedWhen < :plannedWhenBefore AND t.line.product IN :products AND t.delay >= :delay")
-    int countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndDelayIsGreaterThanOrEqualTo(
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM trips t " +
+            "JOIN line l ON t.line_id = l.id " +
+            "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore AND (l.stop_line_product = 'regional' or l.stop_line_product = 'suburban' or l.stop_line_product = 'regionalExpress')", nativeQuery = true)
+    int countDatumDazwischenDelayNah(
             @Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
             @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore,
-            @Param("products") List<String> products,
             @Param("delay") int delay);
 
-    @Query("SELECT COUNT(t) FROM Trip t WHERE t.plannedWhen > :plannedWhenAfter AND t.plannedWhen < :plannedWhenBefore AND t.line.product IN :products")
-    int countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLines(
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM trips t " +
+            "JOIN line l ON t.line_id = l.id " +
+            "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore AND (l.stop_line_product = 'national' or l.stop_line_product = 'nationalExpress')", nativeQuery = true)
+    int countDatumDazwischenDelayFern(
             @Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
             @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore,
-            @Param("products") List<String> products
-    );
+            @Param("delay") int delay);
 
-    @Query("SELECT COUNT(t) FROM Trip t WHERE t.plannedWhen > :plannedWhenAfter AND t.plannedWhen < :plannedWhenBefore AND t.line.product IN :products AND t.cancelled = :cancelled")
-    int countByPlannedWhenIsAfterAndPlannedWhenIsBeforeAndLinesAndCancelled(
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM trips t " +
+            "JOIN line l ON t.line_id = l.id " +
+            "WHERE t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore AND (l.stop_line_product = 'regional' OR l.stop_line_product = 'suburban' OR l.stop_line_product = 'regionalExpress')", nativeQuery = true)
+    int countAlleStopsInDiesemZeitraumNah(
             @Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
-            @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore,
-            @Param("products") List<String> products,
-            @Param("cancelled") boolean cancelled);
+            @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore);
+
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM trips t " +
+            "JOIN line l ON t.line_id = l.id " +
+            "WHERE t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore AND (l.stop_line_product = 'national' OR l.stop_line_product = 'nationalExpress')", nativeQuery = true)
+    int countAlleStopsInDiesemZeitraumFern(
+            @Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
+            @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore);
+
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM trips t " +
+            "JOIN line l ON t.line_id = l.id " +
+            "WHERE t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore AND (l.stop_line_product = 'regional' or l.stop_line_product = 'suburban' or l.stop_line_product = 'regionalExpress') and  t.trip_cancelled = true", nativeQuery = true)
+    int countAusfaelleNah(@Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
+                          @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore);
+
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM trips t " +
+            "JOIN line l ON t.line_id = l.id " +
+            "WHERE t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore AND (l.stop_line_product = 'national' or l.stop_line_product = 'nationalExpress') and  t.trip_cancelled = true", nativeQuery = true)
+    int countAusfaelleFern(@Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
+                           @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore);
 
     Optional<List<Trip>> findAllByPlannedWhenAfterAndPlannedWhenBefore(LocalDateTime whenAfter, LocalDateTime whenBefore);
 

@@ -179,7 +179,7 @@ public class MainView extends AppLayout implements BeforeEnterObserver {
         SideNav mainSideNav = new SideNav();
         mainSideNav.addItem(
                 createNavItem("Home", "/", VaadinIcon.HOME.create(), LumoUtility.FontSize.MEDIUM),
-                createNavItem("DE-Insight", "/delays", LineAwesomeIcon.EYE.create(), LumoUtility.FontSize.MEDIUM),
+                createNavItem("DE-Insight", "/insight", LineAwesomeIcon.EYE.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("Zugstatistiken", "/zugstatistiken", LineAwesomeIcon.SUBWAY_SOLID.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("Bahnhöfe", "/stationsView", LineAwesomeIcon.BUILDING.create(), LumoUtility.FontSize.MEDIUM),
                 createNavItem("Verbindungsprognose", "/verbindungsprognose", VaadinIcon.SEARCH.create(), LumoUtility.FontSize.MEDIUM),
