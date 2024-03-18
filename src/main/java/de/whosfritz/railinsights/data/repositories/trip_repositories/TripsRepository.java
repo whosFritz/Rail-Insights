@@ -46,6 +46,13 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
 
     @Query(value = "SELECT DATE(t.trip_planned_when) AS trip_date, AVG(t.trip_delay) AS avg_delay " +
             "FROM trips t " +
+            "WHERE t.trip_delay >= 360 AND t.trip_planned_when BETWEEN :startDate AND :endDate " +
+            "GROUP BY DATE(t.trip_planned_when) " +
+            "ORDER BY trip_date", nativeQuery = true)
+    List<Object[]> getAverageDelayByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query(value = "SELECT DATE(t.trip_planned_when) AS trip_date, AVG(t.trip_delay) AS avg_delay " +
+            "FROM trips t " +
             "JOIN line l ON t.line_id = l.id " +
             "WHERE t.trip_delay >= 360 AND t.trip_planned_when BETWEEN :startDate AND :endDate AND (l.stop_line_product = 'regional' or l.stop_line_product = 'suburban' or l.stop_line_product = 'regionalExpress')" +
             "GROUP BY DATE(t.trip_planned_when) " +
@@ -60,18 +67,22 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
             "ORDER BY trip_date", nativeQuery = true)
     List<Object[]> getAverageDelayByDateFern(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-    // sum of delay for trips that are delayed more than 6 minutes
+    @Query(value = "SELECT SUM(t.trip_delay) " +
+            "FROM trips t " +
+            "WHERE t.trip_delay >= 360 AND t.trip_planned_when BETWEEN :startDate AND :endDate", nativeQuery = true)
+    int sumOfTripsDelayedMoreThanSixMinutes(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
     @Query(value = "SELECT SUM(t.trip_delay) " +
             "FROM trips t " +
             "JOIN line l ON t.line_id = l.id " +
-            "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :startDate AND :endDate AND l.stop_line_product = 'regional' or l.stop_line_product = 'suburban' or l.stop_line_product = 'regionalExpress'", nativeQuery = true)
+            "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :startDate AND :endDate AND (l.stop_line_product = 'regional' or l.stop_line_product = 'suburban' or l.stop_line_product = 'regionalExpress')", nativeQuery = true)
     int sumOfTripsDelayedMoreThanSixMinutesNah(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("delay") int delay);
 
 
     @Query(value = "SELECT SUM(t.trip_delay) " +
             "FROM trips t " +
             "JOIN line l ON t.line_id = l.id " +
-            "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :startDate AND :endDate AND l.stop_line_product = 'national' or l.stop_line_product = 'nationalExpress'", nativeQuery = true)
+            "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :startDate AND :endDate AND (l.stop_line_product = 'national' or l.stop_line_product = 'nationalExpress')", nativeQuery = true)
     int sumOfTripsDelayedMoreThanSixMinutesFern(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("delay") int delay);
 
     int countAllByCancelled(boolean cancelled);
@@ -111,6 +122,14 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
 
     @Query(value = "SELECT COUNT(*) " +
             "FROM trips t " +
+            "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore", nativeQuery = true)
+    int countDatumDazwischenDelay(
+            LocalDateTime plannedWhenAfter,
+            LocalDateTime plannedWhenBefore,
+            int delay);
+
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM trips t " +
             "JOIN line l ON t.line_id = l.id " +
             "WHERE t.trip_delay >= :delay AND t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore AND (l.stop_line_product = 'regional' or l.stop_line_product = 'suburban' or l.stop_line_product = 'regionalExpress')", nativeQuery = true)
     int countDatumDazwischenDelayNah(
@@ -129,6 +148,11 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
 
     @Query(value = "SELECT COUNT(*) " +
             "FROM trips t " +
+            "WHERE t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore", nativeQuery = true)
+    int countAlleStopsInDiesemZeitraum(@Param("plannedWhenAfter") LocalDateTime plannedWhenAfter, @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore);
+
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM trips t " +
             "JOIN line l ON t.line_id = l.id " +
             "WHERE t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore AND (l.stop_line_product = 'regional' OR l.stop_line_product = 'suburban' OR l.stop_line_product = 'regionalExpress')", nativeQuery = true)
     int countAlleStopsInDiesemZeitraumNah(
@@ -142,6 +166,12 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
     int countAlleStopsInDiesemZeitraumFern(
             @Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
             @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore);
+
+    @Query(value = "SELECT COUNT(*) " +
+            "FROM trips t " +
+            "WHERE t.trip_planned_when BETWEEN :plannedWhenAfter AND :plannedWhenBefore AND t.trip_cancelled = true", nativeQuery = true)
+    int countAusfaelle(@Param("plannedWhenAfter") LocalDateTime plannedWhenAfter,
+                       @Param("plannedWhenBefore") LocalDateTime plannedWhenBefore);
 
     @Query(value = "SELECT COUNT(*) " +
             "FROM trips t " +
@@ -162,5 +192,5 @@ public interface TripsRepository extends ListCrudRepository<Trip, Long> {
     Optional<List<Trip>> findAllByLineNameAndTripIdContains(String lineName, String tripId);
 
     int countAllByStopAndPlannedWhenAfterAndWhenBefore(Stop stop, LocalDateTime whenAfter, LocalDateTime whenBefore);
-
 }
+

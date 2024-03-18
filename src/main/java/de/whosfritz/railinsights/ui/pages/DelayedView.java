@@ -9,8 +9,6 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
-import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -56,13 +54,6 @@ public class DelayedView extends VerticalLayout {
 
         Button infoButton = ButtonFactory.createInfoButton("Informationen", p1, p2);
 
-        RadioButtonGroup<String> radioButtonGroup = new RadioButtonGroup<>();
-        radioButtonGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-        radioButtonGroup.setLabel("Verkehrstyp wählen");
-        radioButtonGroup.setItems("Nahverkehr", "Fernverkehr", "Alles");
-        radioButtonGroup.setRequired(true);
-        radioButtonGroup.setRequiredIndicatorVisible(true);
-        radioButtonGroup.setValue("Nahverkehr");
 
         DatePicker startDatePicker = new DatePicker();
         startDatePicker.setLabel("Startdatum");
@@ -79,9 +70,9 @@ public class DelayedView extends VerticalLayout {
         endDatePicker.setValue(LocalDate.now());
         endDatePicker.setLocale(new Locale("de", "DE"));
 
-        createStatsButton.addClickListener(event -> createStats(startDatePicker.getValue(), endDatePicker.getValue(), radioButtonGroup.getValue()));
+        createStatsButton.addClickListener(event -> createStats(startDatePicker.getValue(), endDatePicker.getValue(), "Alles"));
 
-        controls.add(infoButton, startDatePicker, endDatePicker, radioButtonGroup, createStatsButton);
+        controls.add(infoButton, startDatePicker, endDatePicker, createStatsButton);
 
         add(controls, stats);
     }
@@ -133,6 +124,15 @@ public class DelayedView extends VerticalLayout {
             results = tripService.getAverageDelayByDateFern(startDate.atStartOfDay(), endDate.atStartOfDay()).getData();
 
         } else {
+            allStopsInTimeRange = tripService.countAlleStopsInDiesemZeitraum(startDate.atStartOfDay(), endDate.atStartOfDay());
+            stopsDelayed = tripService.countDatumDazwischenDelay(startDate.atStartOfDay(), endDate.atStartOfDay(), 360);
+            stopsDelayed15min = tripService.countDatumDazwischenDelay(startDate.atStartOfDay(), endDate.atStartOfDay(), 900);
+            stopsDelayed30min = tripService.countDatumDazwischenDelay(startDate.atStartOfDay(), endDate.atStartOfDay(), 1800);
+            stopsDelayed60min = tripService.countDatumDazwischenDelay(startDate.atStartOfDay(), endDate.atStartOfDay(), 3600);
+            stopsCancelled = tripService.countAusfaelle(startDate.atStartOfDay(), endDate.atStartOfDay());
+            stopsOnTime = allStopsInTimeRange - stopsDelayed - stopsCancelled;
+            avgDelayInSeconds = tripService.sumOfTripsDelayedMoreThanSixMinutes(startDate.atStartOfDay(), endDate.atStartOfDay()) / stopsDelayed;
+            results = tripService.getAverageDelayByDate(startDate.atStartOfDay(), endDate.atStartOfDay()).getData();
         }
 
 
@@ -186,3 +186,4 @@ public class DelayedView extends VerticalLayout {
         stats.add(board);
     }
 }
+
