@@ -75,9 +75,9 @@ public class HomeView extends VerticalLayout {
         DataSeriesItem onTime = new DataSeriesItem("Pünktlich", dataProviderService.getStopsPercentageOnTime());
         onTime.setColor(new SolidColor(ColorScheme.SUCCESS.getColor()));
 
-        dataSeries.add(cancelled);
         dataSeries.add(delayed);
         dataSeries.add(onTime);
+        dataSeries.add(cancelled);
 
         return new CancelledDelayedOnPointPieChart(dataSeries);
     }
@@ -87,6 +87,6 @@ public class HomeView extends VerticalLayout {
         DataSeries delayedSeries = dataProviderService.getPercentageDelayedDataSeries();
         DataSeries cancelledSeries = dataProviderService.getPercentageCancelledDataSeries();
 
-        return new PercentageTimeChart(onTimeSeries, delayedSeries, cancelledSeries);
+        return new PercentageTimeChart(delayedSeries, onTimeSeries, cancelledSeries);
     }
 }
