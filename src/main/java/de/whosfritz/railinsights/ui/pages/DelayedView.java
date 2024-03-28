@@ -91,6 +91,7 @@ public class DelayedView extends VerticalLayout {
             return;
         }
         stats.removeAll();
+        long startTime = System.currentTimeMillis();
 
         int allStopsInTimeRange = 0;
         double stopsDelayed = 0;
@@ -135,6 +136,11 @@ public class DelayedView extends VerticalLayout {
             results = tripService.getAverageDelayByDate(startDate.atStartOfDay(), endDate.atStartOfDay()).getData();
         }
 
+        if (allStopsInTimeRange == 0) {
+            NotificationFactory.createNotification(NotificationTypes.ERROR, "Es wurden keine Halte in dem Zeitraum gefunden.").open();
+            return;
+        }
+
 
         double percentageStopsOnTime = PercentageUtil.convertToTwoDecimalPlaces(stopsOnTime / allStopsInTimeRange * 100);
         double percentageStopsDelayed = PercentageUtil.convertToTwoDecimalPlaces(stopsDelayed / allStopsInTimeRange * 100);
@@ -168,6 +174,10 @@ public class DelayedView extends VerticalLayout {
         }
 
         DataSeries dailyDelaySeries = UniversalCalculator.createDailyDelaySeriesForInsight(tripsCorrespondingToProducts);
+
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        NotificationFactory.createNotification(NotificationTypes.SUCCESS, "Statistiken erstellt in " + duration / 1000 + " Sekunden").open();
 
         Board board = new Board();
         board.addRow(
