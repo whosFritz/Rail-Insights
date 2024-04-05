@@ -6,12 +6,12 @@ import de.mekaso.vaadin.addon.compani.viewtransitions.ViewOutTransition;
 
 public interface AbstractAnimationViewClass extends AnimatedView {
     @Override
-    public default ViewInTransition enterWith() {
+    default ViewInTransition enterWith() {
         return ViewInTransition.MoveFromLeft;
     }
 
     @Override
-    public default ViewOutTransition exitWith() {
+    default ViewOutTransition exitWith() {
         return ViewOutTransition.MoveToRight;
     }
 }
