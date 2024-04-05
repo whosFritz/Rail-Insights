@@ -17,12 +17,13 @@ import de.whosfritz.railinsights.ui.components.charts.CancelledDelayedOnPointPie
 import de.whosfritz.railinsights.ui.components.charts.PercentageTimeChart;
 import de.whosfritz.railinsights.ui.components.charts.StoppsOverTimeChart;
 import de.whosfritz.railinsights.ui.layout.MainView;
+import de.whosfritz.railinsights.ui.pages.AbstractAnimationViewClass.AbstractAnimationViewClass;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = "/", layout = MainView.class)
 @PageTitle("RailInsights")
-public class HomeView extends VerticalLayout {
+public class HomeView extends VerticalLayout implements AbstractAnimationViewClass {
 
     @Autowired
     private DataProviderService dataProviderService;
