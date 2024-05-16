@@ -19,6 +19,7 @@ import de.whosfritz.railinsights.ui.factories.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
+import de.whosfritz.railinsights.ui.pages.AbstractAnimationViewClass.AbstractAnimationViewClass;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
 import de.whosfritz.railinsights.utils.PercentageUtil;
 
@@ -32,7 +33,7 @@ import java.util.TreeMap;
 import static de.whosfritz.railinsights.ui.components.boards.StationViewDashboard.createHighlight;
 
 @Route(value = "insight", layout = MainView.class)
-public class DelayedView extends VerticalLayout {
+public class DelayedView extends VerticalLayout implements AbstractAnimationViewClass {
 
     private final DataProviderService dataProviderService = VaadinService.getCurrent().getInstantiator().getOrCreate(DataProviderService.class);
     private final TripService tripService;
