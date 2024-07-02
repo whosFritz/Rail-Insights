@@ -10,7 +10,7 @@ We are currently working on release 1.0.0. This version will be continuously upd
 
 ## Reporting a Vulnerability 🚨
 
-Please report security vulnerabilities to this e-mail address: ducktech0815@duck.com. 
+Please report security vulnerabilities to this e-mail address: fritzschubert21@outlook.de. 
 If you have found a security vulnerability or similar, this is the only and best way to inform us. 
 #### Please do not open an issue on GitHub, we will take care of that in case of doubt.
 
