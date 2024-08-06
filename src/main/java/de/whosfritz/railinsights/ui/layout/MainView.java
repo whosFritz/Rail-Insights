@@ -7,6 +7,7 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -21,6 +22,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import de.mekaso.vaadin.addon.compani.animation.Animation;
 import de.whosfritz.railinsights.ui.color_scheme.ThemeUtil;
 import de.whosfritz.railinsights.ui.color_scheme.ThemeVariant;
 import de.whosfritz.railinsights.ui.components.DarkModeToggle;
@@ -34,6 +36,7 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
  * MainView class extends AppLayout and represents the main layout of the application.
  * It includes the navigation bar, cookie consent banner, and other UI components.
  */
+@StyleSheet(Animation.STYLES)
 public class MainView extends AppLayout implements BeforeEnterObserver {
     Notification cookieNotification = new Notification();
 
