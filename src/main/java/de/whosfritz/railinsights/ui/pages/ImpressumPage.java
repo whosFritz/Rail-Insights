@@ -7,10 +7,9 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import de.whosfritz.railinsights.ui.layout.MainView;
-import de.whosfritz.railinsights.ui.pages.AbstractAnimationViewClass.AbstractAnimationViewClass;
 
 @Route(value = "impressum", layout = MainView.class)
-public class ImpressumPage extends VerticalLayout implements AbstractAnimationViewClass {
+public class ImpressumPage extends VerticalLayout {
 
     public ImpressumPage() {
         Div impressum = new Div();

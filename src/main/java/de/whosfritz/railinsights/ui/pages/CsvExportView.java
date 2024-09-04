@@ -15,7 +15,6 @@ import de.whosfritz.railinsights.data.services.csv_export_service.CSVExporterSer
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
-import de.whosfritz.railinsights.ui.pages.AbstractAnimationViewClass.AbstractAnimationViewClass;
 import org.vaadin.firitin.components.DynamicFileDownloader;
 
 import java.io.PrintWriter;
@@ -24,7 +23,7 @@ import java.time.LocalDateTime;
 
 @Route(value = "csv-export", layout = MainView.class)
 
-public class CsvExportView extends VerticalLayout implements AbstractAnimationViewClass {
+public class CsvExportView extends VerticalLayout {
 
     public CsvExportView(CSVExporterService csvExporterService) {
 

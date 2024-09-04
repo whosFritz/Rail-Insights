@@ -4,10 +4,9 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import de.whosfritz.railinsights.ui.layout.MainView;
-import de.whosfritz.railinsights.ui.pages.AbstractAnimationViewClass.AbstractAnimationViewClass;
 
 @Route(value = "datenschutzerklaerung", layout = MainView.class)
-public class DatenSchutzerklaerungPage extends VerticalLayout implements AbstractAnimationViewClass {
+public class DatenSchutzerklaerungPage extends VerticalLayout {
 
     public DatenSchutzerklaerungPage() {
         add(new Html("<div>\n" +

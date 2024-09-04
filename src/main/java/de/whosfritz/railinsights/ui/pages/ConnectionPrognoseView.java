@@ -23,7 +23,6 @@ import de.whosfritz.railinsights.ui.components.TicketComponent;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
-import de.whosfritz.railinsights.ui.pages.AbstractAnimationViewClass.AbstractAnimationViewClass;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
 import de.whosfritz.railinsights.utils.TicketUtil;
 
@@ -35,7 +34,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Route(value = "verbindungsprognose", layout = MainView.class)
-public class ConnectionPrognoseView extends VerticalLayout implements AbstractAnimationViewClass {
+public class ConnectionPrognoseView extends VerticalLayout {
 
     private final TicketComponent ticketComponent;
 

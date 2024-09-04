@@ -28,7 +28,6 @@ import de.whosfritz.railinsights.ui.factories.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
-import de.whosfritz.railinsights.ui.pages.AbstractAnimationViewClass.AbstractAnimationViewClass;
 import de.whosfritz.railinsights.ui.services.DataProviderService;
 import de.whosfritz.railinsights.utils.PercentageUtil;
 import de.whosfritz.railinsights.utils.TripUtil;
@@ -43,7 +42,7 @@ import static de.whosfritz.railinsights.ui.components.boards.StationViewDashboar
 
 @Route(value = "zugstatistiken", layout = MainView.class)
 @Transactional
-public class TrainStatsView extends VerticalLayout implements AbstractAnimationViewClass {
+public class TrainStatsView extends VerticalLayout {
     private final UniversalCalculator universalCalculator = new UniversalCalculator();
 
     private final TripService tripService;
