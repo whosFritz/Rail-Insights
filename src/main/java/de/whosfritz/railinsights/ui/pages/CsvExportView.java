@@ -2,7 +2,6 @@ package de.whosfritz.railinsights.ui.pages;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -13,7 +12,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import de.whosfritz.railinsights.data.services.csv_export_service.CSVExporterService;
-import de.whosfritz.railinsights.ui.factories.ButtonFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationFactory;
 import de.whosfritz.railinsights.ui.factories.notification.NotificationTypes;
 import de.whosfritz.railinsights.ui.layout.MainView;
@@ -93,7 +91,7 @@ public class CsvExportView extends VerticalLayout {
         dynamicFileDownloader.getButton().setIcon(new Icon(VaadinIcon.DOWNLOAD));
         dynamicFileDownloader.getButton().addClickListener(e -> {
             String message = "Verarbeitung gestartet...";
-            if(tableToDownloadComboBox.getValue() != null && tableToDownloadComboBox.getValue().equals("Fahrten (Stops)")) {
+            if (tableToDownloadComboBox.getValue() != null && tableToDownloadComboBox.getValue().equals("Fahrten (Stops)")) {
                 message = "Verarbeitung gestartet... gib uns einen Moment, die Daten zu finden! Das kann ein paar Sekunden dauern...";
             }
             NotificationFactory.createNotification(NotificationTypes.WARNING, message).open();
