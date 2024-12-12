@@ -16,6 +16,8 @@ Deutschen Bahn konzentriert. Die zugehörige Webanwendung ermöglicht den Benutz
 Bahnhöfen und globale Verspätungen.
 Zusätzlich bietet die Anwendung eine Prognosefunktion für zukünftige Fahrten.
 
+Dieses Project benutzt den [DB-Adapter-v6](https://github.com/olech2412/DB-Adapter-v6)
+
 ## Funktionalitäten
 
 - **HomeView:** Die Startseite der Anwendung zeigt Statistiken über die ausgewerteten Daten.
